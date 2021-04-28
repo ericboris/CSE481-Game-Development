@@ -1,16 +1,15 @@
 package;
 
-import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.util.FlxColor;
 
 class Entity
 {
-	public var sprite:FlxSprite;
+	public var sprite:SpriteWrapper<Entity>;
 
 	public function new()
 	{
-		sprite = new FlxSprite();
+		sprite = new SpriteWrapper<Entity>(this);
 	}
 
 	function setSprite(width:Int, height:Int, color:FlxColor)
@@ -19,13 +18,12 @@ class Entity
 		sprite.setSize(width, height);
 	}
 
-	public function addToWorld(state:FlxState)
-	{
-		state.add(sprite);
-	}
-
 	public function update(elapsed:Float)
 	{
 		sprite.update(elapsed);
 	}
+
+	public function handlePlayerCollision(player:Player) {}
+
+	public function handlePreyCollision(prey:Prey) {}
 }

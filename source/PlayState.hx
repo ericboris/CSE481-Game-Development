@@ -3,50 +3,70 @@ package;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
+import js.html.Console;
 
 class PlayState extends FlxState
 {
+	// In world entities
 	var player:Player;
-	var dinos:Array<Dino>;
+	var prey:Array<Prey>;
 
-	var dinoSprites:FlxGroup;
+	// FlxSprite groups
+	var preySprites:FlxGroup;
 
 	override public function create()
 	{
 		super.create();
 
 		player = new Player();
-		player.addToWorld(this);
+		add(player.sprite);
 
-		dinoSprites = new FlxGroup();
-		dinos = new Array<Dino>();
+		preySprites = new FlxGroup();
+		prey = new Array<Prey>();
 		for (i in 0...6)
 		{
-			var dino = new Dino();
+			var dino = new Prey();
 			dino.sprite.setPosition(Math.random() * FlxG.width, Math.random() * FlxG.height);
-			dinoSprites.add(dino.sprite);
-			dino.addToWorld(this);
-			dinos.push(dino);
+			preySprites.add(dino.sprite);
+			add(dino.sprite);
+			prey.push(dino);
 		}
 	}
 
 	override public function update(elapsed:Float)
 	{
+		// Update all entities
 		player.update(elapsed);
-		for (dino in dinos)
+		for (p in prey)
 		{
-			dino.update(elapsed);
-			if (FlxG.overlap(player.sprite, dino.sprite) && dino.state == Roaming)
-			{
-				// Player is touching this dino! Set it to be following the player.
-				player.addDino(dino);
-			}
+			p.update(elapsed);
 		}
 
-		// Collision resolution
-		FlxG.collide(player.sprite, dinoSprites);
-		FlxG.collide(dinoSprites, dinoSprites);
+		// Do collision checks
+		collisionChecks();
 
 		super.update(elapsed);
+	}
+
+	function collisionChecks()
+	{
+		// Collision resolution -- notify entities
+		FlxG.overlap(player.sprite, preySprites, handlePlayerPreyCollision);
+
+		// Collision resolution -- physics
+		FlxG.collide(player.sprite, preySprites);
+		FlxG.collide(preySprites, preySprites);
+	}
+
+	/* --------------------------
+		Collision handler methods
+		------------------------- */
+	function handlePlayerPreyCollision(e1:SpriteWrapper<Player>, e2:SpriteWrapper<Prey>)
+	{
+		var player = e1.entity;
+		var prey = e2.entity;
+
+		player.handlePreyCollision(prey);
+		prey.handlePlayerCollision(player);
 	}
 }

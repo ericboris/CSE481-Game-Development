@@ -2,63 +2,74 @@ package;
 
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
-import js.html.Console;
 
 enum DinoState
 {
-	Roaming;
-	Following();
+	Herded;
+	Unherded;
 }
 
 class Dino extends Entity
 {
-	var speed:Float = 80.0;
-
 	public var state:DinoState;
 
-	/* State for following behavior */
-	var leader:Entity;
-	var followingRadius = 70.0;
+	/* State for herded behavior */
+	var herdedLeader:Entity;
+	var herdedSpeed = 80.0;
+	var herdedFollowingRadius = 70.0;
+
+	/* State for unherded behavior */
+	// --
 
 	public function new()
 	{
 		super();
 
 		setSprite(45, 45, FlxColor.YELLOW);
-
-		state = Roaming;
+		state = Unherded;
 	}
 
 	public override function update(elapsed:Float)
 	{
 		switch (state)
 		{
-			case Roaming:
-				Console.log("Roaming");
-				sprite.velocity.set(0, 0);
-			case Following:
-				Console.log("Following");
-
-				var pos1 = leader.sprite.getPosition();
-				var pos2 = sprite.getPosition();
-
-				if (pos1.distanceTo(pos2) > followingRadius)
-				{
-					var dir = new FlxPoint(pos1.x - pos2.x, pos1.y - pos2.y);
-					var angle = Math.atan2(dir.y, dir.x);
-					sprite.velocity.set(Math.cos(angle) * speed, Math.sin(angle) * speed);
-				}
-				else
-				{
-					sprite.velocity.set(0, 0);
-				}
+			case Unherded:
+				unherdedBehavior();
+			case Herded:
+				herdedBehavior();
 		}
+
 		super.update(elapsed);
 	}
 
-	public function setFollowing(newLeader:Entity)
+	// Used by Player class to update herd ordering.
+	public function setLeader(entity:Entity)
 	{
-		leader = newLeader;
-		state = Following;
+		herdedLeader = entity;
+	}
+
+	/* ----------------------
+		State behavior methods
+		---------------------- */
+	function unherdedBehavior()
+	{
+		sprite.velocity.set(0, 0);
+	}
+
+	function herdedBehavior()
+	{
+		var pos1 = herdedLeader.sprite.getPosition();
+		var pos2 = sprite.getPosition();
+
+		if (pos1.distanceTo(pos2) > herdedFollowingRadius)
+		{
+			var dir = new FlxPoint(pos1.x - pos2.x, pos1.y - pos2.y);
+			var angle = Math.atan2(dir.y, dir.x);
+			sprite.velocity.set(Math.cos(angle) * herdedSpeed, Math.sin(angle) * herdedSpeed);
+		}
+		else
+		{
+			sprite.velocity.set(0, 0);
+		}
 	}
 }

@@ -7,6 +7,7 @@ class Player extends Entity
 {
 	var speed:Float = 80.0;
 
+	// Array of followers. TODO: Should be linked list.
 	var followers:Array<Dino>;
 
 	public function new()
@@ -21,12 +22,12 @@ class Player extends Entity
 
 	public override function update(elapsed:Float)
 	{
-		updateMovement();
+		move();
 
 		super.update(elapsed);
 	}
 
-	function updateMovement()
+	function move()
 	{
 		var up = FlxG.keys.anyPressed([UP, W]);
 		var down = FlxG.keys.anyPressed([DOWN, S]);
@@ -75,11 +76,12 @@ class Player extends Entity
 	{
 		if (followers.length > 0)
 		{
-			followers[0].setFollowing(dino);
+			// Update herd ordering
+			followers[0].setLeader(dino);
 		}
 
 		// This operation is inefficient but just for testing.
+		// Insert new dino to front of herd
 		followers.insert(0, dino);
-		dino.setFollowing(this);
 	}
 }
