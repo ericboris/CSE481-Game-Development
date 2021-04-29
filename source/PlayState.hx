@@ -21,6 +21,8 @@ class PlayState extends FlxState
 		player = new Player();
 		add(player.sprite);
 
+		FlxG.camera.follow(player.sprite, TOPDOWN, 1);
+
 		preySprites = new FlxGroup();
 		prey = new Array<Prey>();
 		for (i in 0...6)
