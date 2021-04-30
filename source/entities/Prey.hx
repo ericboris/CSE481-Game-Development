@@ -28,4 +28,12 @@ class Prey extends Dino
 			state = Herded;
 		}
 	}
+
+	public override function handleCaveCollision(cave:Cave)
+	{
+		if (state == Herded)
+		{
+			herdedPlayer.notifyCaveDeposit(this);
+		}
+	}
 }

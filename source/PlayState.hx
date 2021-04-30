@@ -147,6 +147,7 @@ class PlayState extends FlxState
 		FlxG.overlap(playerGroup, preyGroup, handleCollision);
 		FlxG.overlap(playerGroup, caveGroup, handleCollision);
 		FlxG.overlap(hitboxGroup, collidableSprites, handleCollision);
+		FlxG.overlap(caveGroup, preyGroup, handleCollision);
 
 		// Collision resolution -- physics
 		FlxG.collide(collidableSprites, collidableSprites);

@@ -19,7 +19,9 @@ class Dino extends Entity
 	var herdedLeader:Entity;
 	var herdedSpeed = 80.0;
 	var herdedMaxFollowingRadius = 105.0;
-	var herdedFollowingRadius = 35.0;
+
+	public var herdedDisableFollowingRadius = false;
+	public var herdedFollowingRadius = 35.0;
 
 	/* State for unherded behavior */
 	// --
@@ -71,7 +73,7 @@ class Dino extends Entity
 			setUnherded(true);
 			return;
 		}
-		else if (dist > herdedFollowingRadius)
+		else if (herdedDisableFollowingRadius || dist > herdedFollowingRadius)
 		{
 			var dir = new FlxPoint(pos1.x - pos2.x, pos1.y - pos2.y);
 			var angle = Math.atan2(dir.y, dir.x);
