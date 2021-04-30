@@ -1,3 +1,5 @@
+package entities;
+
 import flixel.FlxSprite;
 
 class SpriteWrapper<T> extends FlxSprite

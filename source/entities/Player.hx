@@ -1,4 +1,4 @@
-package;
+package entities;
 
 import flixel.FlxG;
 import flixel.util.FlxColor;
@@ -14,7 +14,9 @@ class Player extends Entity
 	{
 		super();
 
-		setSprite(30, 30, FlxColor.WHITE);
+		this.type = EntityPlayer;
+
+		setSprite(16, 16, FlxColor.WHITE);
 		sprite.screenCenter();
 
 		followers = new Array<Dino>();
@@ -70,6 +72,28 @@ class Player extends Entity
 
 		angle *= Math.PI / 180;
 		sprite.velocity.set(Math.cos(angle) * speed, Math.sin(angle) * speed);
+	}
+
+	public function notifyUnherded()
+	{
+		var unherdedIndex = -1;
+		for (i in 0...followers.length)
+		{
+			if (unherdedIndex == -1 && followers[i].state == Unherded)
+			{
+				unherdedIndex = i;
+			}
+
+			if (unherdedIndex != -1 && i > unherdedIndex)
+			{
+				followers[i].setUnherded();
+			}
+		}
+
+		if (unherdedIndex != -1)
+		{
+			followers.resize(unherdedIndex);
+		}
 	}
 
 	public function addDino(dino:Dino)

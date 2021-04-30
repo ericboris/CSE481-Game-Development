@@ -1,4 +1,4 @@
-package;
+package entities;
 
 import flixel.FlxState;
 import flixel.util.FlxColor;
@@ -6,6 +6,7 @@ import flixel.util.FlxColor;
 class Entity
 {
 	public var sprite:SpriteWrapper<Entity>;
+	public var type:EntityType;
 
 	public function new()
 	{

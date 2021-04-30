@@ -1,7 +1,8 @@
-package;
+package entities;
 
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
+import js.html.Console;
 
 enum DinoState
 {
@@ -14,9 +15,11 @@ class Dino extends Entity
 	public var state:DinoState;
 
 	/* State for herded behavior */
+	var herdedPlayer:Player;
 	var herdedLeader:Entity;
 	var herdedSpeed = 80.0;
-	var herdedFollowingRadius = 70.0;
+	var herdedMaxFollowingRadius = 105.0;
+	var herdedFollowingRadius = 35.0;
 
 	/* State for unherded behavior */
 	// --
@@ -25,7 +28,8 @@ class Dino extends Entity
 	{
 		super();
 
-		setSprite(45, 45, FlxColor.YELLOW);
+		setSprite(20, 20, FlxColor.YELLOW);
+		sprite.mass = 0.5; // Make the dino easier to push by player.
 		state = Unherded;
 	}
 
@@ -34,9 +38,9 @@ class Dino extends Entity
 		switch (state)
 		{
 			case Unherded:
-				unherdedBehavior();
+				unherded();
 			case Herded:
-				herdedBehavior();
+				herded();
 		}
 
 		super.update(elapsed);
@@ -51,17 +55,23 @@ class Dino extends Entity
 	/* ----------------------
 		State behavior methods
 		---------------------- */
-	function unherdedBehavior()
+	function unherded()
 	{
 		sprite.velocity.set(0, 0);
 	}
 
-	function herdedBehavior()
+	function herded()
 	{
 		var pos1 = herdedLeader.sprite.getPosition();
 		var pos2 = sprite.getPosition();
+		var dist = pos1.distanceTo(pos2);
 
-		if (pos1.distanceTo(pos2) > herdedFollowingRadius)
+		if (dist > herdedMaxFollowingRadius)
+		{
+			setUnherded(true);
+			return;
+		}
+		else if (dist > herdedFollowingRadius)
 		{
 			var dir = new FlxPoint(pos1.x - pos2.x, pos1.y - pos2.y);
 			var angle = Math.atan2(dir.y, dir.x);
@@ -70,6 +80,20 @@ class Dino extends Entity
 		else
 		{
 			sprite.velocity.set(0, 0);
+		}
+	}
+
+	/* State transition methods */
+	public function setUnherded(notify:Bool = false)
+	{
+		var player = herdedPlayer;
+		herdedLeader = null;
+		herdedPlayer = null;
+		state = Unherded;
+
+		if (notify)
+		{
+			player.notifyUnherded();
 		}
 	}
 }
