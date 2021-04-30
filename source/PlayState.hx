@@ -3,13 +3,11 @@ package;
 import entities.*;
 import entities.EntityType;
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxColor;
-import flixel.util.FlxStringUtil;
-import haxe.macro.Type.VarAccess;
-import js.html.Console;
 
 class PlayState extends FlxState
 {
@@ -30,14 +28,21 @@ class PlayState extends FlxState
 	{
 		super.create();
 
-		FlxG.worldBounds.set(0, 0, worldWidth, worldHeight);
-
 		spriteGroups = new Map<EntityType, FlxGroup>();
 		entities = new Array<Entity>();
 
-		var screenBorder = new FlxSprite(0, 0);
-		screenBorder.makeGraphic(640, 480, FlxColor.fromRGB(47, 79, 79, 255));
-		add(screenBorder);
+		// Set world size
+		FlxG.worldBounds.set(0, 0, worldWidth, worldHeight);
+
+		// Create background sprite
+		var ground = new FlxSprite(0, 0);
+		ground.makeGraphic(640, 480, FlxColor.fromRGB(47, 79, 79, 255));
+		add(ground);
+
+		// Create ridge
+		var ridge = new Ridge(7, cast(worldHeight / 2, Int), FlxObject.LEFT);
+		ridge.sprite.setPosition(worldWidth / 2, 0);
+		addEntity(ridge);
 
 		// Create player
 		player = new Player();
@@ -67,7 +72,6 @@ class PlayState extends FlxState
 		}
 
 		// Set camera to follow player
-		Console.log(FlxG.initialWidth);
 		FlxG.camera.setScrollBoundsRect(0, 0, worldWidth, worldHeight);
 		FlxG.camera.follow(player.sprite, TOPDOWN, 1);
 	}
@@ -112,17 +116,23 @@ class PlayState extends FlxState
 	{
 		var playerGroup = spriteGroups[EntityPlayer];
 		var preyGroup = spriteGroups[EntityPrey];
+		var ridgeGroup = spriteGroups[EntityRidge];
 		var obstacleGroup = spriteGroups[EntityObstacle];
 
 		// Collision resolution -- notify entities
 		FlxG.overlap(player.sprite, preyGroup, handlePlayerPreyCollision);
 
 		// Collision resolution -- physics
+
+		// Player
 		FlxG.collide(playerGroup, preyGroup);
 		FlxG.collide(playerGroup, obstacleGroup);
+		FlxG.collide(playerGroup, ridgeGroup);
 
+		// Prey
 		FlxG.collide(preyGroup, preyGroup);
 		FlxG.collide(preyGroup, obstacleGroup);
+		FlxG.collide(preyGroup, ridgeGroup);
 	}
 
 	/* --------------------------
