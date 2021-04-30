@@ -2,9 +2,13 @@ package entities;
 
 import flixel.FlxG;
 import flixel.util.FlxColor;
+import js.html.Console;
 
 class Player extends Entity
 {
+	/* Hitbox id constants */
+	static var INTERACT_HITBOX_ID = 0;
+
 	var speed:Float = 80.0;
 
 	// Array of followers. TODO: Should be linked list.
@@ -18,6 +22,10 @@ class Player extends Entity
 
 		setSprite(16, 16, FlxColor.WHITE);
 		sprite.screenCenter();
+
+		var interactHitbox = new Hitbox(this, INTERACT_HITBOX_ID);
+		interactHitbox.getSprite().makeGraphic(24, 24, FlxColor.BLUE);
+		addHitbox(interactHitbox);
 
 		followers = new Array<Dino>();
 	}
@@ -79,7 +87,7 @@ class Player extends Entity
 		var unherdedIndex = -1;
 		for (i in 0...followers.length)
 		{
-			if (unherdedIndex == -1 && followers[i].state == Unherded)
+			if (unherdedIndex == -1 && followers[i].getState() == Unherded)
 			{
 				unherdedIndex = i;
 			}
@@ -107,5 +115,16 @@ class Player extends Entity
 		// This operation is inefficient but just for testing.
 		// Insert new dino to front of herd
 		followers.insert(0, dino);
+	}
+
+	public override function notifyHitboxCollision(hitbox:Hitbox, entity:Entity)
+	{
+		if (hitbox.getId() == INTERACT_HITBOX_ID)
+		{
+			if (entity.type == EntityCave)
+			{
+				Console.log("Cave!");
+			}
+		}
 	}
 }

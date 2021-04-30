@@ -2,6 +2,7 @@ import flixel.FlxG;
 import flixel.FlxState;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
+import openfl.media.Sound;
 
 class MenuState extends FlxState
 {

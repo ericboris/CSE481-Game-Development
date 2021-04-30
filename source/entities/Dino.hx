@@ -12,7 +12,7 @@ enum DinoState
 
 class Dino extends Entity
 {
-	public var state:DinoState;
+	var state:DinoState;
 
 	/* State for herded behavior */
 	var herdedPlayer:Player;
@@ -95,5 +95,11 @@ class Dino extends Entity
 		{
 			player.notifyUnherded();
 		}
+	}
+
+	/* Getters */
+	public function getState()
+	{
+		return state;
 	}
 }

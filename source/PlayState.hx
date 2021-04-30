@@ -11,6 +11,9 @@ import flixel.util.FlxColor;
 
 class PlayState extends FlxState
 {
+	// A singleton reference to the global PlayState.
+	public static var world:PlayState;
+
 	var worldWidth = 640;
 	var worldHeight = 480;
 
@@ -24,12 +27,19 @@ class PlayState extends FlxState
 	// Maps GroupdIds (defined above) to a group containing all of that type of entity
 	var spriteGroups:Map<EntityType, FlxGroup>;
 
+	// A group containing all collidable entities
+	var collidableSprites:FlxGroup;
+
 	override public function create()
 	{
 		super.create();
 
+		// Set singleton reference
+		world = this;
+
 		spriteGroups = new Map<EntityType, FlxGroup>();
 		entities = new Array<Entity>();
+		collidableSprites = new FlxGroup();
 
 		// Set world size
 		FlxG.worldBounds.set(0, 0, worldWidth, worldHeight);
@@ -41,23 +51,8 @@ class PlayState extends FlxState
 
 		// Create ridge
 		var ridge = new Ridge(7, cast(worldHeight / 2, Int), FlxObject.LEFT);
-		ridge.sprite.setPosition(worldWidth / 2, 0);
+		ridge.setPosition(worldWidth / 2, 0);
 		addEntity(ridge);
-
-		// Create player
-		player = new Player();
-		addEntity(player);
-
-		// Create prey
-		for (i in 0...18)
-		{
-			var dino = new Prey();
-			var x = worldWidth / 10.0 + Math.random() * worldWidth * 0.8;
-			var y = worldHeight / 10.0 + Math.random() * worldHeight * 0.8;
-
-			dino.sprite.setPosition(x, y);
-			addEntity(dino);
-		}
 
 		// Create tree boundaries
 		for (x in 0...21)
@@ -71,9 +66,29 @@ class PlayState extends FlxState
 			createTree(worldWidth - 22, y * worldHeight / 16);
 		}
 
+		// Create cave
+		var cave = new Cave();
+		cave.setPosition(160, 120);
+		addEntity(cave);
+
+		// Create player
+		player = new Player();
+		addEntity(player);
+
+		// Create prey
+		for (i in 0...18)
+		{
+			var dino = new Prey();
+			var x = worldWidth / 10.0 + Math.random() * worldWidth * 0.8;
+			var y = worldHeight / 10.0 + Math.random() * worldHeight * 0.8;
+
+			dino.setPosition(x, y);
+			addEntity(dino);
+		}
+
 		// Set camera to follow player
 		FlxG.camera.setScrollBoundsRect(0, 0, worldWidth, worldHeight);
-		FlxG.camera.follow(player.sprite, TOPDOWN, 1);
+		FlxG.camera.follow(player.getSprite(), TOPDOWN, 1);
 	}
 
 	override public function update(elapsed:Float)
@@ -91,24 +106,33 @@ class PlayState extends FlxState
 	}
 
 	// Adds entity to the world and respective sprite group.
-	function addEntity(entity:Entity)
+	public function addEntity(entity:Entity, collidable:Bool = true)
 	{
+		var type = entity.getType();
+		var sprite = entity.getSprite();
+
 		// Add to entities array
 		entities.push(entity);
 
 		// Add sprite to FlxGroup (used for collision detection)
-		if (!spriteGroups.exists(entity.type))
+		if (!spriteGroups.exists(type))
 		{
-			spriteGroups[entity.type] = new FlxGroup();
+			spriteGroups[type] = new FlxGroup();
 		}
-		spriteGroups[entity.type].add(entity.sprite);
-		add(entity.sprite);
+		spriteGroups[type].add(sprite);
+		add(sprite);
+
+		// Add to collidable entities
+		if (collidable)
+		{
+			collidableSprites.add(sprite);
+		}
 	}
 
 	function createTree(x:Float, y:Float)
 	{
 		var obstacle = new Obstacle(22, 22, FlxColor.GREEN);
-		obstacle.sprite.setPosition(x, y);
+		obstacle.setPosition(x, y);
 		addEntity(obstacle);
 	}
 
@@ -116,34 +140,27 @@ class PlayState extends FlxState
 	{
 		var playerGroup = spriteGroups[EntityPlayer];
 		var preyGroup = spriteGroups[EntityPrey];
-		var ridgeGroup = spriteGroups[EntityRidge];
-		var obstacleGroup = spriteGroups[EntityObstacle];
+		var caveGroup = spriteGroups[EntityCave];
+		var hitboxGroup = spriteGroups[EntityHitbox];
 
-		// Collision resolution -- notify entities
-		FlxG.overlap(player.sprite, preyGroup, handlePlayerPreyCollision);
+		// Collision resolution -- notify entities of collisions
+		FlxG.overlap(playerGroup, preyGroup, handleCollision);
+		FlxG.overlap(playerGroup, caveGroup, handleCollision);
+		FlxG.overlap(hitboxGroup, collidableSprites, handleCollision);
 
 		// Collision resolution -- physics
-
-		// Player
-		FlxG.collide(playerGroup, preyGroup);
-		FlxG.collide(playerGroup, obstacleGroup);
-		FlxG.collide(playerGroup, ridgeGroup);
-
-		// Prey
-		FlxG.collide(preyGroup, preyGroup);
-		FlxG.collide(preyGroup, obstacleGroup);
-		FlxG.collide(preyGroup, ridgeGroup);
+		FlxG.collide(collidableSprites, collidableSprites);
 	}
 
 	/* --------------------------
 		Collision handler methods
 		------------------------- */
-	function handlePlayerPreyCollision(e1:SpriteWrapper<Player>, e2:SpriteWrapper<Prey>)
+	function handleCollision(s1:SpriteWrapper<Entity>, s2:SpriteWrapper<Entity>)
 	{
-		var player = e1.entity;
-		var prey = e2.entity;
+		var e1 = s1.entity;
+		var e2 = s2.entity;
 
-		player.handlePreyCollision(prey);
-		prey.handlePlayerCollision(player);
+		e1.handleCollision(e2);
+		e2.handleCollision(e1);
 	}
 }

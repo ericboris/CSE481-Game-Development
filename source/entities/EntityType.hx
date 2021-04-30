@@ -7,4 +7,6 @@ enum EntityType
 	EntityPredator;
 	EntityObstacle;
 	EntityRidge;
+	EntityCave;
+	EntityHitbox;
 }
