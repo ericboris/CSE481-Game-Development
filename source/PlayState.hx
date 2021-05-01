@@ -84,29 +84,33 @@ class PlayState extends FlxState
 		player = new Player();
 		addEntity(player);
 
+		spriteGroups[EntityCave] = new FlxGroup();
+		spriteGroups[EntityPrey] = new FlxGroup();
+		spriteGroups[EntityHitbox] = new FlxGroup();
+
 		/*
-				// Create ridge
-				var ridge = new Ridge(7, cast(worldHeight / 2, Int), FlxObject.LEFT);
-				ridge.setPosition(worldWidth / 2, 0);
-				addEntity(ridge);
+			// Create ridge
+			var ridge = new Ridge(7, cast(worldHeight / 2, Int), FlxObject.LEFT);
+			ridge.setPosition(worldWidth / 2, 0);
+			addEntity(ridge);
 
-				// Create tree boundaries
-				for (x in 0...21)
-				{
-					createTree(x * worldWidth / 21, 0);
-					createTree(x * worldWidth / 21, worldHeight - 22);
-				}
+			// Create tree boundaries
+			for (x in 0...21)
+			{
+				createTree(x * worldWidth / 21, 0);
+				createTree(x * worldWidth / 21, worldHeight - 22);
+			}
 
-				for (y in 0...16)
-				{
-					createTree(0, y * worldHeight / 16);
-					createTree(worldWidth - 22, y * worldHeight / 16);
-				}
+			for (y in 0...16)
+			{
+				createTree(0, y * worldHeight / 16);
+				createTree(worldWidth - 22, y * worldHeight / 16);
+			}
 
-				// Create cave
-				var cave = new Cave();
-				cave.setPosition(160, 120);
-				addEntity(cave);
+			// Create cave
+			var cave = new Cave();
+			cave.setPosition(160, 120);
+			addEntity(cave);
 
 
 			// Create prey
