@@ -4,13 +4,14 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.util.FlxColor;
 import js.html.Console;
+import flixel.FlxSprite;
 
 class Player extends Entity
 {
 	/* Hitbox id constants */
 	static var INTERACT_HITBOX_ID = 0;
 
-	var speed:Float = 80.0;
+	var speed:Float = 100.0;
 
 	// Array of followers. TODO: Should be linked list.
 	var followers:Array<Dino>;
@@ -186,5 +187,11 @@ class Player extends Entity
 		depositingToCave = true;
 		inRangeOfCave = true;
 		this.cave = cave;
+	}
+	
+	// Return the Player's speed.
+	public function getSpeed()
+	{
+		return this.speed; 
 	}
 }

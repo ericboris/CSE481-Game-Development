@@ -17,7 +17,7 @@ class Dino extends Entity
 	/* State for herded behavior */
 	var herdedPlayer:Player;
 	var herdedLeader:Entity;
-	var herdedSpeed = 80.0;
+	var herdedSpeed:Float;
 	var herdedMaxFollowingRadius = 105.0;
 
 	public var herdedDisableFollowingRadius = false;
@@ -64,6 +64,7 @@ class Dino extends Entity
 
 	function herded()
 	{
+		herdedSpeed = herdedPlayer.getSpeed();
 		var pos1 = herdedLeader.sprite.getPosition();
 		var pos2 = sprite.getPosition();
 		var dist = pos1.distanceTo(pos2);
