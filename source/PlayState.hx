@@ -4,10 +4,10 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.group.FlxGroup;
-import flixel.util.FlxColor;
 import flixel.addons.editors.ogmo.FlxOgmo3Loader;
+import flixel.group.FlxGroup;
 import flixel.tile.FlxTilemap;
+import flixel.util.FlxColor;
 
 class PlayState extends FlxState
 {
@@ -29,6 +29,7 @@ class PlayState extends FlxState
 
 	// A group containing all collidable entities
 	var collidableSprites:FlxGroup;
+	var staticCollidableSprites:FlxGroup;
 
 	// The object that holds the ogmo map.
 	var map:FlxOgmo3Loader;
@@ -43,83 +44,83 @@ class PlayState extends FlxState
 	{
 		super.create();
 
-        spriteGroups = new Map<EntityType, FlxGroup>();
+		// Set singleton reference
+		world = this;
+
+		// Initialize member variables
+		spriteGroups = new Map<EntityType, FlxGroup>();
 		entities = new Array<Entity>();
 		collidableSprites = new FlxGroup();
+		staticCollidableSprites = new FlxGroup();
 
 		// Set up the tilemap.
 		map = new FlxOgmo3Loader(AssetPaths.DinoHerder__ogmo, AssetPaths.Sandbox__json);
-        //map.loadEntities(placeEntities, "entities");
 
+		// Load tiles from tile maps
 		ground = map.loadTilemap(AssetPaths.Cliff__png, "ground");
 		ground.follow();
 		ground.setTileProperties(8, FlxObject.NONE);
 		add(ground);
-        cliffs = map.loadTilemap(AssetPaths.Cliff__png, "cliffs");
-        cliffs.follow();
-        // TODO cliff properties.
-        add(cliffs);
-        trees = map.loadTilemap(AssetPaths.Trees__png, "trees");
-        // TODO tree properties. 
-        //collidableSprites.add(trees);
-        trees.follow();
-        add(trees);
-        rocks = map.loadTilemap(AssetPaths.Rocks__png, "rocks");
-        // TODO rock properties.
-        rocks.follow();
-        add(rocks);
 
-		// Set singleton reference
-		world = this;
+		cliffs = map.loadTilemap(AssetPaths.Cliff__png, "cliffs");
+		cliffs.follow();
+		staticCollidableSprites.add(cliffs);
+		add(cliffs);
 
+		trees = map.loadTilemap(AssetPaths.Trees__png, "trees");
+		trees.follow();
+		staticCollidableSprites.add(trees);
+		add(trees);
+
+		rocks = map.loadTilemap(AssetPaths.Rocks__png, "rocks");
+		rocks.follow();
+		staticCollidableSprites.add(rocks);
+		add(rocks);
 
 		// Set world size
 		FlxG.worldBounds.set(0, 0, worldWidth, worldHeight);
-
-		// Create background sprite
-		//var ground = new FlxSprite(0, 0);
-		//ground.makeGraphic(640, 480, FlxColor.fromRGB(47, 79, 79, 255));
-		//add(ground);
-
-		// Create ridge
-		var ridge = new Ridge(7, cast(worldHeight / 2, Int), FlxObject.LEFT);
-		ridge.setPosition(worldWidth / 2, 0);
-		addEntity(ridge);
-
-		// Create tree boundaries
-		for (x in 0...21)
-		{
-			createTree(x * worldWidth / 21, 0);
-			createTree(x * worldWidth / 21, worldHeight - 22);
-		}
-
-        /**
-            for (y in 0...16)
-            {
-                createTree(0, y * worldHeight / 16);
-                createTree(worldWidth - 22, y * worldHeight / 16);
-            }
-        */
-
-		// Create cave
-		var cave = new Cave();
-		cave.setPosition(160, 120);
-		addEntity(cave);
 
 		// Create player
 		player = new Player();
 		addEntity(player);
 
-		// Create prey
-		for (i in 0...18)
-		{
-			var dino = new Prey();
-			var x = worldWidth / 10.0 + Math.random() * worldWidth * 0.8;
-			var y = worldHeight / 10.0 + Math.random() * worldHeight * 0.8;
+		/*
+				// Create ridge
+				var ridge = new Ridge(7, cast(worldHeight / 2, Int), FlxObject.LEFT);
+				ridge.setPosition(worldWidth / 2, 0);
+				addEntity(ridge);
 
-			dino.setPosition(x, y);
-			addEntity(dino);
-		}
+				// Create tree boundaries
+				for (x in 0...21)
+				{
+					createTree(x * worldWidth / 21, 0);
+					createTree(x * worldWidth / 21, worldHeight - 22);
+				}
+
+				for (y in 0...16)
+				{
+					createTree(0, y * worldHeight / 16);
+					createTree(worldWidth - 22, y * worldHeight / 16);
+				}
+
+				// Create cave
+				var cave = new Cave();
+				cave.setPosition(160, 120);
+				addEntity(cave);
+
+
+			// Create prey
+			for (i in 0...18)
+			{
+				var dino = new Prey();
+				var x = worldWidth / 10.0 + Math.random() * worldWidth * 0.8;
+				var y = worldHeight / 10.0 + Math.random() * worldHeight * 0.8;
+
+				dino.setPosition(x, y);
+				addEntity(dino);
+			}
+
+		 */
 
 		// Set camera to follow player
 		FlxG.camera.setScrollBoundsRect(0, 0, worldWidth, worldHeight);
@@ -186,22 +187,22 @@ class PlayState extends FlxState
 
 		// Collision resolution -- physics
 		FlxG.collide(collidableSprites, collidableSprites);
+		FlxG.collide(collidableSprites, staticCollidableSprites);
 	}
 
+	function placeEntities(entity:EntityData)
+	{
+		var x = entity.x;
+		var y = entity.y;
 
-    function placeEntities(entity:EntityData)
-    {
-        var x = entity.x;
-        var y = entity.y;
-
-        switch (entity.name)
-        {
-            case "player":
-                player.setPosition(x, y);
-            case "tree":
-                createTree(x, y);
-        }
-    }
+		switch (entity.name)
+		{
+			case "player":
+				player.setPosition(x, y);
+			case "tree":
+				createTree(x, y);
+		}
+	}
 
 	function handleCollision(s1:SpriteWrapper<Entity>, s2:SpriteWrapper<Entity>)
 	{
