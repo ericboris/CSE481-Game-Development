@@ -1,6 +1,7 @@
 package entities;
 
 import flixel.FlxState;
+import flixel.FlxObject;
 import flixel.util.FlxColor;
 
 class Entity
@@ -16,6 +17,12 @@ class Entity
 	{
 		sprite = new SpriteWrapper<Entity>(this);
 		hitboxes = new Array<Hitbox>();
+	}
+
+	function setGraphic(width:Int, height:Int, dir:String, isAnimated:Bool)
+	{
+		sprite.loadGraphic(dir, isAnimated, width, height);
+		sprite.setSize(width, height);
 	}
 
 	function setSprite(width:Int, height:Int, color:FlxColor)

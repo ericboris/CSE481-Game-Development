@@ -1,5 +1,3 @@
-package;
-
 import entities.*;
 import entities.EntityType;
 import flixel.FlxG;
@@ -8,6 +6,8 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxColor;
+import flixel.addons.editors.ogmo.FlxOgmo3Loader;
+import flixel.tile.FlxTilemap;
 
 class PlayState extends FlxState
 {
@@ -30,24 +30,56 @@ class PlayState extends FlxState
 	// A group containing all collidable entities
 	var collidableSprites:FlxGroup;
 
+	// The object that holds the ogmo map.
+	var map:FlxOgmo3Loader;
+
+	// The tilemaps generated from the ogmo map.
+	var ground:FlxTilemap;
+	var cliffs:FlxTilemap;
+	var trees:FlxTilemap;
+	var rocks:FlxTilemap;
+
 	override public function create()
 	{
 		super.create();
 
+        spriteGroups = new Map<EntityType, FlxGroup>();
+		entities = new Array<Entity>();
+		collidableSprites = new FlxGroup();
+
+		// Set up the tilemap.
+		map = new FlxOgmo3Loader(AssetPaths.DinoHerder__ogmo, AssetPaths.Sandbox__json);
+        //map.loadEntities(placeEntities, "entities");
+
+		ground = map.loadTilemap(AssetPaths.Cliff__png, "ground");
+		ground.follow();
+		ground.setTileProperties(8, FlxObject.NONE);
+		add(ground);
+        cliffs = map.loadTilemap(AssetPaths.Cliff__png, "cliffs");
+        cliffs.follow();
+        // TODO cliff properties.
+        add(cliffs);
+        trees = map.loadTilemap(AssetPaths.Trees__png, "trees");
+        // TODO tree properties. 
+        //collidableSprites.add(trees);
+        trees.follow();
+        add(trees);
+        rocks = map.loadTilemap(AssetPaths.Rocks__png, "rocks");
+        // TODO rock properties.
+        rocks.follow();
+        add(rocks);
+
 		// Set singleton reference
 		world = this;
 
-		spriteGroups = new Map<EntityType, FlxGroup>();
-		entities = new Array<Entity>();
-		collidableSprites = new FlxGroup();
 
 		// Set world size
 		FlxG.worldBounds.set(0, 0, worldWidth, worldHeight);
 
 		// Create background sprite
-		var ground = new FlxSprite(0, 0);
-		ground.makeGraphic(640, 480, FlxColor.fromRGB(47, 79, 79, 255));
-		add(ground);
+		//var ground = new FlxSprite(0, 0);
+		//ground.makeGraphic(640, 480, FlxColor.fromRGB(47, 79, 79, 255));
+		//add(ground);
 
 		// Create ridge
 		var ridge = new Ridge(7, cast(worldHeight / 2, Int), FlxObject.LEFT);
@@ -60,11 +92,14 @@ class PlayState extends FlxState
 			createTree(x * worldWidth / 21, 0);
 			createTree(x * worldWidth / 21, worldHeight - 22);
 		}
-		for (y in 0...16)
-		{
-			createTree(0, y * worldHeight / 16);
-			createTree(worldWidth - 22, y * worldHeight / 16);
-		}
+
+        /**
+            for (y in 0...16)
+            {
+                createTree(0, y * worldHeight / 16);
+                createTree(worldWidth - 22, y * worldHeight / 16);
+            }
+        */
 
 		// Create cave
 		var cave = new Cave();
@@ -153,9 +188,21 @@ class PlayState extends FlxState
 		FlxG.collide(collidableSprites, collidableSprites);
 	}
 
-	/* --------------------------
-		Collision handler methods
-		------------------------- */
+
+    function placeEntities(entity:EntityData)
+    {
+        var x = entity.x;
+        var y = entity.y;
+
+        switch (entity.name)
+        {
+            case "player":
+                player.setPosition(x, y);
+            case "tree":
+                createTree(x, y);
+        }
+    }
+
 	function handleCollision(s1:SpriteWrapper<Entity>, s2:SpriteWrapper<Entity>)
 	{
 		var e1 = s1.entity;

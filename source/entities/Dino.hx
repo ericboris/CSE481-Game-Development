@@ -72,7 +72,6 @@ class Dino extends Entity
 		if (dist > herdedMaxFollowingRadius)
 		{
 			setUnherded(true);
-			return;
 		}
 		else if (herdedDisableFollowingRadius || dist > herdedFollowingRadius)
 		{

@@ -27,7 +27,15 @@ class Player extends Entity
 
 		this.type = EntityPlayer;
 
-		setSprite(16, 16, FlxColor.WHITE);
+		setGraphic(16, 16, AssetPaths.player__png, true);
+
+        sprite.setFacingFlip(FlxObject.LEFT, false, false);
+        sprite.setFacingFlip(FlxObject.RIGHT, true, false);
+
+        sprite.animation.add("lr", [3, 4, 3, 5], 6, false);
+        sprite.animation.add("u", [6, 7, 6, 8], 6, false);
+        sprite.animation.add("d", [0, 1, 0, 2], 6, false);
+
 		sprite.screenCenter();
 
 		var interactHitbox = new Hitbox(this, INTERACT_HITBOX_ID);
@@ -91,6 +99,7 @@ class Player extends Entity
 				angle -= 45;
 			if (right)
 				angle += 45;
+			sprite.facing = FlxObject.UP;
 		}
 		else if (down)
 		{
@@ -99,11 +108,18 @@ class Player extends Entity
 				angle += 45;
 			if (right)
 				angle -= 45;
+			sprite.facing = FlxObject.DOWN;
 		}
 		else if (left)
+		{
 			angle = 180;
+			sprite.facing = FlxObject.LEFT;
+		}
 		else if (right)
+		{
 			angle = 0;
+			sprite.facing = FlxObject.RIGHT;
+		}	
 		else
 		{
 			// Player is not moving
@@ -113,7 +129,20 @@ class Player extends Entity
 
 		angle *= Math.PI / 180;
 		sprite.velocity.set(Math.cos(angle) * speed, Math.sin(angle) * speed);
-	}
+
+        if ((sprite.velocity.x != 0 || sprite.velocity.y != 0) && sprite.touching == FlxObject.NONE)
+        {
+            switch (sprite.facing)
+            {
+                case FlxObject.LEFT, FlxObject.RIGHT:
+                    sprite.animation.play("lr");
+                case FlxObject.UP:
+                    sprite.animation.play("u");
+                case FlxObject.DOWN:
+                    sprite.animation.play("d");
+            }
+        }
+    }
 
 	public function notifyUnherded()
 	{
