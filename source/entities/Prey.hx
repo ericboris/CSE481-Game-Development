@@ -5,6 +5,9 @@ import js.html.Console;
 
 class Prey extends Dino
 {
+    final PREY_SIGHT_RANGE = 75;
+    final PREY_SIGHT_ANGLE = 30;
+
     public function new()
     {
         super();
@@ -55,4 +58,14 @@ class Prey extends Dino
             herdedPlayer.notifyCaveDeposit(this);
         }
     }
+
+    public override function getSightRange()
+    {   
+        return PREY_SIGHT_RANGE;
+    }   
+
+    public override function getSightAngle()
+    {   
+        return PREY_SIGHT_ANGLE;
+    }   
 }

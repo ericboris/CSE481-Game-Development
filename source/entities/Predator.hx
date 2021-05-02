@@ -13,6 +13,9 @@ class Predator extends Dino
     final PREDATOR_ACCELERATION = 30.0;
     final PREDATOR_ELASTICITY = 0.6;
 
+    final PREDATOR_SIGHT_RANGE = 50;
+    final PREDATOR_SIGHT_ANGLE = 15;
+
     public function new()
     {
         super();
@@ -66,9 +69,7 @@ class Predator extends Dino
             var v1 = sprite.velocity;
             var v2 = new FlxPoint(PREDATOR_SPEED + PREDATOR_ACCELERATION, 0);
 
-            var dot = v1.x * v2.x + v1.y * v2.y;
-            var cross = v1.x * v2.y - v2.x * v1.y;
-            var angle = Math.atan2(cross, dot);
+            var angle = GameWorld.pointAngle(v1.x, v1.y, v2.x, v2.y);
 
             sprite.acceleration.x = Math.cos(angle) * PREDATOR_ACCELERATION;
             sprite.acceleration.y = Math.sin(angle) * PREDATOR_ACCELERATION;
@@ -78,5 +79,15 @@ class Predator extends Dino
             sprite.acceleration.x = 0;
             sprite.acceleration.y = 0;
         }
+    }
+
+    public override function getSightRange()
+    {
+        return this.PREDATOR_SIGHT_RANGE;
+    }
+
+    public override function getSightAngle()
+    {   
+        return this.PREDATOR_SIGHT_ANGLE;
     }
 }

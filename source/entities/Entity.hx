@@ -124,4 +124,14 @@ class Entity
         sprite.path = new FlxPath();
         sprite.path.start([new FlxPoint(sprite.x, sprite.y), new FlxPoint(x, y)]);
     }
+
+    public function getSightRange()
+    {
+        return 0;
+    }
+
+    public function getSightAngle()
+    {
+        return 0;
+    }
 }

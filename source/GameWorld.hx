@@ -8,28 +8,45 @@ import js.html.Console;
 
 class GameWorld
 {
-    static public function getNearestEntity(src:Entity, dst:Array<Entity>)
+    static public function getNearestEntity(src:Entity, entities:Array<Entity>)
     {
         var nearestEntity = null;
         var minDistance = FlxMath.MAX_VALUE_FLOAT;
 
-        for (e in dst)
+        for (entity in entities)
         {
-            var srcSprite = src.getSprite();
-            var dstSprite = e.getSprite();
-            var distance = distance(srcSprite.x, srcSprite.y, dstSprite.x, dstSprite.y);
+            var distance = entityDistance(src, entity);
             if (distance < minDistance)
             {
                 minDistance = distance;
-                nearestEntity = e;
+                nearestEntity = entity;
             }
         }
         return nearestEntity;
     }
 
-    static public function distance(x1:Float, y1:Float, x2:Float, y2:Float)
+    static public function pointDistance(x1:Float, y1:Float, x2:Float, y2:Float)
     {
         return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+    }
+
+    static public function entityDistance(src:Entity, dst:Entity)
+    {
+        return pointDistance(src.getSprite().x, src.getSprite().y, dst.getSprite().x, dst.getSprite().y);
+    }
+
+    static public function entityAngle(src:Entity, dst:Entity)
+    {
+        var midpoint1 = src.getSprite().getMidpoint();
+        var midpoint2 = dst.getSprite().getMidpoint();
+        return pointAngle(midpoint1.x, midpoint1.y, midpoint2.x, midpoint2.y);
+    }
+
+    static public function pointAngle(x1:Float, y1:Float, x2:Float, y2:Float)
+    {
+        var dot = x1 * x2 + y1 * y2;
+        var cross = x1 * y2 - x2 * y1;
+        return Math.atan2(cross, dot);
     }
 
     static public function handleDownCliffCollision(tile:FlxObject, entity:FlxObject)
@@ -72,7 +89,7 @@ class GameWorld
 
     static public function magnitude(vector:FlxPoint)
     {
-        return GameWorld.distance(0, 0, vector.x, vector.y);
+        return pointDistance(0, 0, vector.x, vector.y);
     }
 
     static public function random(min:Float, max:Float)

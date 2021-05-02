@@ -220,4 +220,22 @@ class PlayState extends FlxState
     {
         return caves;
     }
+
+    /**
+    function checkVision(from:Entity, to:Entity)
+    {
+        var range = GameWorld.entityDistance(from, to);
+        // angle between (0, 0) and from velocity vector = angle looking
+        // if between angle looking 
+        var angle = Gameworld.entityAngle(from, to);
+        if (range < from.getSightRange && Math.abs(angle) < from.getSightAngle / 2)
+        {
+            if (tilemap.ray(from.getMidpoint(), to.getMidpoint()));
+            {
+                from.addSeen(to);
+                from.toPosition = to.getMidpoint();
+            }
+        }
+    }
+    */
 }
