@@ -144,7 +144,7 @@ class Dino extends Entity
 	{
 		if (idleTimer <= 0)
 		{
-			if (FlxG.random.bool(1))
+			if (FlxG.random.bool(25))
 			{
 				moveDirection = -1;
 				sprite.velocity.x = sprite.velocity.y = 0;
