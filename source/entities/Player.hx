@@ -11,7 +11,7 @@ class Player extends Entity
 	/* Hitbox id constants */
 	static var INTERACT_HITBOX_ID = 0;
 
-	var speed:Float = 100.0;
+	var speed:Float = 80.0;
 
 	// Array of followers. TODO: Should be linked list.
 	var followers:Array<Dino>;
@@ -23,11 +23,11 @@ class Player extends Entity
 
 	public function new()
 	{
-		super();
+        super();
 
-		this.type = EntityPlayer;
+        this.type = EntityPlayer;
 
-		setGraphic(16, 16, AssetPaths.player__png, true);
+        setGraphic(16, 16, AssetPaths.player__png, true);
 
         sprite.setFacingFlip(FlxObject.LEFT, false, false);
         sprite.setFacingFlip(FlxObject.RIGHT, true, false);
@@ -36,13 +36,16 @@ class Player extends Entity
         sprite.animation.add("u", [6, 7, 6, 8], 6, false);
         sprite.animation.add("d", [0, 1, 0, 2], 6, false);
 
-		sprite.screenCenter();
+        // sprite.screenCenter();
 
-		var interactHitbox = new Hitbox(this, INTERACT_HITBOX_ID);
-		interactHitbox.getSprite().makeGraphic(24, 24, FlxColor.BLUE);
-		addHitbox(interactHitbox);
+        sprite.setSize(6, 6);
+        sprite.offset.set(4, 6);
 
-		followers = new Array<Dino>();
+        var interactHitbox = new Hitbox(this, INTERACT_HITBOX_ID);
+        interactHitbox.getSprite().makeGraphic(24, 24, FlxColor.BLUE);
+        addHitbox(interactHitbox);
+
+        followers = new Array<Dino>();
 	}
 
 	public override function update(elapsed:Float)
@@ -217,6 +220,22 @@ class Player extends Entity
 		inRangeOfCave = true;
 		this.cave = cave;
 	}
+
+    public override function handlePredatorCollision(predator:Predator)
+    {
+        // Unherd all dinosaurs.
+        for (follower in followers)
+        {
+            follower.setUnherded(); 
+        }
+
+        // Move player to nearest cave.
+        var caves = PlayState.world.getCaves();
+        var nearestCave = GameWorld.getNearestEntity(this, cast caves);
+        this.setPosition(nearestCave.sprite.x, nearestCave.sprite.y);
+    }
+
+
 	
 	// Return the Player's speed.
 	public function getSpeed()

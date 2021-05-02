@@ -3,20 +3,20 @@ package entities;
 import js.html.Console;
 import flixel.FlxObject;
 
-class Prey extends Dino
+class Predator extends Dino
 {
 	public function new()
 	{
 		super();
 
-		this.type = EntityPrey;
+		this.type = EntityPredator;
 
-        setGraphic(16, 16, AssetPaths.SlimeBlue__png, true);
+        setGraphic(16, 16, AssetPaths.boss__png, true);
 
         sprite.setFacingFlip(FlxObject.LEFT, false, false);
         sprite.setFacingFlip(FlxObject.RIGHT, true, false);
 
-        sprite.animation.add("lr", [3], 3, false);
+        sprite.animation.add("lr", [0], 0, false);
         //sprite.animation.add("u", [6, 7, 6, 8], 6, false);
         //sprite.animation.add("d", [0, 1, 0, 2], 6, false);
 
@@ -30,29 +30,8 @@ class Prey extends Dino
 		super.update(elapsed);
 	}
 
-	public override function handlePlayerCollision(player:Player)
-	{
-		if (state == Unherded)
-		{
-			// We only care about this collision if we are unherded.
-			// Add to player's herd.
-			player.addDino(this);
-			herdedLeader = player;
-			herdedPlayer = player;
-			state = Herded;
-		}
-	}
-
     private override function unherded(elapsed:Float)
     {
         idle(elapsed);
     }
-
-	public override function handleCaveCollision(cave:Cave)
-	{
-		if (state == Herded)
-		{
-			herdedPlayer.notifyCaveDeposit(this);
-		}
-	}
 }
