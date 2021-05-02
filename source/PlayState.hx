@@ -73,10 +73,10 @@ class PlayState extends FlxState
 
 		cliffs = map.loadTilemap(AssetPaths.Cliff__png, "cliffs");
 		cliffs.follow();
-		cliffs.setTileProperties(1, FlxObject.LEFT | FlxObject.RIGHT | FlxObject.UP);
-		cliffs.setTileProperties(7, FlxObject.LEFT | FlxObject.UP | FlxObject.DOWN);
-		cliffs.setTileProperties(9, FlxObject.DOWN | FlxObject.RIGHT | FlxObject.UP);
-		cliffs.setTileProperties(15, FlxObject.LEFT | FlxObject.RIGHT | FlxObject.DOWN);
+		cliffs.setTileProperties(1, FlxObject.ANY, GameWorld.handleDownCliffCollision);
+		cliffs.setTileProperties(7, FlxObject.ANY, GameWorld.handleRightCliffCollision);
+		cliffs.setTileProperties(9, FlxObject.ANY, GameWorld.handleLeftCliffCollision);
+		cliffs.setTileProperties(15, FlxObject.ANY, GameWorld.handleUpCliffCollision);
 
 		staticCollidableSprites.add(cliffs);
 		add(cliffs);
@@ -160,15 +160,22 @@ class PlayState extends FlxState
 		var caveGroup = spriteGroups[EntityCave];
 		var hitboxGroup = spriteGroups[EntityHitbox];
 
-		// Collision resolution -- notify entities of collisions
-		FlxG.overlap(playerGroup, preyGroup, handleCollision);
-		FlxG.overlap(playerGroup, caveGroup, handleCollision);
-		FlxG.overlap(playerGroup, predatorGroup, handleCollision);
-		FlxG.overlap(preyGroup, predatorGroup, handleCollision);
-		FlxG.overlap(hitboxGroup, collidableSprites, handleCollision);
-		FlxG.overlap(caveGroup, preyGroup, handleCollision);
+		// Collision resolution
 
-		// Collision resolution -- physics
+        // Check collidable entity overlap
+		FlxG.overlap(playerGroup, collidableSprites, handleCollision);
+		FlxG.overlap(preyGroup, collidableSprites, handleCollision);
+        FlxG.overlap(hitboxGroup, collidableSprites, handleCollision);
+
+        // Check cliff overlap
+        FlxG.overlap(playerGroup, cliffs);
+        FlxG.overlap(preyGroup, cliffs);
+
+        // Check cave overlap
+        FlxG.overlap(playerGroup, caveGroup, handleCollision);
+		FlxG.overlap(preyGroup, caveGroup, handleCollision);
+
+        // Collision resolution -- physics
 		FlxG.collide(collidableSprites, collidableSprites);
 		FlxG.collide(collidableSprites, staticCollidableSprites);
 	}

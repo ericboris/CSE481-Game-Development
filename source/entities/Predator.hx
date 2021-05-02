@@ -28,7 +28,7 @@ class Predator extends Dino
 		// sprite.animation.add("u", [6, 7, 6, 8], 6, false);
 		// sprite.animation.add("d", [0, 1, 0, 2], 6, false);
 
-		var angle = MathHelper.random(0, Math.PI * 2.0);
+		var angle = GameWorld.random(0, Math.PI * 2.0);
 		this.sprite.velocity.x = Math.cos(angle) * PREDATOR_SPEED;
 		this.sprite.velocity.y = Math.sin(angle) * PREDATOR_SPEED;
 		this.sprite.elasticity = PREDATOR_ELASTICITY;
@@ -60,7 +60,7 @@ class Predator extends Dino
 			sprite.velocity.y *= -1;
 		}
 
-		if (MathHelper.magnitude(sprite.velocity) < PREDATOR_SPEED)
+		if (GameWorld.magnitude(sprite.velocity) < PREDATOR_SPEED)
 		{
 			// Set sprite's acceleration to speed up in the same direction
 			var v1 = sprite.velocity;

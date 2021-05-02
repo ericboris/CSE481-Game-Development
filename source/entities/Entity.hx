@@ -1,7 +1,9 @@
 package entities;
 
-import flixel.FlxObject;
 import flixel.FlxState;
+import flixel.FlxObject;
+import flixel.math.FlxPoint;
+import flixel.util.FlxPath;
 import flixel.util.FlxColor;
 
 class Entity
@@ -12,6 +14,8 @@ class Entity
 	// Hitboxes used by this entity.
 	// Hitboxes are used by entities to do additional collision checks over other areas.
 	var hitboxes:Array<Hitbox>;
+
+    var isJumpingCliff:Bool;
 
 	public function new()
 	{
@@ -33,6 +37,17 @@ class Entity
 
 	public function update(elapsed:Float)
 	{
+        if (isJumpingCliff)
+        {
+            if (sprite.path.finished)
+            {
+                sprite.path = null;
+                isJumpingCliff = false;
+            }
+
+            sprite.velocity.set(0,0);
+        }
+
 		// Update our sprite
 		sprite.update(elapsed);
 	}
@@ -56,8 +71,8 @@ class Entity
 				handlePreyCollision(cast entity);
 			case EntityCave:
 				handleCaveCollision(cast entity);
-			case EntityPredator:
-				handlePredatorCollision(cast entity);
+            case EntityPredator:
+                handlePredatorCollision(cast entity);
 			default:
 		}
 	}
@@ -70,7 +85,7 @@ class Entity
 
 	public function handleCaveCollision(cave:Cave) {}
 
-	public function handlePredatorCollision(predator:Predator) {}
+    public function handlePredatorCollision(predator:Predator) {}
 
 	/* Setters & Getters */
 	public function setPosition(x:Float, y:Float)
@@ -87,4 +102,26 @@ class Entity
 	{
 		return type;
 	}
+
+    public function handleCliffCollision(direction:Int)
+    {
+        var x = sprite.x;
+        var y = sprite.y;
+        switch (direction)
+        {
+            case FlxObject.UP:
+                y -= 30;
+            case FlxObject.DOWN:
+                y += 30;
+            case FlxObject.LEFT:
+                x -= 30;
+            case FlxObject.RIGHT:
+                x += 30;
+            default:
+        }
+
+        isJumpingCliff = true;
+        sprite.path = new FlxPath();
+        sprite.path.start([new FlxPoint(sprite.x, sprite.y), new FlxPoint(x, y)]);
+    }
 }
