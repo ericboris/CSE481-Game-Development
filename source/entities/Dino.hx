@@ -1,10 +1,10 @@
 package entities;
 
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import js.html.Console;
-import flixel.FlxObject;
 
 enum DinoState
 {
@@ -26,9 +26,9 @@ class Dino extends Entity
 	public var herdedFollowingRadius = 20.0;
 
 	/* State for unherded behavior */
-    var UNHERDED_SPEED:Float = 30;
-    var idleTimer:Float;
-    var moveDirection:Float;
+	var UNHERDED_SPEED:Float = 30;
+	var idleTimer:Float;
+	var moveDirection:Float;
 
 	public function new()
 	{
@@ -38,7 +38,7 @@ class Dino extends Entity
 		sprite.mass = 0.5; // Make the dino easier to push by player.
 		state = Unherded;
 
-        idleTimer = 0;
+		idleTimer = 0;
 	}
 
 	public override function update(elapsed:Float)
@@ -51,36 +51,36 @@ class Dino extends Entity
 				herded(elapsed);
 		}
 
-        if ((sprite.velocity.x != 0 || sprite.velocity.y != 0) && sprite.touching == FlxObject.NONE)
-        {
-            if (Math.abs(sprite.velocity.x) > Math.abs(sprite.velocity.y))
-            {
-                if (sprite.velocity.x < 0)
-                    sprite.facing = FlxObject.LEFT;
-                else
-                    sprite.facing = FlxObject.RIGHT;
-            }
-            else
-            {
-                if (sprite.velocity.y < 0)
-                    sprite.facing = FlxObject.UP;
-                else
-                    sprite.facing = FlxObject.DOWN;
-            }
+		if ((sprite.velocity.x != 0 || sprite.velocity.y != 0) && sprite.touching == FlxObject.NONE)
+		{
+			if (Math.abs(sprite.velocity.x) > Math.abs(sprite.velocity.y))
+			{
+				if (sprite.velocity.x < 0)
+					sprite.facing = FlxObject.LEFT;
+				else
+					sprite.facing = FlxObject.RIGHT;
+			}
+			else
+			{
+				if (sprite.velocity.y < 0)
+					sprite.facing = FlxObject.UP;
+				else
+					sprite.facing = FlxObject.DOWN;
+			}
 
-            switch (sprite.facing)
-            {
-                case FlxObject.LEFT, FlxObject.RIGHT:
-                    sprite.animation.play("lr");
+			switch (sprite.facing)
+			{
+				case FlxObject.LEFT, FlxObject.RIGHT:
+					sprite.animation.play("lr");
 
-                case FlxObject.UP:
-                    sprite.animation.play("u");
+				case FlxObject.UP:
+					sprite.animation.play("u");
 
-                case FlxObject.DOWN:
-                    sprite.animation.play("d");
-            }
-        }
-        super.update(elapsed);
+				case FlxObject.DOWN:
+					sprite.animation.play("d");
+			}
+		}
+		super.update(elapsed);
 	}
 
 	// Used by Player class to update herd ordering.
@@ -140,28 +140,27 @@ class Dino extends Entity
 		return state;
 	}
 
-    function idle(elapsed:Float)
-    {
-        if (idleTimer <= 0)
-        {
-            if (FlxG.random.bool(1))
-            {
-                moveDirection = -1;
-                sprite.velocity.x = sprite.velocity.y = 0;
-            }
-            else
-            {
-                moveDirection = FlxG.random.int(0, 8) * 45;
+	function idle(elapsed:Float)
+	{
+		if (idleTimer <= 0)
+		{
+			if (FlxG.random.bool(1))
+			{
+				moveDirection = -1;
+				sprite.velocity.x = sprite.velocity.y = 0;
+			}
+			else
+			{
+				moveDirection = FlxG.random.int(0, 8) * 45;
 
-                sprite.velocity.set(UNHERDED_SPEED * 0.5, 0);
-                sprite.velocity.rotate(FlxPoint.weak(), moveDirection);
-
-            }
-            idleTimer = FlxG.random.int(1, 4);
-        }
-        else
-        {
-            idleTimer -= elapsed;
-        }
-    }
+				sprite.velocity.set(UNHERDED_SPEED * 0.5, 0);
+				sprite.velocity.rotate(FlxPoint.weak(), moveDirection);
+			}
+			idleTimer = FlxG.random.int(1, 4);
+		}
+		else
+		{
+			idleTimer -= elapsed;
+		}
+	}
 }

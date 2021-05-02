@@ -1,7 +1,7 @@
 package entities;
 
-import flixel.FlxState;
 import flixel.FlxObject;
+import flixel.FlxState;
 import flixel.util.FlxColor;
 
 class Entity
@@ -56,8 +56,8 @@ class Entity
 				handlePreyCollision(cast entity);
 			case EntityCave:
 				handleCaveCollision(cast entity);
-            case EntityPredator:
-                handlePredatorCollision(cast entity);
+			case EntityPredator:
+				handlePredatorCollision(cast entity);
 			default:
 		}
 	}
@@ -70,7 +70,7 @@ class Entity
 
 	public function handleCaveCollision(cave:Cave) {}
 
-    public function handlePredatorCollision(predator:Predator) {}
+	public function handlePredatorCollision(predator:Predator) {}
 
 	/* Setters & Getters */
 	public function setPosition(x:Float, y:Float)

@@ -1,7 +1,7 @@
 package entities;
 
-import flixel.util.FlxColor;
 import flixel.FlxObject;
+import flixel.util.FlxColor;
 
 class Cave extends Obstacle
 {
@@ -9,7 +9,7 @@ class Cave extends Obstacle
 	{
 		super(16, 16, FlxColor.BLACK);
 
-        sprite.visible = false;
+		sprite.visible = false;
 
 		this.type = EntityCave;
 	}

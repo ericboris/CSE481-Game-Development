@@ -41,7 +41,7 @@ class PlayState extends FlxState
 	var trees:FlxTilemap;
 	var rocks:FlxTilemap;
 
-    var caves:Array<Cave>;
+	var caves:Array<Cave>;
 
 	override public function create()
 	{
@@ -55,7 +55,7 @@ class PlayState extends FlxState
 		entities = new Array<Entity>();
 		collidableSprites = new FlxGroup();
 		staticCollidableSprites = new FlxGroup();
-        caves = new Array<Cave>();
+		caves = new Array<Cave>();
 
 		// Set up the tilemap.
 		map = new FlxOgmo3Loader(AssetPaths.DinoHerder__ogmo, AssetPaths.Sandbox__json);
@@ -64,7 +64,7 @@ class PlayState extends FlxState
 		spriteGroups[EntityPrey] = new FlxGroup();
 		spriteGroups[EntityHitbox] = new FlxGroup();
 
-        // Static Entities.
+		// Static Entities.
 		// Load tiles from tile maps
 		ground = map.loadTilemap(AssetPaths.Cliff__png, "ground");
 		ground.follow();
@@ -73,11 +73,11 @@ class PlayState extends FlxState
 
 		cliffs = map.loadTilemap(AssetPaths.Cliff__png, "cliffs");
 		cliffs.follow();
-        cliffs.setTileProperties(1, FlxObject.LEFT | FlxObject.RIGHT | FlxObject.UP);
-        cliffs.setTileProperties(7, FlxObject.LEFT | FlxObject.UP | FlxObject.DOWN);
-        cliffs.setTileProperties(9, FlxObject.DOWN | FlxObject.RIGHT | FlxObject.UP);
-        cliffs.setTileProperties(15, FlxObject.LEFT | FlxObject.RIGHT | FlxObject.DOWN);
-        
+		cliffs.setTileProperties(1, FlxObject.LEFT | FlxObject.RIGHT | FlxObject.UP);
+		cliffs.setTileProperties(7, FlxObject.LEFT | FlxObject.UP | FlxObject.DOWN);
+		cliffs.setTileProperties(9, FlxObject.DOWN | FlxObject.RIGHT | FlxObject.UP);
+		cliffs.setTileProperties(15, FlxObject.LEFT | FlxObject.RIGHT | FlxObject.DOWN);
+
 		staticCollidableSprites.add(cliffs);
 		add(cliffs);
 
@@ -91,19 +91,18 @@ class PlayState extends FlxState
 		staticCollidableSprites.add(rocks);
 		add(rocks);
 
-        // Dynamic Entities.
+		// Dynamic Entities.
 		// Create player
 		player = new Player();
-        map.loadEntities(placeEntities, "entities");
 		addEntity(player);
 
-        // map.loadEntities(placeEntities, "prey");
-        //addEntity(prey);
+		// Load entities from tilemap
+		map.loadEntities(placeEntities, "entities");
 
 		// Set world size
 		FlxG.worldBounds.set(0, 0, worldWidth, worldHeight);
 
-        // Set camera to follow player
+		// Set camera to follow player
 		FlxG.camera.setScrollBoundsRect(0, 0, worldWidth, worldHeight);
 		FlxG.camera.follow(player.getSprite(), TOPDOWN, 1);
 	}
@@ -157,15 +156,15 @@ class PlayState extends FlxState
 	{
 		var playerGroup = spriteGroups[EntityPlayer];
 		var preyGroup = spriteGroups[EntityPrey];
-        var predatorGroup = spriteGroups[EntityPredator];
+		var predatorGroup = spriteGroups[EntityPredator];
 		var caveGroup = spriteGroups[EntityCave];
 		var hitboxGroup = spriteGroups[EntityHitbox];
 
 		// Collision resolution -- notify entities of collisions
 		FlxG.overlap(playerGroup, preyGroup, handleCollision);
 		FlxG.overlap(playerGroup, caveGroup, handleCollision);
-        FlxG.overlap(playerGroup, predatorGroup, handleCollision);
-        FlxG.overlap(preyGroup, predatorGroup, handleCollision);
+		FlxG.overlap(playerGroup, predatorGroup, handleCollision);
+		FlxG.overlap(preyGroup, predatorGroup, handleCollision);
 		FlxG.overlap(hitboxGroup, collidableSprites, handleCollision);
 		FlxG.overlap(caveGroup, preyGroup, handleCollision);
 
@@ -185,25 +184,24 @@ class PlayState extends FlxState
 				player.setPosition(x, y);
 			case "tree":
 				createTree(x, y);
-            case "prey":
-                var prey = new Prey();
-                prey.setPosition(x, y);
-                addEntity(prey);
-            case "predator":
-                var predator = new Predator();
-                predator.setPosition(x, y);
-                addEntity(predator);
-            case "cave":
-                var cave = new Cave();
-                cave.setPosition(x, y);
-                addEntity(cave, false);
-                caves.push(cave);
+			case "prey":
+				var prey = new Prey();
+				prey.setPosition(x, y);
+				addEntity(prey);
+			case "predator":
+				var predator = new Predator();
+				predator.setPosition(x, y);
+				addEntity(predator);
+			case "cave":
+				var cave = new Cave();
+				cave.setPosition(x, y);
+				addEntity(cave, false);
+				caves.push(cave);
 		}
 	}
 
 	function handleCollision(s1:SpriteWrapper<Entity>, s2:SpriteWrapper<Entity>)
 	{
-        Console.log("handle collison");
 		var e1 = s1.entity;
 		var e2 = s2.entity;
 
@@ -211,8 +209,8 @@ class PlayState extends FlxState
 		e2.handleCollision(e1);
 	}
 
-    public function getCaves()
-    {
-        return caves;
-    }
+	public function getCaves()
+	{
+		return caves;
+	}
 }

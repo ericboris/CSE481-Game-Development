@@ -1,7 +1,7 @@
 package entities;
 
-import js.html.Console;
 import flixel.FlxObject;
+import js.html.Console;
 
 class Prey extends Dino
 {
@@ -11,18 +11,18 @@ class Prey extends Dino
 
 		this.type = EntityPrey;
 
-        setGraphic(16, 16, AssetPaths.SlimeBlue__png, true);
+		setGraphic(16, 16, AssetPaths.SlimeBlue__png, true);
 
-        sprite.setFacingFlip(FlxObject.LEFT, false, false);
-        sprite.setFacingFlip(FlxObject.RIGHT, true, false);
+		sprite.setFacingFlip(FlxObject.LEFT, false, false);
+		sprite.setFacingFlip(FlxObject.RIGHT, true, false);
 
-        sprite.animation.add("lr", [3], 3, false);
-        //sprite.animation.add("u", [6, 7, 6, 8], 6, false);
-        //sprite.animation.add("d", [0, 1, 0, 2], 6, false);
+		sprite.animation.add("lr", [3], 3, false);
+		// sprite.animation.add("u", [6, 7, 6, 8], 6, false);
+		// sprite.animation.add("d", [0, 1, 0, 2], 6, false);
 
-        sprite.screenCenter();
+		sprite.screenCenter();
 
-        sprite.setSize(8, 8);
+		sprite.setSize(8, 8);
 	}
 
 	public override function update(elapsed:Float)
@@ -43,10 +43,10 @@ class Prey extends Dino
 		}
 	}
 
-    private override function unherded(elapsed:Float)
-    {
-        idle(elapsed);
-    }
+	private override function unherded(elapsed:Float)
+	{
+		idle(elapsed);
+	}
 
 	public override function handleCaveCollision(cave:Cave)
 	{

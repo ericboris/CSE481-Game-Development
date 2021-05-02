@@ -2,9 +2,9 @@ package entities;
 
 import flixel.FlxG;
 import flixel.FlxObject;
+import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import js.html.Console;
-import flixel.FlxSprite;
 
 class Player extends Entity
 {
@@ -23,29 +23,29 @@ class Player extends Entity
 
 	public function new()
 	{
-        super();
+		super();
 
-        this.type = EntityPlayer;
+		this.type = EntityPlayer;
 
-        setGraphic(16, 16, AssetPaths.player__png, true);
+		setGraphic(16, 16, AssetPaths.player__png, true);
 
-        sprite.setFacingFlip(FlxObject.LEFT, false, false);
-        sprite.setFacingFlip(FlxObject.RIGHT, true, false);
+		sprite.setFacingFlip(FlxObject.LEFT, false, false);
+		sprite.setFacingFlip(FlxObject.RIGHT, true, false);
 
-        sprite.animation.add("lr", [3, 4, 3, 5], 6, false);
-        sprite.animation.add("u", [6, 7, 6, 8], 6, false);
-        sprite.animation.add("d", [0, 1, 0, 2], 6, false);
+		sprite.animation.add("lr", [3, 4, 3, 5], 6, false);
+		sprite.animation.add("u", [6, 7, 6, 8], 6, false);
+		sprite.animation.add("d", [0, 1, 0, 2], 6, false);
 
-        // sprite.screenCenter();
+		// sprite.screenCenter();
 
-        sprite.setSize(6, 6);
-        sprite.offset.set(4, 6);
+		sprite.setSize(6, 6);
+		sprite.offset.set(4, 6);
 
-        var interactHitbox = new Hitbox(this, INTERACT_HITBOX_ID);
-        interactHitbox.getSprite().makeGraphic(24, 24, FlxColor.BLUE);
-        addHitbox(interactHitbox);
+		var interactHitbox = new Hitbox(this, INTERACT_HITBOX_ID);
+		interactHitbox.getSprite().makeGraphic(24, 24, FlxColor.BLUE);
+		addHitbox(interactHitbox);
 
-        followers = new Array<Dino>();
+		followers = new Array<Dino>();
 	}
 
 	public override function update(elapsed:Float)
@@ -54,7 +54,7 @@ class Player extends Entity
 
 		// Cave depositing logic
 
-		if (!inRangeOfCave)
+		if (!inRangeOfCave && depositingToCave)
 		{
 			// We are no longer in range of cave. Set herd back to normal order.
 			depositingToCave = false;
@@ -71,7 +71,7 @@ class Player extends Entity
 		if (depositingToCave && followers.length > 0)
 		{
 			followers[0].setLeader(cave);
-			followers[0].herdedFollowingRadius = 0;
+			followers[0].herdedDisableFollowingRadius = true;
 		}
 
 		// Assume that we are now out of range of the cave.
@@ -122,7 +122,7 @@ class Player extends Entity
 		{
 			angle = 0;
 			sprite.facing = FlxObject.RIGHT;
-		}	
+		}
 		else
 		{
 			// Player is not moving
@@ -133,19 +133,19 @@ class Player extends Entity
 		angle *= Math.PI / 180;
 		sprite.velocity.set(Math.cos(angle) * speed, Math.sin(angle) * speed);
 
-        if ((sprite.velocity.x != 0 || sprite.velocity.y != 0) && sprite.touching == FlxObject.NONE)
-        {
-            switch (sprite.facing)
-            {
-                case FlxObject.LEFT, FlxObject.RIGHT:
-                    sprite.animation.play("lr");
-                case FlxObject.UP:
-                    sprite.animation.play("u");
-                case FlxObject.DOWN:
-                    sprite.animation.play("d");
-            }
-        }
-    }
+		if ((sprite.velocity.x != 0 || sprite.velocity.y != 0) && sprite.touching == FlxObject.NONE)
+		{
+			switch (sprite.facing)
+			{
+				case FlxObject.LEFT, FlxObject.RIGHT:
+					sprite.animation.play("lr");
+				case FlxObject.UP:
+					sprite.animation.play("u");
+				case FlxObject.DOWN:
+					sprite.animation.play("d");
+			}
+		}
+	}
 
 	public function notifyUnherded()
 	{
@@ -221,25 +221,24 @@ class Player extends Entity
 		this.cave = cave;
 	}
 
-    public override function handlePredatorCollision(predator:Predator)
-    {
-        // Unherd all dinosaurs.
-        for (follower in followers)
-        {
-            follower.setUnherded(); 
-        }
+	public override function handlePredatorCollision(predator:Predator)
+	{
+		// Unherd all dinosaurs.
+		for (follower in followers)
+		{
+			follower.setUnherded();
+		}
+		followers.resize(0);
 
-        // Move player to nearest cave.
-        var caves = PlayState.world.getCaves();
-        var nearestCave = GameWorld.getNearestEntity(this, cast caves);
-        this.setPosition(nearestCave.sprite.x, nearestCave.sprite.y);
-    }
+		// Move player to nearest cave.
+		var caves = PlayState.world.getCaves();
+		var nearestCave = GameWorld.getNearestEntity(this, cast caves);
+		this.setPosition(nearestCave.sprite.x, nearestCave.sprite.y);
+	}
 
-
-	
 	// Return the Player's speed.
 	public function getSpeed()
 	{
-		return this.speed; 
+		return this.speed;
 	}
 }
