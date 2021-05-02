@@ -2,11 +2,11 @@ package entities;
 
 enum EntityType
 {
-	EntityPlayer;
-	EntityPrey;
-	EntityPredator;
-	EntityObstacle;
-	EntityRidge;
-	EntityCave;
-	EntityHitbox;
+    EntityPlayer;
+    EntityPrey;
+    EntityPredator;
+    EntityObstacle;
+    EntityRidge;
+    EntityCave;
+    EntityHitbox;
 }

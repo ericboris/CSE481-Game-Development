@@ -6,50 +6,52 @@ import openfl.media.Sound;
 
 class MenuState extends FlxState
 {
-	var playButton:FlxButton;
-	var titleText:FlxText;
-	var optionsButton:FlxButton;
+    var playButton:FlxButton;
+    var titleText:FlxText;
+    var optionsButton:FlxButton;
 
-	override public function create()
-	{
-		super.create();
+    override public function create()
+    {
+        super.create();
 
-		titleText = new FlxText(20, 0, 0, "Dino\nHerder", 22);
-		titleText.alignment = CENTER;
-		add(titleText);
+        titleText = new FlxText(20, 0, 0, "Dino\nHerder", 22);
+        titleText.alignment = CENTER;
+        add(titleText);
 
-		playButton = new FlxButton(0, 0, "Play", clickPlay);
-		playButton.x = (FlxG.width / 2) - playButton.width - 10;
-		playButton.y = FlxG.height - playButton.height - 10;
-		add(playButton);
+        playButton = new FlxButton(0, 0, "Play", clickPlay);
+        playButton.x = (FlxG.width / 2) - playButton.width - 10;
+        playButton.y = FlxG.height - playButton.height - 10;
+        add(playButton);
 
-		playButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav);
+        playButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav);
 
-		optionsButton = new FlxButton(0, 0, "Options", clickOptions);
-		optionsButton.x = (FlxG.width / 2) + 10;
-		optionsButton.y = FlxG.height - optionsButton.height - 10;
-		add(optionsButton);
+        optionsButton = new FlxButton(0, 0, "Options", clickOptions);
+        optionsButton.x = (FlxG.width / 2) + 10;
+        optionsButton.y = FlxG.height - optionsButton.height - 10;
+        add(optionsButton);
 
-		optionsButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav);
+        optionsButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav);
 
-		if (FlxG.sound.music == null)
-		{
-			FlxG.sound.playMusic(AssetPaths.Theme__mp3, 0.0, true);
-		}
-	}
+        if (FlxG.sound.music == null)
+        {
+            FlxG.sound.playMusic(AssetPaths.Theme__mp3, 0.0, true);
+        }
 
-	override public function update(elapsed:Float)
-	{
-		super.update(elapsed);
-	}
+        FlxG.sound.volume = 0.0;
+    }
 
-	function clickPlay()
-	{
-		FlxG.switchState(new PlayState());
-	}
+    override public function update(elapsed:Float)
+    {
+        super.update(elapsed);
+    }
 
-	function clickOptions()
-	{
-		FlxG.switchState(new OptionsState());
-	}
+    function clickPlay()
+    {
+        FlxG.switchState(new PlayState());
+    }
+
+    function clickOptions()
+    {
+        FlxG.switchState(new OptionsState());
+    }
 }
