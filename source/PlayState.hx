@@ -211,10 +211,6 @@ class PlayState extends FlxState
                 prey.setPosition(x, y);
                 addEntity(prey);
             case "predator":
-                if (entityGroups.exists(EntityPredator))
-                {
-                    return;
-                }
                 var predator = new Predator();
                 predator.setPosition(x, y);
                 addEntity(predator);
