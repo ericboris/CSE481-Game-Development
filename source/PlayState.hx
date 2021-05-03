@@ -74,19 +74,11 @@ class PlayState extends FlxState
         obstacles = map.loadTilemap(AssetPaths.Tileset__png, "obstacles");
         obstacles.follow();
         // Make all obstacles collidable.
-        /**
-        for (i in 0 ... 112)
-        {
-            if (i == 29 || i == 35 || i == 37 || i == 42)
-            {
-                obstacles.setTileProperties(i, FlxObject.ANY, GameWorld.handleDownCliffCollision);
-            }
-            else
-            {
-                obstacles.setTileProperties(i, FlxObject.ANY);
-            }
-        }
-        */
+        obstacles.setTileProperties(29, FlxObject.ANY, GameWorld.handleDownCliffCollision);
+        obstacles.setTileProperties(35, FlxObject.ANY, GameWorld.handleDownCliffCollision);
+        obstacles.setTileProperties(37, FlxObject.ANY, GameWorld.handleDownCliffCollision);
+        obstacles.setTileProperties(43, FlxObject.ANY, GameWorld.handleDownCliffCollision);
+
         staticCollidableSprites.add(obstacles);
         add(obstacles);
 
