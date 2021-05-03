@@ -75,9 +75,9 @@ class PlayState extends FlxState
         obstacles.follow();
         // Make all obstacles collidable.
         obstacles.setTileProperties(29, FlxObject.ANY, GameWorld.handleDownCliffCollision);
-        obstacles.setTileProperties(35, FlxObject.ANY, GameWorld.handleDownCliffCollision);
-        obstacles.setTileProperties(37, FlxObject.ANY, GameWorld.handleDownCliffCollision);
-        obstacles.setTileProperties(43, FlxObject.ANY, GameWorld.handleDownCliffCollision);
+        obstacles.setTileProperties(35, FlxObject.ANY, GameWorld.handleRightCliffCollision);
+        obstacles.setTileProperties(37, FlxObject.ANY, GameWorld.handleLeftCliffCollision);
+        obstacles.setTileProperties(43, FlxObject.ANY, GameWorld.handleUpCliffCollision);
 
         staticCollidableSprites.add(obstacles);
         add(obstacles);
