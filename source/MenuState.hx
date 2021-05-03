@@ -37,7 +37,6 @@ class MenuState extends FlxState
             FlxG.sound.playMusic(AssetPaths.Theme__mp3, 0.1, true);
         }
 
-        FlxG.sound.volume = 0.0;
     }
 
     override public function update(elapsed:Float)

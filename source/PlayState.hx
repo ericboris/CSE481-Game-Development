@@ -38,9 +38,7 @@ class PlayState extends FlxState
 
     // The tilemaps generated from the ogmo map.
     var ground:FlxTilemap;
-    var cliffs:FlxTilemap;
-    var trees:FlxTilemap;
-    var rocks:FlxTilemap;
+    var obstacles:FlxTilemap;
 
     var caves:Array<Cave>;
 
@@ -68,30 +66,29 @@ class PlayState extends FlxState
 
         // Static Entities.
         // Load tiles from tile maps
-        ground = map.loadTilemap(AssetPaths.Cliff__png, "ground");
+        ground = map.loadTilemap(AssetPaths.Tileset__png, "ground");
         ground.follow();
-        ground.setTileProperties(8, FlxObject.NONE);
+        ground.setTileProperties(1, FlxObject.NONE);
         add(ground);
 
-        cliffs = map.loadTilemap(AssetPaths.Cliff__png, "cliffs");
-        cliffs.follow();
-        cliffs.setTileProperties(1, FlxObject.ANY, GameWorld.handleDownCliffCollision);
-        cliffs.setTileProperties(7, FlxObject.ANY, GameWorld.handleRightCliffCollision);
-        cliffs.setTileProperties(9, FlxObject.ANY, GameWorld.handleLeftCliffCollision);
-        cliffs.setTileProperties(15, FlxObject.ANY, GameWorld.handleUpCliffCollision);
-
-        staticCollidableSprites.add(cliffs);
-        add(cliffs);
-
-        trees = map.loadTilemap(AssetPaths.Trees__png, "trees");
-        trees.follow();
-        staticCollidableSprites.add(trees);
-        add(trees);
-
-        rocks = map.loadTilemap(AssetPaths.Rocks__png, "rocks");
-        rocks.follow();
-        staticCollidableSprites.add(rocks);
-        add(rocks);
+        obstacles = map.loadTilemap(AssetPaths.Tileset__png, "obstacles");
+        obstacles.follow();
+        // Make all obstacles collidable.
+        /**
+        for (i in 0 ... 112)
+        {
+            if (i == 29 || i == 35 || i == 37 || i == 42)
+            {
+                obstacles.setTileProperties(i, FlxObject.ANY, GameWorld.handleDownCliffCollision);
+            }
+            else
+            {
+                obstacles.setTileProperties(i, FlxObject.ANY);
+            }
+        }
+        */
+        staticCollidableSprites.add(obstacles);
+        add(obstacles);
 
         // Dynamic Entities.
         // Create player
@@ -153,12 +150,14 @@ class PlayState extends FlxState
         }
     }
 
+    /**
     function createTree(x:Float, y:Float)
     {
         var obstacle = new Obstacle(22, 22, FlxColor.GREEN);
         obstacle.setPosition(x, y);
         addEntity(obstacle);
     }
+    */
 
     function collisionChecks()
     {
@@ -176,8 +175,8 @@ class PlayState extends FlxState
         FlxG.overlap(hitboxGroup, collidableSprites, handleCollision);
 
         // Check cliff overlap
-        FlxG.overlap(playerGroup, cliffs);
-        FlxG.overlap(preyGroup, cliffs);
+        FlxG.overlap(playerGroup, obstacles);
+        FlxG.overlap(preyGroup, obstacles);
 
         // Check cave overlap
         FlxG.overlap(playerGroup, caveGroup, handleCollision);
@@ -187,7 +186,6 @@ class PlayState extends FlxState
         FlxG.collide(collidableSprites, collidableSprites);
         FlxG.collide(collidableSprites, staticCollidableSprites);
 
-        
         // Vision checks
         for (predator in entityGroups[EntityPredator])
         {
@@ -204,8 +202,10 @@ class PlayState extends FlxState
         {
             case "player":
                 player.setPosition(x, y);
+            /**
             case "tree":
                 createTree(x, y);
+            */
             case "prey":
                 var prey = new Prey();
                 prey.setPosition(x, y);
@@ -250,7 +250,7 @@ class PlayState extends FlxState
         if (range < from.getSightRange() && Math.abs(angle) < from.getSightAngle() / 2)
         {
             // TODO: Update cliffs tilemap to full tilemap
-            if (cliffs.ray(from.getSprite().getMidpoint(), to.getSprite().getMidpoint(), null, 4))
+            if (obstacles.ray(from.getSprite().getMidpoint(), to.getSprite().getMidpoint(), null, 4))
             {
                 Console.log("Pred see player!");
                 //from.addSeen(to);
