@@ -39,7 +39,7 @@ class GameWorld
     {
         var midpoint1 = src.getSprite().getMidpoint();
         var midpoint2 = dst.getSprite().getMidpoint();
-        return pointAngle(midpoint1.x, midpoint1.y, midpoint2.x, midpoint2.y);
+        return pointAngle(1, 0, midpoint2.x - midpoint1.x, midpoint2.y - midpoint1.y);
     }
 
     static public function pointAngle(x1:Float, y1:Float, x2:Float, y2:Float)
@@ -95,5 +95,15 @@ class GameWorld
     static public function random(min:Float, max:Float)
     {
         return Math.random() * (max - min) + min;
+    }
+
+    static public function toRadians(degrees:Int)
+    {
+        return degrees * Math.PI / 180.0;
+    }
+
+    static public function toDegrees(radians:Float)
+    {
+        return radians * 180.0 / Math.PI;
     }
 }

@@ -9,12 +9,12 @@ import js.html.Console;
 class Predator extends Dino
 {
     /* Unherded state */
-    final PREDATOR_SPEED = 85.0;
+    final PREDATOR_SPEED = 50.0;
     final PREDATOR_ACCELERATION = 30.0;
     final PREDATOR_ELASTICITY = 0.6;
 
-    final PREDATOR_SIGHT_RANGE = 50;
-    final PREDATOR_SIGHT_ANGLE = 15;
+    final PREDATOR_SIGHT_RANGE = 75.0;
+    final PREDATOR_SIGHT_ANGLE = GameWorld.toRadians(30);
 
     public function new()
     {
@@ -63,11 +63,12 @@ class Predator extends Dino
             sprite.velocity.y *= -1;
         }
 
-        if (GameWorld.magnitude(sprite.velocity) < PREDATOR_SPEED)
+        var speed = GameWorld.magnitude(sprite.velocity);
+        if (speed < PREDATOR_SPEED)
         {
             // Set sprite's acceleration to speed up in the same direction
             var v1 = sprite.velocity;
-            var v2 = new FlxPoint(PREDATOR_SPEED + PREDATOR_ACCELERATION, 0);
+            var v2 = new FlxPoint(speed + PREDATOR_ACCELERATION, 0);
 
             var angle = GameWorld.pointAngle(v1.x, v1.y, v2.x, v2.y);
 

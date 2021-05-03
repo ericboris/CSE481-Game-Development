@@ -26,6 +26,7 @@ class PlayState extends FlxState
 
     // FlxSprite groups.
     // Maps GroupdIds (defined above) to a group containing all of that type of entity
+    var entityGroups:Map<EntityType, Array<Entity>>;
     var spriteGroups:Map<EntityType, FlxGroup>;
 
     // A group containing all collidable entities
@@ -51,6 +52,7 @@ class PlayState extends FlxState
         world = this;
 
         // Initialize member variables
+        entityGroups = new Map<EntityType, Array<Entity>>();
         spriteGroups = new Map<EntityType, FlxGroup>();
         entities = new Array<Entity>();
         collidableSprites = new FlxGroup();
@@ -138,6 +140,12 @@ class PlayState extends FlxState
         spriteGroups[type].add(sprite);
         add(sprite);
 
+        if (!entityGroups.exists(type))
+        {
+            entityGroups[type] = new Array<Entity>();
+        }
+        entityGroups[type].push(entity);
+
         // Add to collidable entities
         if (collidable)
         {
@@ -178,6 +186,13 @@ class PlayState extends FlxState
         // Collision resolution -- physics
         FlxG.collide(collidableSprites, collidableSprites);
         FlxG.collide(collidableSprites, staticCollidableSprites);
+
+        
+        // Vision checks
+        for (predator in entityGroups[EntityPredator])
+        {
+            checkVision(predator, player);
+        }
     }
 
     function placeEntities(entity:EntityData)
@@ -196,6 +211,10 @@ class PlayState extends FlxState
                 prey.setPosition(x, y);
                 addEntity(prey);
             case "predator":
+                if (entityGroups.exists(EntityPredator))
+                {
+                    return;
+                }
                 var predator = new Predator();
                 predator.setPosition(x, y);
                 addEntity(predator);
@@ -221,21 +240,26 @@ class PlayState extends FlxState
         return caves;
     }
 
-    /**
     function checkVision(from:Entity, to:Entity)
     {
         var range = GameWorld.entityDistance(from, to);
-        // angle between (0, 0) and from velocity vector = angle looking
-        // if between angle looking 
-        var angle = Gameworld.entityAngle(from, to);
-        if (range < from.getSightRange && Math.abs(angle) < from.getSightAngle / 2)
+
+        var velocity = from.getSprite().velocity;
+        // Angle between positive x axis and velocity vector
+        var velocityAngle = GameWorld.pointAngle(1, 0, velocity.x, velocity.y);
+        // Angle between the two entities
+        var angleBetween = GameWorld.entityAngle(from, to);
+        var angle = angleBetween - velocityAngle;
+        
+        if (range < from.getSightRange() && Math.abs(angle) < from.getSightAngle() / 2)
         {
-            if (tilemap.ray(from.getMidpoint(), to.getMidpoint()));
+            // TODO: Update cliffs tilemap to full tilemap
+            if (cliffs.ray(from.getSprite().getMidpoint(), to.getSprite().getMidpoint(), null, 4))
             {
-                from.addSeen(to);
-                from.toPosition = to.getMidpoint();
+                Console.log("Pred see player!");
+                //from.addSeen(to);
+                //from.toPosition = to.getMidpoint();
             }
         }
     }
-    */
 }

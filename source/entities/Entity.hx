@@ -127,11 +127,11 @@ class Entity
 
     public function getSightRange()
     {
-        return 0;
+        return 0.0;
     }
 
     public function getSightAngle()
     {
-        return 0;
+        return 0.0;
     }
 }
