@@ -15,12 +15,15 @@ class Entity
     // Hitboxes are used by entities to do additional collision checks over other areas.
     var hitboxes:Array<Hitbox>;
 
+    var seenEntities:Array<Entity>;
+
     var isJumpingCliff:Bool;
 
     public function new()
     {
         sprite = new SpriteWrapper<Entity>(this);
         hitboxes = new Array<Hitbox>();
+        seenEntities = new Array<Entity>();
     }
 
     function setGraphic(width:Int, height:Int, dir:String, isAnimated:Bool)
@@ -75,6 +78,10 @@ class Entity
                 handlePredatorCollision(cast entity);
             default:
         }
+
+        // Delete all seen entities.
+        // These will be refilled in during the following collision check cycle.
+        seenEntities.resize(0);
     }
 
     public function notifyHitboxCollision(hitbox:Hitbox, entity:Entity) {}
@@ -133,5 +140,10 @@ class Entity
     public function getSightAngle()
     {
         return 0.0;
+    }
+
+    public function seen(entity: Entity)
+    {
+       seenEntities.push(entity);
     }
 }
