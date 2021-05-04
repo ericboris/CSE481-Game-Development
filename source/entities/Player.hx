@@ -11,7 +11,7 @@ class Player extends Entity
     /* Hitbox id constants */
     static var INTERACT_HITBOX_ID = 0;
 
-    var speed:Float = 80.0;
+    var speed:Float = 50.0;
 
     // Array of followers. TODO: Should be linked list.
     var followers:Array<Dino>;

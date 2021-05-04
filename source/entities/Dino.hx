@@ -19,7 +19,7 @@ class Dino extends Entity
     
     // Constants
     final MAX_FOLLOWING_RADIUS = 150.0;
-    final FOLLOWING_RADIUS = 20.0;
+    final FOLLOWING_RADIUS = 15.0;
     final DAMPING_FACTOR = 0.55;
     final UNHERDED_SPEED = 30.0;
 

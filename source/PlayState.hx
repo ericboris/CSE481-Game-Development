@@ -64,7 +64,7 @@ class PlayState extends FlxState
         }
 
         // Set up the tilemap.
-        map = new FlxOgmo3Loader(AssetPaths.DinoHerder__ogmo, AssetPaths.Sandbox__json);
+        map = new FlxOgmo3Loader(AssetPaths.DinoHerder__ogmo, AssetPaths.tutorial0__json);
 
         spriteGroups[EntityCave] = new FlxGroup();
         spriteGroups[EntityPrey] = new FlxGroup();
@@ -75,6 +75,12 @@ class PlayState extends FlxState
         ground = map.loadTilemap(AssetPaths.Tileset__png, "ground");
         ground.follow();
         ground.setTileProperties(1, FlxObject.NONE);
+        ground.setTileProperties(2, FlxObject.NONE);
+        ground.setTileProperties(36, FlxObject.NONE);
+        ground.setTileProperties(17, FlxObject.NONE);
+        ground.setTileProperties(18, FlxObject.NONE);
+        ground.setTileProperties(24, FlxObject.NONE);
+        ground.setTileProperties(25, FlxObject.NONE);
         add(ground);
 
         obstacles = map.loadTilemap(AssetPaths.Tileset__png, "obstacles");
