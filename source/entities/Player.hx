@@ -189,6 +189,17 @@ class Player extends Entity
         PlayState.world.removeEntity(dino);
     }
 
+    public function notifyDeadFollower(dino:Dino)
+    {
+        var dinoIndex = followers.indexOf(dino);
+        for (i in dinoIndex...followers.length)
+        {
+            followers[i].notifyScattered();
+        }
+
+        followers.remove(dino);
+    }
+
     public function addDino(dino:Dino)
     {
         if (followers.length > 0)
