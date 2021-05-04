@@ -224,6 +224,11 @@ class Player extends Entity
         }
     }
 
+    public function isInRangeOfCave()
+    {
+        return this.inRangeOfCave;
+    }
+
     public override function handleCaveCollision(cave:Cave)
     {
         depositingToCave = true;

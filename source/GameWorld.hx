@@ -8,6 +8,11 @@ import js.html.Console;
 
 class GameWorld
 {
+    static var levelIndex = 0;
+    static var levelArray = [AssetPaths.tutorial0__json, 
+                            AssetPaths.tutorial1__json,
+                            AssetPaths.Sandbox__json];
+
     static public function getNearestEntity(src:Entity, entities:Array<Entity>)
     {
         var nearestEntity = null;
@@ -105,5 +110,17 @@ class GameWorld
     static public function toDegrees(radians:Float)
     {
         return radians * 180.0 / Math.PI;
+    }
+
+    static public function getNextMap()
+    {   
+        if (levelIndex < levelArray.length - 1) 
+        {
+            return levelArray[levelIndex++];
+        }
+        else
+        {
+            return levelArray[levelIndex];
+        }
     }
 }

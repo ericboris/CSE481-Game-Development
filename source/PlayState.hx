@@ -64,25 +64,12 @@ class PlayState extends FlxState
         }
 
         // Set up the tilemap.
-        map = new FlxOgmo3Loader(AssetPaths.DinoHerder__ogmo, AssetPaths.Sandbox__json);
-
-        spriteGroups[EntityCave] = new FlxGroup();
-        spriteGroups[EntityPrey] = new FlxGroup();
-        spriteGroups[EntityHitbox] = new FlxGroup();
+        map = new FlxOgmo3Loader(AssetPaths.DinoHerder__ogmo, GameWorld.getNextMap());
 
         // Static Entities.
         // Load tiles from tile maps
         ground = map.loadTilemap(AssetPaths.Tileset__png, "ground");
         ground.follow();
-        /**
-        ground.setTileProperties(1, FlxObject.NONE);
-        ground.setTileProperties(2, FlxObject.NONE);
-        ground.setTileProperties(36, FlxObject.NONE);
-        ground.setTileProperties(17, FlxObject.NONE);
-        ground.setTileProperties(18, FlxObject.NONE);
-        ground.setTileProperties(24, FlxObject.NONE);
-        ground.setTileProperties(25, FlxObject.NONE);
-        */
         add(ground);
 
         obstacles = map.loadTilemap(AssetPaths.Tileset__png, "obstacles");
@@ -122,6 +109,12 @@ class PlayState extends FlxState
 
         // Do collision checks
         collisionChecks();
+
+        // Check to load next level.
+        if (player.isInRangeOfCave() && levelIsComplete())
+        {
+            FlxG.switchState(new PlayState());
+        }
 
         super.update(elapsed);
     }
@@ -256,5 +249,10 @@ class PlayState extends FlxState
                 //from.toPosition = to.getMidpoint();
             }
         }
+    }
+
+    function levelIsComplete()
+    {
+        return entityGroups[EntityPrey].length == 0;
     }
 }
