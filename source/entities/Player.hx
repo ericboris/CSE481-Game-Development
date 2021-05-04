@@ -32,9 +32,9 @@ class Player extends Entity
         sprite.setFacingFlip(FlxObject.LEFT, false, false);
         sprite.setFacingFlip(FlxObject.RIGHT, true, false);
 
-        sprite.animation.add("lr", [3, 4, 3, 5], 6, false);
-        sprite.animation.add("u", [6, 7, 6, 8], 6, false);
-        sprite.animation.add("d", [0, 1, 0, 2], 6, false);
+        sprite.animation.add("lr", [18, 19, 20, 21, 22], 6, false);
+        sprite.animation.add("u", [6, 7, 8, 9, 10], 6, false);
+        sprite.animation.add("d", [0, 1, 2, 3, 4], 6, false);
 
         // sprite.screenCenter();
 
