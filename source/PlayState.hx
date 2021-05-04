@@ -125,21 +125,12 @@ class PlayState extends FlxState
         var sprite = entity.getSprite();
 
         // Add to entities array
+        entityGroups[type].push(entity);
         entities.push(entity);
 
         // Add sprite to FlxGroup (used for collision detection)
-        if (!spriteGroups.exists(type))
-        {
-            spriteGroups[type] = new FlxGroup();
-        }
         spriteGroups[type].add(sprite);
         add(sprite);
-
-        if (!entityGroups.exists(type))
-        {
-            entityGroups[type] = new Array<Entity>();
-        }
-        entityGroups[type].push(entity);
 
         // Add to collidable entities
         if (collidable)
@@ -148,14 +139,20 @@ class PlayState extends FlxState
         }
     }
 
-    /**
-    function createTree(x:Float, y:Float)
+    public function removeEntity(entity:Entity)
     {
-        var obstacle = new Obstacle(22, 22, FlxColor.GREEN);
-        obstacle.setPosition(x, y);
-        addEntity(obstacle);
+        var type = entity.getType();
+
+        // Remove from entity arrays
+        entityGroups[type].remove(entity);
+        entities.remove(entity);
+
+        // Remove from FlxGroups
+        var sprite = entity.getSprite();
+        spriteGroups[type].remove(sprite);
+        collidableSprites.remove(sprite);
+        remove(sprite);
     }
-    */
 
     function collisionChecks()
     {
@@ -200,10 +197,6 @@ class PlayState extends FlxState
         {
             case "player":
                 player.setPosition(x, y);
-            /**
-            case "tree":
-                createTree(x, y);
-            */
             case "prey":
                 var prey = new Prey();
                 prey.setPosition(x, y);
