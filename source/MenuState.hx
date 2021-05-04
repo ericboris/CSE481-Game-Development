@@ -34,7 +34,7 @@ class MenuState extends FlxState
 
         if (FlxG.sound.music == null)
         {
-            FlxG.sound.playMusic(AssetPaths.Theme__mp3, 0.1, true);
+            FlxG.sound.playMusic(AssetPaths.Theme__mp3, 0.05, true);
         }
 
     }
