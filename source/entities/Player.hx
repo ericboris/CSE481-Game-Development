@@ -11,7 +11,7 @@ class Player extends Entity
     /* Hitbox id constants */
     static var INTERACT_HITBOX_ID = 0;
 
-    var speed:Float = 50.0;
+    var speed:Float = 40.0;
 
     // Array of followers. TODO: Should be linked list.
     var followers:Array<Dino>;
@@ -32,9 +32,9 @@ class Player extends Entity
         sprite.setFacingFlip(FlxObject.LEFT, false, false);
         sprite.setFacingFlip(FlxObject.RIGHT, true, false);
 
-        sprite.animation.add("lr", [18, 19, 20, 21, 22], 6, false);
-        sprite.animation.add("u", [6, 7, 8, 9, 10], 6, false);
-        sprite.animation.add("d", [0, 1, 2, 3, 4], 6, false);
+        sprite.animation.add("lr", [19, 20, 21, 22], 8, false);
+        sprite.animation.add("u", [7, 8, 9, 10], 8, false);
+        sprite.animation.add("d", [1, 2, 3, 4], 8, false);
 
         // sprite.screenCenter();
 
