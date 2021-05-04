@@ -10,6 +10,7 @@ enum DinoState
 {
     Herded;
     Unherded;
+    Pursuing;
 }
 
 class Dino extends Entity
@@ -52,6 +53,7 @@ class Dino extends Entity
                 unherded(elapsed);
             case Herded:
                 herded(elapsed);
+            default:
         }
 
         if ((sprite.velocity.x != 0 || sprite.velocity.y != 0) && sprite.touching == FlxObject.NONE)

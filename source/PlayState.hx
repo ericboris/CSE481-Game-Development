@@ -57,6 +57,12 @@ class PlayState extends FlxState
         staticCollidableSprites = new FlxGroup();
         caves = new Array<Cave>();
 
+        for (type in Type.allEnums(EntityType))
+        {
+            entityGroups[type] = new Array<Entity>();
+            spriteGroups[type] = new FlxGroup();
+        }
+
         // Set up the tilemap.
         map = new FlxOgmo3Loader(AssetPaths.DinoHerder__ogmo, AssetPaths.tutorial0__json);
 
@@ -250,7 +256,7 @@ class PlayState extends FlxState
             // TODO: Update cliffs tilemap to full tilemap
             if (obstacles.ray(from.getSprite().getMidpoint(), to.getSprite().getMidpoint(), null, 4))
             {
-                Console.log("Pred see player!");
+                from.seen(to);
                 //from.addSeen(to);
                 //from.toPosition = to.getMidpoint();
             }

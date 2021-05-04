@@ -11,10 +11,20 @@ class Predator extends Dino
     /* Unherded state */
     final PREDATOR_SPEED = 50.0;
     final PREDATOR_ACCELERATION = 30.0;
-    final PREDATOR_ELASTICITY = 0.6;
+    final PREDATOR_ELASTICITY = 0.9;
 
     final PREDATOR_SIGHT_RANGE = 75.0;
     final PREDATOR_SIGHT_ANGLE = GameWorld.toRadians(30);
+
+
+    /* Pursuing state */
+    final PREDATOR_ROTATION = GameWorld.toRadians(30);
+    final PREDATOR_FAST_SPEED = 30.0;
+    final PREDATOR_SEEN_TIMER = 5;
+
+    var seenEntity: Entity;
+    var lastSeenTimer:Float = 0;
+    var moveAngle:Float;
 
     public function new()
     {
@@ -31,9 +41,9 @@ class Predator extends Dino
         // sprite.animation.add("u", [6, 7, 6, 8], 6, false);
         // sprite.animation.add("d", [0, 1, 0, 2], 6, false);
 
-        var angle = GameWorld.random(0, Math.PI * 2.0);
-        this.sprite.velocity.x = Math.cos(angle) * PREDATOR_SPEED;
-        this.sprite.velocity.y = Math.sin(angle) * PREDATOR_SPEED;
+        moveAngle = GameWorld.random(0, Math.PI * 2.0);
+        this.sprite.velocity.x = Math.cos(moveAngle) * PREDATOR_SPEED;
+        this.sprite.velocity.y = Math.sin(moveAngle) * PREDATOR_SPEED;
         this.sprite.elasticity = PREDATOR_ELASTICITY;
 
         sprite.screenCenter();
@@ -43,7 +53,32 @@ class Predator extends Dino
 
     public override function update(elapsed:Float)
     {
+        if (seenEntities.length > 0)
+            state = Pursuing;
+
+        if (state == Pursuing)
+            pursuing(elapsed);
         super.update(elapsed);
+    }
+
+    function speedUp(maxSpeed:Float)
+    {
+        var angle = GameWorld.pointAngle(1, 0, sprite.velocity.x, sprite.velocity.y);
+        var speed = GameWorld.magnitude(sprite.velocity);
+        if (speed >= maxSpeed)
+        {
+            sprite.acceleration.x = 0;
+            sprite.acceleration.y = 0;
+
+            sprite.velocity.x = Math.cos(angle) * maxSpeed;
+            sprite.velocity.y = Math.sin(angle) * maxSpeed;
+        }
+        else
+        {
+            // Set sprite's acceleration to speed up in the same direction
+            sprite.acceleration.x = Math.cos(angle) * PREDATOR_ACCELERATION;
+            sprite.acceleration.y = Math.sin(angle) * PREDATOR_ACCELERATION;
+        }
     }
 
     private override function unherded(elapsed:Float)
@@ -63,23 +98,34 @@ class Predator extends Dino
             sprite.velocity.y *= -1;
         }
 
-        var speed = GameWorld.magnitude(sprite.velocity);
-        if (speed < PREDATOR_SPEED)
+        speedUp(PREDATOR_SPEED);
+    }
+
+    function pursuing(elapsed: Float)
+    {
+        if (seenEntities.length > 0)
         {
-            // Set sprite's acceleration to speed up in the same direction
-            var v1 = sprite.velocity;
-            var v2 = new FlxPoint(speed + PREDATOR_ACCELERATION, 0);
+            lastSeenTimer = PREDATOR_SEEN_TIMER;
+            var entity = GameWorld.getNearestEntity(this, seenEntities);
 
-            var angle = GameWorld.pointAngle(v1.x, v1.y, v2.x, v2.y);
+            var moveAngle = GameWorld.pointAngle(1, 0, sprite.velocity.x, sprite.velocity.y);
+            var angleBetween = GameWorld.entityAngle(this, entity);
+            var angleDiff = angleBetween - moveAngle;
 
-            sprite.acceleration.x = Math.cos(angle) * PREDATOR_ACCELERATION;
-            sprite.acceleration.y = Math.sin(angle) * PREDATOR_ACCELERATION;
+            Console.log(angleDiff);
+            sprite.velocity.rotate(FlxPoint.weak(), GameWorld.toDegrees(Math.min(angleDiff, PREDATOR_ROTATION)));
         }
         else
         {
-            sprite.acceleration.x = 0;
-            sprite.acceleration.y = 0;
+            lastSeenTimer -= elapsed;
+            if (lastSeenTimer <= 0)
+            {
+                // Return to unherded state
+                this.state = Unherded;
+            }
         }
+
+        speedUp(PREDATOR_FAST_SPEED);
     }
 
     public override function getSightRange()
