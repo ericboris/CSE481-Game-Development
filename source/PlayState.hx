@@ -74,6 +74,7 @@ class PlayState extends FlxState
 
         obstacles = map.loadTilemap(AssetPaths.Tileset__png, "obstacles");
         obstacles.follow();
+ 
         // Make all obstacles collidable.
         obstacles.setTileProperties(29, FlxObject.ANY, GameWorld.handleDownCliffCollision);
         obstacles.setTileProperties(35, FlxObject.ANY, GameWorld.handleRightCliffCollision);
@@ -111,7 +112,7 @@ class PlayState extends FlxState
         collisionChecks();
 
         // Check to load next level.
-        if (player.isInRangeOfCave() && levelIsComplete())
+        if (FlxG.keys.anyPressed([N]) || player.isInRangeOfCave() && levelIsComplete())
         {
             FlxG.switchState(new PlayState());
         }
@@ -245,8 +246,6 @@ class PlayState extends FlxState
             if (obstacles.ray(from.getSprite().getMidpoint(), to.getSprite().getMidpoint(), null, 4))
             {
                 from.seen(to);
-                //from.addSeen(to);
-                //from.toPosition = to.getMidpoint();
             }
         }
     }
