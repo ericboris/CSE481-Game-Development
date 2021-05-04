@@ -5,6 +5,7 @@ import flixel.FlxObject;
 import flixel.math.FlxPoint;
 import flixel.util.FlxPath;
 import flixel.util.FlxColor;
+import js.html.Console;
 
 class Entity
 {
@@ -53,6 +54,10 @@ class Entity
 
         // Update our sprite
         sprite.update(elapsed);
+
+        // Delete all seen entities.
+        // These will be refilled in during the following collision check cycle.
+        seenEntities.resize(0);
     }
 
     public function addHitbox(hitbox:Hitbox)
@@ -78,10 +83,6 @@ class Entity
                 handlePredatorCollision(cast entity);
             default:
         }
-
-        // Delete all seen entities.
-        // These will be refilled in during the following collision check cycle.
-        seenEntities.resize(0);
     }
 
     public function notifyHitboxCollision(hitbox:Hitbox, entity:Entity) {}

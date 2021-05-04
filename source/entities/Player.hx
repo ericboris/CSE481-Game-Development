@@ -184,9 +184,19 @@ class Player extends Entity
             }
         }
 
-        PlayState.world.remove(dino.getSprite());
-        dino.getSprite().alive = false;
-        dino.getSprite().allowCollisions = FlxObject.NONE;
+        // Remove entity from world
+        followers.remove(dino);
+        PlayState.world.removeEntity(dino);
+    }
+
+    public function notifyDeadFollower(dino:Dino)
+    {
+        var dinoIndex = followers.indexOf(dino);
+        for (i in dinoIndex...followers.length)
+        {
+            followers[i].notifyScattered();
+        }
+
         followers.remove(dino);
     }
 

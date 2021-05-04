@@ -94,9 +94,12 @@ class Dino extends Entity
         herdedLeader = entity;
     }
 
-    /* ----------------------
-        State behavior methods
-        ---------------------- */
+    // Called by Player when the herd has been scattered
+    public function notifyScattered()
+    {
+        this.state = Unherded;
+    }
+
     function unherded(elapsed:Float)
     {
         sprite.velocity.set(0, 0);
@@ -140,7 +143,6 @@ class Dino extends Entity
         }
     }
 
-    /* Getters */
     public function getState()
     {
         return state;
