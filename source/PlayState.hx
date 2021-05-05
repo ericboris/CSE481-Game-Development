@@ -15,8 +15,16 @@ class PlayState extends FlxState
     // A singleton reference to the global PlayState.
     public static var world:PlayState;
 
-    var worldWidth = 640;
-    var worldHeight = 480;
+    static public final SCREEN_WIDTH = 800;
+    static public final SCREEN_HEIGHT = 600;
+
+    // Size of tiles/chunks
+    static public final TILE_WIDTH = 320;
+    static public final TILE_HEIGHT = 240;
+    
+    // Size of map (in # of tiles)
+    var mapWidth = 2;
+    var mapHeight = 2;
 
     // In world entities
     var player:Player;
@@ -95,11 +103,18 @@ class PlayState extends FlxState
         map.loadEntities(placeEntities, "entities");
 
         // Set world size
-        FlxG.worldBounds.set(0, 0, worldWidth, worldHeight);
+        FlxG.worldBounds.set(0, 0, TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight);
 
         // Set camera to follow player
-        FlxG.camera.setScrollBoundsRect(0, 0, worldWidth, worldHeight);
+        FlxG.camera.setScrollBoundsRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        FlxG.camera.zoom = SCREEN_WIDTH / TILE_WIDTH;
         FlxG.camera.follow(player.getSprite(), TOPDOWN, 1);
+
+        var camera_x = SCREEN_WIDTH/2;
+        var camera_y = SCREEN_HEIGHT/2;
+        var camera_w = TILE_WIDTH/4;
+        var camera_h = TILE_HEIGHT/4;
+        FlxG.camera.deadzone.set(camera_x - camera_w/2, camera_y - camera_h/2, camera_w, camera_h);
     }
 
     override public function update(elapsed:Float)
