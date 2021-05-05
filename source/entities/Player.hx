@@ -15,6 +15,7 @@ class Player extends Entity
 
     // Array of followers. TODO: Should be linked list.
     var followers:Array<Dino>;
+    var primaryFollowers:Array<Dino>;
 
     // State variables
     var depositingToCave:Bool = false;
@@ -46,6 +47,7 @@ class Player extends Entity
         addHitbox(interactHitbox);
 
         followers = new Array<Dino>();
+        primaryFollowers = new Array<Dino>();
     }
 
     public override function update(elapsed:Float)
@@ -53,32 +55,68 @@ class Player extends Entity
         move();
 
         // Cave depositing logic
+        reorganizeHerd();
 
         if (!inRangeOfCave && depositingToCave)
         {
             // We are no longer in range of cave. Set herd back to normal order.
             depositingToCave = false;
-            for (i in 0...followers.length)
+            reorganizeHerd();
+            for (dino in followers)
             {
-                if (i == 0)
-                    followers[i].setLeader(this);
-                else
-                    followers[i].setLeader(followers[i - 1]);
-                followers[i].herdedDisableFollowingRadius = false;
+                dino.herdedDisableFollowingRadius = false;
             }
         }
 
         if (depositingToCave && followers.length > 0)
         {
-            followers[0].setLeader(cave);
-            followers[0].herdedDisableFollowingRadius = true;
+            for (dino in primaryFollowers)
+            {
+                dino.setLeader(cave);
+                dino.herdedDisableFollowingRadius = true;
+            }
         }
+
 
         // Assume that we are now out of range of the cave.
         // If we're still in range, we'll be notified within the following collision checking cycle.
         inRangeOfCave = false;
 
         super.update(elapsed);
+    }
+
+    function reorganizeHerd()
+    {
+        primaryFollowers.resize(0);
+
+        var followersCopy = new Array<Entity>();
+        for (dino in followers)
+        {
+            followersCopy.push(dino);
+        }
+
+        var lastEntity:Entity = this;
+        var numInLine:Int = 1;//cast Math.min(1 + followers.length / 5, 4);
+
+        while (followersCopy.length > 0)
+        {
+            for (i in 0...numInLine)
+            {
+                if (followersCopy.length == 0)
+                    break;
+
+                var dino:Dino = cast GameWorld.getNearestEntity(lastEntity, followersCopy);
+                // TODO: This is inefficient
+                followersCopy.remove(dino);
+
+                if (i == 0)
+                    primaryFollowers.push(dino);
+
+                dino.setLeader(lastEntity);
+                if (i == numInLine-1)
+                    lastEntity = dino;
+            }
+        }
     }
 
     function move()
@@ -175,15 +213,6 @@ class Player extends Entity
         if (!depositingToCave)
             return;
 
-        for (i in 0...followers.length - 1)
-        {
-            if (followers[i] == dino)
-            {
-                followers[i + 1].setLeader(cave);
-                followers[i + 1].herdedDisableFollowingRadius = true;
-            }
-        }
-
         // Remove entity from world
         followers.remove(dino);
         PlayState.world.removeEntity(dino);
@@ -191,13 +220,15 @@ class Player extends Entity
 
     public function notifyDeadFollower(dino:Dino)
     {
+        // TODO: Reimplement this w/ the sets
+        /*
         var dinoIndex = followers.indexOf(dino);
         for (i in dinoIndex...followers.length)
         {
             followers[i].notifyScattered();
         }
 
-        followers.remove(dino);
+        followers.remove(dino);*/
     }
 
     public function addDino(dino:Dino)
