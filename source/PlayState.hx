@@ -81,6 +81,8 @@ class PlayState extends FlxState
         obstacles.setTileProperties(37, FlxObject.ANY, GameWorld.handleLeftCliffCollision);
         obstacles.setTileProperties(43, FlxObject.ANY, GameWorld.handleUpCliffCollision);
 
+        // Tree tile indices: 14, 15, 21, 22
+
         staticCollidableSprites.add(obstacles);
         add(obstacles);
 
@@ -187,6 +189,10 @@ class PlayState extends FlxState
         for (predator in entityGroups[EntityPredator])
         {
             checkVision(predator, player);
+            for (prey in entityGroups[EntityPrey])
+            {
+                //checkVision(predator, prey);
+            }
         }
     }
 
@@ -242,11 +248,15 @@ class PlayState extends FlxState
         
         if (range < from.getSightRange() && Math.abs(angle) < from.getSightAngle() / 2)
         {
-            // TODO: Update cliffs tilemap to full tilemap
             if (obstacles.ray(from.getSprite().getMidpoint(), to.getSprite().getMidpoint(), null, 4))
             {
+                // Entity is in line of sight
                 from.seen(to);
             }
+        }
+        else if (GameWorld.entityDistance(from, to) < from.getNearbySightRadius())
+        {
+            from.seen(to);
         }
     }
 

@@ -38,7 +38,9 @@ class GameWorld
 
     static public function entityDistance(src:Entity, dst:Entity)
     {
-        return pointDistance(src.getSprite().x, src.getSprite().y, dst.getSprite().x, dst.getSprite().y);
+        var midpoint1 = src.getSprite().getMidpoint();
+        var midpoint2 = dst.getSprite().getMidpoint();
+        return pointDistance(midpoint1.x, midpoint1.y, midpoint2.x, midpoint2.y);
     }
 
     static public function entityAngle(src:Entity, dst:Entity)

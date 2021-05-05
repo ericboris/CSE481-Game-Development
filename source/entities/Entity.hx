@@ -19,6 +19,7 @@ class Entity
     var seenEntities:Array<Entity>;
 
     var isJumpingCliff:Bool;
+    var canJumpCliffs = true;
 
     public function new()
     {
@@ -113,6 +114,11 @@ class Entity
 
     public function handleCliffCollision(direction:Int)
     {
+        if (!canJumpCliffs)
+        {
+            return;
+        }
+
         var x = sprite.x;
         var y = sprite.y;
         switch (direction)
@@ -139,6 +145,11 @@ class Entity
     }
 
     public function getSightAngle()
+    {
+        return 0.0;
+    }
+ 
+    public function getNearbySightRadius()
     {
         return 0.0;
     }
