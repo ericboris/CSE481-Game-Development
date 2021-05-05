@@ -106,7 +106,7 @@ class PlayState extends FlxState
         FlxG.worldBounds.set(0, 0, TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight);
 
         // Set camera to follow player
-        FlxG.camera.setScrollBoundsRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        FlxG.camera.setScrollBoundsRect(0, 0, TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight);
         FlxG.camera.zoom = SCREEN_WIDTH / TILE_WIDTH;
         FlxG.camera.follow(player.getSprite(), TOPDOWN, 1);
 
