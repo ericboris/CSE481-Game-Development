@@ -14,7 +14,7 @@ class MenuState extends FlxState
     {
         super.create();
 
-        titleText = new FlxText(20, 0, 0, "Dino\nHerder", 22);
+        titleText = new FlxText(210, 180, 400, "Dino Herder", 70);
         titleText.alignment = CENTER;
         add(titleText);
 
