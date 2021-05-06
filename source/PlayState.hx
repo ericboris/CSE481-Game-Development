@@ -224,10 +224,9 @@ class PlayState extends FlxState
         // Vision checks
         for (predator in entityGroups[EntityPredator])
         {
-            checkVision(predator, player);
-            for (prey in entityGroups[EntityPrey])
+            if (GameWorld.checkVision(predator, player, GameWorld.checkSightRange))
             {
-                //checkVision(predator, prey);
+                predator.seen(player);
             }
         }
     }
@@ -271,7 +270,7 @@ class PlayState extends FlxState
         return caves;
     }
 
-    function checkVision(from:Entity, to:Entity)
+    function checkSightRange(from:Entity, to:Entity)
     {
         var range = GameWorld.entityDistance(from, to);
 
@@ -282,18 +281,7 @@ class PlayState extends FlxState
         var angleBetween = GameWorld.entityAngle(from, to);
         var angle = angleBetween - velocityAngle;
         
-        if (range < from.getSightRange() && Math.abs(angle) < from.getSightAngle() / 2)
-        {
-            if (obstacles.ray(from.getSprite().getMidpoint(), to.getSprite().getMidpoint(), null, 4))
-            {
-                // Entity is in line of sight
-                from.seen(to);
-            }
-        }
-        else if (GameWorld.entityDistance(from, to) < from.getNearbySightRadius())
-        {
-            from.seen(to);
-        }
+        return range < from.getSightRange() && Math.abs(angle) < from.getSightAngle() / 2;
     }
 
     function levelIsComplete()
@@ -305,5 +293,10 @@ class PlayState extends FlxState
     {
         Score.increment(amount);
         scoreText.alpha = 1;
+    }
+
+    public function getObstacles()
+    {
+        return obstacles;
     }
 }

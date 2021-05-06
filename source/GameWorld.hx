@@ -90,6 +90,19 @@ class GameWorld
         }
     }
 
+    static public function checkVision(from:Entity, to:Entity, checkFunc: (Entity, Entity) -> Bool)
+    {
+        if (checkFunc(from, to))
+        {
+            var obstacles = PlayState.world.getObstacles();
+            if (obstacles.ray(from.getSprite().getMidpoint(), to.getSprite().getMidpoint(), null, 4))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     static public function radians(degrees:Int)
     {
         return degrees * Math.PI / 180.0;
@@ -126,4 +139,19 @@ class GameWorld
             return levelArray[levelIndex];
         }
     }
+
+    static public function checkSightRange(from:Entity, to:Entity)
+    {
+        var range = GameWorld.entityDistance(from, to);
+
+        var velocity = from.getSprite().velocity;
+        // Angle between positive x axis and velocity vector
+        var velocityAngle = GameWorld.pointAngle(1, 0, velocity.x, velocity.y);
+        // Angle between the two entities
+        var angleBetween = GameWorld.entityAngle(from, to);
+        var angle = angleBetween - velocityAngle;
+
+        return range < from.getSightRange() && Math.abs(angle) < from.getSightAngle() / 2;
+    }
+
 }
