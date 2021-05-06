@@ -14,10 +14,6 @@ class Predator extends Dino
     final PREDATOR_ELASTICITY = 0.9;
     final PREDATOR_PURSUING_ELASTICITY = 0.3;
 
-    final PREDATOR_SIGHT_RANGE = 200.0;
-    final PREDATOR_SIGHT_ANGLE = GameWorld.toRadians(50);
-    final PREDATOR_SIGHT_RADIUS = 24.0;
-
     /* Pursuing state */
     final PREDATOR_ANGULAR_ACCELERATION = GameWorld.toRadians(5);
     final PREDATOR_PURSUING_SPEED = 39.0;
@@ -25,7 +21,6 @@ class Predator extends Dino
 
     final SATIATED_TIMER = 5;
 
-    var seenEntity:Entity;
     var lastSeenTimer:Float = 0;
     var moveAngle:Float;
 
@@ -54,6 +49,9 @@ class Predator extends Dino
         this.sprite.elasticity = PREDATOR_ELASTICITY;
 
         sprite.screenCenter();
+
+        this.SIGHT_ANGLE = GameWorld.toRadians(50);
+        this.SIGHT_RANGE = 200;
 
         sprite.setSize(8, 8);
     }
@@ -167,20 +165,5 @@ class Predator extends Dino
         {
             return false;
         }
-    }
-
-    public override function getSightRange()
-    {
-        return this.PREDATOR_SIGHT_RANGE;
-    }
-
-    public override function getSightAngle()
-    {   
-        return this.PREDATOR_SIGHT_ANGLE;
-    }
-
-    public override function getNearbySightRadius()
-    {
-        return this.PREDATOR_SIGHT_RADIUS;
     }
 }

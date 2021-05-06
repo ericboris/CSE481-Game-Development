@@ -228,6 +228,18 @@ class PlayState extends FlxState
             {
                 predator.seen(player);
             }
+
+            for (prey in entityGroups[EntityPrey])
+            {
+                if (GameWorld.checkVision(predator, prey))
+                {
+                    predator.seen(prey);
+                }
+                if (GameWorld.checkVision(prey, predator))
+                {
+                    prey.seen(predator);
+                }
+            }
         }
     }
 
@@ -268,20 +280,6 @@ class PlayState extends FlxState
     public function getCaves()
     {
         return caves;
-    }
-
-    function checkSightRange(from:Entity, to:Entity)
-    {
-        var range = GameWorld.entityDistance(from, to);
-
-        var velocity = from.getSprite().velocity;
-        // Angle between positive x axis and velocity vector
-        var velocityAngle = GameWorld.pointAngle(1, 0, velocity.x, velocity.y);
-        // Angle between the two entities
-        var angleBetween = GameWorld.entityAngle(from, to);
-        var angle = angleBetween - velocityAngle;
-        
-        return range < from.getSightRange() && Math.abs(angle) < from.getSightAngle() / 2;
     }
 
     function levelIsComplete()

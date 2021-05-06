@@ -9,6 +9,9 @@ import js.html.Console;
 
 class Entity
 {
+    private var SIGHT_ANGLE:Float;
+    private var SIGHT_RANGE:Int;
+
     var sprite:SpriteWrapper<Entity>;
     var type:EntityType;
 
@@ -172,23 +175,28 @@ class Entity
         sprite.path.start(null, 60.0);
     }
 
-    public function getSightRange()
+    public function getSightRange():Int
     {
-        return 0.0;
+        return this.SIGHT_RANGE;
     }
 
-    public function getSightAngle()
+    public function getSightAngle():Float
     {
-        return 0.0;
-    }
- 
-    public function getNearbySightRadius()
-    {
-        return 0.0;
+        return this.SIGHT_ANGLE;
     }
 
     public function seen(entity: Entity)
     {
        seenEntities.push(entity);
+    }
+
+    public function getVelocityX():Float
+    {
+        return this.sprite.velocity.x;
+    }
+
+    public function getVelocityY():Float
+    {
+        return this.sprite.velocity.y;
     }
 }

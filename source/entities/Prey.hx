@@ -5,9 +5,6 @@ import js.html.Console;
 
 class Prey extends Dino
 {
-    final PREY_SIGHT_RANGE = 75;
-    final PREY_SIGHT_ANGLE = 30;
-
     final PREY_ELASTICITY = 0.9;
 
     public function new()
@@ -29,10 +26,18 @@ class Prey extends Dino
 
         sprite.setSize(8, 8);
         sprite.elasticity = PREY_ELASTICITY;
+
+        this.SIGHT_ANGLE = GameWorld.toRadians(360);
+        this.SIGHT_RANGE = 100;
     }
 
     public override function update(elapsed:Float)
     {
+        if (state == Unherded && seenEntities.length > 0)
+        {
+            state = Fleeing;
+        }
+
         super.update(elapsed);
     }
 
@@ -74,14 +79,4 @@ class Prey extends Dino
             herdedPlayer.notifyCaveDeposit(this);
         }
     }
-
-    public override function getSightRange()
-    {   
-        return PREY_SIGHT_RANGE;
-    }   
-
-    public override function getSightAngle()
-    {   
-        return PREY_SIGHT_ANGLE;
-    }   
 }

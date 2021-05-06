@@ -11,6 +11,7 @@ enum DinoState
     Herded;
     Unherded;
     Pursuing;
+    Fleeing;
 }
 
 class Dino extends Entity
@@ -53,6 +54,8 @@ class Dino extends Entity
                 unherded(elapsed);
             case Herded:
                 herded(elapsed);
+            case Fleeing:
+                fleeing(elapsed);
             default:
         }
 
@@ -169,6 +172,22 @@ class Dino extends Entity
         else
         {
             idleTimer -= elapsed;
+        }
+    }
+
+    function fleeing(elapsed:Float)
+    {
+        if (seenEntities.length == 0)
+        {
+            state = Unherded;
+        }
+        else
+        {
+            Console.log("FLEEING");
+            var entity = GameWorld.getNearestEntity(this, seenEntities);
+            var dir = new FlxPoint(this.sprite.x - entity.getSprite().x, this.sprite.y - entity.getSprite().y);
+            var angle = Math.atan2(dir.y, dir.x);
+            sprite.velocity.set(Math.cos(angle) * UNHERDED_SPEED, Math.sin(angle) * UNHERDED_SPEED);
         }
     }
 }
