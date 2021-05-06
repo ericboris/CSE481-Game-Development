@@ -8,6 +8,8 @@ class Prey extends Dino
     final PREY_SIGHT_RANGE = 75;
     final PREY_SIGHT_ANGLE = 30;
 
+    final PREY_ELASTICITY = 0.9;
+
     public function new()
     {
         super();
@@ -26,6 +28,7 @@ class Prey extends Dino
         sprite.screenCenter();
 
         sprite.setSize(8, 8);
+        sprite.elasticity = PREY_ELASTICITY;
     }
 
     public override function update(elapsed:Float)

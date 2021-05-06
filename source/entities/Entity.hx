@@ -119,24 +119,57 @@ class Entity
             return;
         }
 
-        var x = sprite.x;
-        var y = sprite.y;
+        var jumpDist = 25;
+        
+        var endx = sprite.x;
+        var endy = sprite.y;
+        var theta0 = 0.0;
+        var theta1 = 0.0;
+        var radiusX = jumpDist/2;
+        var radiusY = jumpDist/2;
         switch (direction)
         {
             case FlxObject.UP:
-                y -= 30;
+                endy -= jumpDist;
+                theta0 = Math.PI/2;
+                theta1 = -Math.PI/2;
+                radiusX /= 2;
             case FlxObject.DOWN:
-                y += 30;
+                endy += jumpDist;
+                theta0 = -Math.PI/2;
+                theta1 = Math.PI/2;
+                radiusX /= 2;
             case FlxObject.LEFT:
-                x -= 30;
+                endx -= jumpDist;
+                theta0 = 2 * Math.PI;
+                theta1 = Math.PI;
+                radiusY /= 2;
             case FlxObject.RIGHT:
-                x += 30;
+                endx += jumpDist;
+                theta0 = Math.PI;
+                theta1 = 2 * Math.PI;
+                radiusY /= 2;
             default:
         }
 
+        var centerX = (endx + sprite.x) / 2;
+        var centerY = (endy + sprite.y) / 2;
+
+
         isJumpingCliff = true;
         sprite.path = new FlxPath();
-        sprite.path.start([new FlxPoint(sprite.x, sprite.y), new FlxPoint(x, y)]);
+        var pathLength = 10;
+        Console.log(sprite.x + ", " + sprite.y);
+        for (i in 0...pathLength)
+        {
+            var theta = cast(i, Float) / cast(pathLength, Float) * (theta1 - theta0) + theta0;
+            var pathX = centerX + Math.cos(theta) * radiusX;
+            var pathY = centerY + Math.sin(theta) * radiusY;
+            if (i == 0) Console.log(pathX + ", " + pathY);
+            sprite.path.add(pathX, pathY);
+        }
+        sprite.path.add(endx, endy);
+        sprite.path.start(null, 60.0);
     }
 
     public function getSightRange()
