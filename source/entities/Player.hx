@@ -270,17 +270,20 @@ class Player extends Entity
 
     public override function handlePredatorCollision(predator:Predator)
     {
-        // Unherd all dinosaurs.
-        for (follower in followers)
+        if (predator.canEat(this))
         {
-            follower.setUnherded();
-        }
-        followers.resize(0);
+            // Unherd all dinosaurs.
+            for (follower in followers)
+            {
+                follower.setUnherded();
+            }
+            followers.resize(0);
 
-        // Move player to nearest cave.
-        var caves = PlayState.world.getCaves();
-        var nearestCave = GameWorld.getNearestEntity(this, cast caves);
-        this.setPosition(nearestCave.sprite.x, nearestCave.sprite.y);
+            // Move player to nearest cave.
+            var caves = PlayState.world.getCaves();
+            var nearestCave = GameWorld.getNearestEntity(this, cast caves);
+            this.setPosition(nearestCave.sprite.x, nearestCave.sprite.y);
+        }
     }
 
     // Return the Player's speed.

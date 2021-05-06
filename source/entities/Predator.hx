@@ -23,9 +23,14 @@ class Predator extends Dino
     final PREDATOR_PURSUING_SPEED = 39.0;
     final PREDATOR_SEEN_TIMER = 0.1;
 
-    var seenEntity: Entity;
+    final SATIATED_TIMER = 5;
+
+    var seenEntity:Entity;
     var lastSeenTimer:Float = 0;
     var moveAngle:Float;
+
+    var satiated:Bool = false;
+    var satiatedTimer:Float = 0;
 
     public function new()
     {
@@ -57,6 +62,14 @@ class Predator extends Dino
     {
         if (seenEntities.length > 0)
             state = Pursuing;
+
+        if (satiated)
+        {
+            state = Unherded;
+            satiatedTimer -= elapsed;
+            if (satiatedTimer < 0)
+                satiated = false;
+        }
 
         if (state == Pursuing)
             pursuing(elapsed);
@@ -137,6 +150,23 @@ class Predator extends Dino
         }
 
         speedUp(PREDATOR_PURSUING_SPEED);
+    }
+
+    public function canEat(entity:Entity)
+    {
+        if (!satiated)
+        {
+            // Eat this entity! Set satiated to true and reverse direction.
+            sprite.velocity.x *= -1;
+            sprite.velocity.y *= -1;
+            satiated = true;
+            satiatedTimer = SATIATED_TIMER;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public override function getSightRange()

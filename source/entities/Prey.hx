@@ -51,12 +51,15 @@ class Prey extends Dino
 
     public override function handlePredatorCollision(predator:Predator)
     {
-        // If Herded, notify the player that we just died
-        if (state == Herded)
-            herdedPlayer.notifyDeadFollower(this);
+        if (predator.canEat(this))
+        {
+            // If Herded, notify the player that we just died
+            if (state == Herded)
+                herdedPlayer.notifyDeadFollower(this);
         
-        // Die instantly!
-        PlayState.world.removeEntity(this);
+            // Die instantly!
+            PlayState.world.removeEntity(this);
+        }
     }
 
     private override function unherded(elapsed:Float)
