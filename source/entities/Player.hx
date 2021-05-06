@@ -33,9 +33,9 @@ class Player extends Entity
         sprite.setFacingFlip(FlxObject.LEFT, false, false);
         sprite.setFacingFlip(FlxObject.RIGHT, true, false);
 
-        sprite.animation.add("lr", [19, 20, 21, 22], 8, false);
-        sprite.animation.add("u", [7, 8, 9, 10], 8, false);
-        sprite.animation.add("d", [1, 2, 3, 4], 8, false);
+        sprite.animation.add("lr", [19, 20, 21, 22], 4, false);
+        sprite.animation.add("u", [7, 8, 9, 10], 4, false);
+        sprite.animation.add("d", [1, 2, 3, 4], 4, false);
 
         // sprite.screenCenter();
 
@@ -209,13 +209,14 @@ class Player extends Entity
 
     public function notifyCaveDeposit(dino:Dino)
     {
-        // If not depositing to cave, ignore
-        if (!depositingToCave)
-            return;
-
-        // Remove entity from world
-        followers.remove(dino);
-        PlayState.world.removeEntity(dino);
+        if (depositingToCave)
+        { 
+            // Remove entity from world
+            followers.remove(dino);
+            PlayState.world.removeEntity(dino);
+            PlayState.world.incrementScore(1);
+            depositingToCave = false;
+        }
     }
 
     public function notifyDeadFollower(dino:Dino)
@@ -286,5 +287,17 @@ class Player extends Entity
     public function getSpeed()
     {
         return this.speed;
+    }
+
+    // Return the Player's x coordinate.
+    public function getX()
+    {
+        return this.sprite.x;
+    }
+    
+    // Return the Player's y coordinate.
+    public function getY()
+    {
+        return this.sprite.y;
     }
 }

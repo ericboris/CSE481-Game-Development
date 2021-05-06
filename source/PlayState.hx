@@ -9,6 +9,7 @@ import flixel.group.FlxGroup;
 import flixel.tile.FlxTilemap;
 import flixel.util.FlxColor;
 import js.html.Console;
+import flixel.text.FlxText;
 
 class PlayState extends FlxState
 {
@@ -50,12 +51,18 @@ class PlayState extends FlxState
 
     var caves:Array<Cave>;
 
+    // The level's score;
+    var scoreText:FlxText;
+
     override public function create()
     {
         super.create();
 
         // Set singleton reference
         world = this;
+
+        // Hide the cursor
+        FlxG.mouse.visible = false;
 
         // Initialize member variables
         entityGroups = new Map<EntityType, Array<Entity>>();
@@ -115,10 +122,24 @@ class PlayState extends FlxState
         var camera_w = TILE_WIDTH/4;
         var camera_h = TILE_HEIGHT/4;
         FlxG.camera.deadzone.set(camera_x - camera_w/2, camera_y - camera_h/2, camera_w, camera_h);
+
+        scoreText = new FlxText(0, 0, 180, "");
+        scoreText.alpha = 0;
+        add(scoreText);
     }
 
     override public function update(elapsed:Float)
     {
+        scoreText.x = player.getX();
+        scoreText.y = player.getY() - 16;
+        scoreText.text = "" + Score.get();
+
+        // Fade out score text.
+        if (scoreText.alpha > 0)
+        {
+            scoreText.alpha -= 0.01;
+        }
+
         // Update all entities
         for (entity in entities)
         {
@@ -278,5 +299,11 @@ class PlayState extends FlxState
     function levelIsComplete()
     {
         return entityGroups[EntityPrey].length == 0;
+    }
+
+    public function incrementScore(amount:Int):Void
+    {
+        Score.increment(amount);
+        scoreText.alpha = 1;
     }
 }
