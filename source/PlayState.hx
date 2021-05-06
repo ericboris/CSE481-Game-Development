@@ -99,14 +99,18 @@ class PlayState extends FlxState
         staticCollidableSprites.add(obstacles);
         add(obstacles);
 
+        /**
         var boulder = new Boulder();
         boulder.setPosition(256, 144);
         addEntity(boulder);
+        */
 
+        /**
         // Dynamic Entities.
         // Create player
         player = new Player();
         addEntity(player);
+        */
 
         // Load entities from tilemap
         map.loadEntities(placeEntities, "entities");
@@ -263,7 +267,9 @@ class PlayState extends FlxState
         switch (entity.name)
         {
             case "player":
+                player = new Player();
                 player.setPosition(x, y);
+                addEntity(player);
             case "prey":
                 var prey = new Prey();
                 prey.setPosition(x, y);
@@ -277,6 +283,10 @@ class PlayState extends FlxState
                 cave.setPosition(x, y);
                 addEntity(cave, false);
                 caves.push(cave);
+            case "boulder":
+                var boulder = new Boulder();
+                boulder.setPosition(x, y);
+                addEntity(boulder);
         }
     }
 

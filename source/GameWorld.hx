@@ -12,6 +12,7 @@ class GameWorld
     static var levelArray = [AssetPaths.tutorial0__json, 
                             AssetPaths.tutorial1__json,
                             AssetPaths.tutorial2__json,
+                            AssetPaths.tutorial3__json,
                             AssetPaths.Sandbox__json];
 
     static public function getNearestEntity(src:Entity, entities:Array<Entity>)

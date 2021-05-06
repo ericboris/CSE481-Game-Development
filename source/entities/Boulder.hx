@@ -11,6 +11,8 @@ class Boulder extends Entity
     {
         super();
 
+        setGraphic(16, 16, AssetPaths.boulder__png, false);
+
         this.sprite.immovable = true;
         this.type = EntityBoulder;
         this.sprite.mass = 1000;
