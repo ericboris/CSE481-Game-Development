@@ -136,22 +136,22 @@ class Entity
                 endy -= jumpDist;
                 theta0 = Math.PI/2;
                 theta1 = -Math.PI/2;
-                radiusX /= 2;
+                radiusX /= 1.5;
             case FlxObject.DOWN:
                 endy += jumpDist;
                 theta0 = -Math.PI/2;
                 theta1 = Math.PI/2;
-                radiusX /= 2;
+                radiusX /= 1.5;
             case FlxObject.LEFT:
                 endx -= jumpDist;
                 theta0 = 2 * Math.PI;
                 theta1 = Math.PI;
-                radiusY /= 2;
+                radiusY /= 1.5;
             case FlxObject.RIGHT:
                 endx += jumpDist;
                 theta0 = Math.PI;
                 theta1 = 2 * Math.PI;
-                radiusY /= 2;
+                radiusY /= 1.5;
             default:
         }
 
@@ -162,13 +162,11 @@ class Entity
         isJumpingCliff = true;
         sprite.path = new FlxPath();
         var pathLength = 10;
-        Console.log(sprite.x + ", " + sprite.y);
         for (i in 0...pathLength)
         {
             var theta = cast(i, Float) / cast(pathLength, Float) * (theta1 - theta0) + theta0;
             var pathX = centerX + Math.cos(theta) * radiusX;
             var pathY = centerY + Math.sin(theta) * radiusY;
-            if (i == 0) Console.log(pathX + ", " + pathY);
             sprite.path.add(pathX, pathY);
         }
         sprite.path.add(endx, endy);

@@ -15,7 +15,7 @@ class Player extends Entity
 
     // Array of followers. TODO: Should be linked list.
     var followers:Array<Dino>;
-    var primaryFollowers:Array<Dino>;
+    var primaryFollower:Dino;
 
     // State variables
     var depositingToCave:Bool = false;
@@ -47,7 +47,6 @@ class Player extends Entity
         addHitbox(interactHitbox);
 
         followers = new Array<Dino>();
-        primaryFollowers = new Array<Dino>();
     }
 
     public override function update(elapsed:Float)
@@ -70,11 +69,8 @@ class Player extends Entity
 
         if (depositingToCave && followers.length > 0)
         {
-            for (dino in primaryFollowers)
-            {
-                dino.setLeader(cave);
-                dino.herdedDisableFollowingRadius = true;
-            }
+            primaryFollower.setLeader(cave);
+            primaryFollower.herdedDisableFollowingRadius = true;
         }
 
 
@@ -87,35 +83,33 @@ class Player extends Entity
 
     function reorganizeHerd()
     {
-        primaryFollowers.resize(0);
-
-        var followersCopy = new Array<Entity>();
+        var followersCopy = new Array<Dino>();
         for (dino in followers)
         {
-            followersCopy.push(dino);
+            // Prune any Unherded dinosaurs
+            if (dino.getState() == Herded)
+            {
+                followersCopy.push(dino);
+            }
         }
 
         var lastEntity:Entity = this;
-        var numInLine:Int = 1;//cast Math.min(1 + followers.length / 5, 4);
+        var first = true;
 
         while (followersCopy.length > 0)
         {
-            for (i in 0...numInLine)
+            var dino:Dino = cast GameWorld.getNearestEntity(lastEntity, cast followersCopy);
+            // TODO: This is inefficient
+            followersCopy.remove(dino);
+
+            if (first)
             {
-                if (followersCopy.length == 0)
-                    break;
-
-                var dino:Dino = cast GameWorld.getNearestEntity(lastEntity, followersCopy);
-                // TODO: This is inefficient
-                followersCopy.remove(dino);
-
-                if (i == 0)
-                    primaryFollowers.push(dino);
-
-                dino.setLeader(lastEntity);
-                if (i == numInLine-1)
-                    lastEntity = dino;
+                primaryFollower = dino;
+                first = false;
             }
+
+            dino.setLeader(lastEntity);
+            lastEntity = dino;
         }
     }
 
@@ -185,9 +179,9 @@ class Player extends Entity
         }
     }
 
-    public function notifyUnherded()
+    public function notifyUnherded(dino:Dino)
     {
-        var unherdedIndex = -1;
+        /*var unherdedIndex = -1;
         for (i in 0...followers.length)
         {
             if (unherdedIndex == -1 && followers[i].getState() == Unherded)
@@ -204,7 +198,8 @@ class Player extends Entity
         if (unherdedIndex != -1)
         {
             followers.resize(unherdedIndex);
-        }
+        }*/
+        followers.remove(dino);
     }
 
     public function notifyCaveDeposit(dino:Dino)
@@ -227,22 +222,15 @@ class Player extends Entity
         for (i in dinoIndex...followers.length)
         {
             followers[i].notifyScattered();
-        }
+        }*/
 
-        followers.remove(dino);*/
+        followers.remove(dino);
     }
 
     public function addDino(dino:Dino)
     {
-        if (followers.length > 0)
-        {
-            // Update herd ordering
-            followers[0].setLeader(dino);
-        }
-
-        // This operation is inefficient but just for testing.
-        // Insert new dino to front of herd
-        followers.insert(0, dino);
+        // Insert new dino to herd
+        followers.push(dino);
     }
 
     public override function notifyHitboxCollision(hitbox:Hitbox, entity:Entity)

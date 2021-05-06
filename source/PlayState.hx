@@ -154,6 +154,12 @@ class PlayState extends FlxState
         {
             FlxG.switchState(new PlayState());
         }
+        if (FlxG.keys.anyPressed([P]))
+        {
+            var prey = new Prey();
+            prey.setPosition(player.getSprite().x, player.getSprite().y);
+            addEntity(prey);
+        }
 
         super.update(elapsed);
     }

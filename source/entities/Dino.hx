@@ -59,6 +59,12 @@ class Dino extends Entity
             default:
         }
 
+        // If we're herded but our leader is unherded, switch to unherded.
+        if (state == Herded && Std.is(herdedLeader, Dino) && cast(herdedLeader, Dino).getState() == Unherded)
+        {
+            setUnherded();
+        }
+
         if ((sprite.velocity.x != 0 || sprite.velocity.y != 0) && sprite.touching == FlxObject.NONE)
         {
             if (Math.abs(sprite.velocity.x) > Math.abs(sprite.velocity.y))
@@ -140,10 +146,9 @@ class Dino extends Entity
         herdedPlayer = null;
         state = Unherded;
 
-        if (notify)
-        {
-            player.notifyUnherded();
-        }
+        herdedDisableFollowingRadius = false;
+
+        player.notifyUnherded(this);
     }
 
     public function getState()
