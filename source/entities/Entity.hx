@@ -154,6 +154,20 @@ class Entity
             default:
         }
 
+        var startx = sprite.x;
+        var starty = sprite.y;
+        sprite.x = endx;
+        sprite.y = endy;
+        var colliding = GameWorld.collidingWithObstacles(this);
+        sprite.x = startx;
+        sprite.y = starty;
+
+        if (colliding)
+        {
+            // Don't jump off cliff if we're jumping into an obstacle.
+            return;
+        }
+
         var centerX = (endx + sprite.x) / 2;
         var centerY = (endy + sprite.y) / 2;
 
