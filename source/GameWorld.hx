@@ -90,9 +90,9 @@ class GameWorld
         }
     }
 
-    static public function checkVision(from:Entity, to:Entity, checkFunc: (Entity, Entity) -> Bool)
+    static public function checkVision(from:Entity, to:Entity)
     {
-        if (checkFunc(from, to))
+        if (checkSightRange(from, to))
         {
             var obstacles = PlayState.world.getObstacles();
             if (obstacles.ray(from.getSprite().getMidpoint(), to.getSprite().getMidpoint(), null, 4))
@@ -140,7 +140,7 @@ class GameWorld
         }
     }
 
-    static public function checkSightRange(from:Entity, to:Entity)
+    static function checkSightRange(from:Entity, to:Entity)
     {
         var range = GameWorld.entityDistance(from, to);
 
@@ -153,5 +153,4 @@ class GameWorld
 
         return range < from.getSightRange() && Math.abs(angle) < from.getSightAngle() / 2;
     }
-
 }

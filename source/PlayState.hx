@@ -224,7 +224,7 @@ class PlayState extends FlxState
         // Vision checks
         for (predator in entityGroups[EntityPredator])
         {
-            if (GameWorld.checkVision(predator, player, GameWorld.checkSightRange))
+            if (GameWorld.checkVision(predator, player))
             {
                 predator.seen(player);
             }
