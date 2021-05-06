@@ -96,10 +96,12 @@ class PlayState extends FlxState
         obstacles.setTileProperties(37, FlxObject.ANY, GameWorld.handleLeftCliffCollision);
         obstacles.setTileProperties(43, FlxObject.ANY, GameWorld.handleUpCliffCollision);
 
-        // Tree tile indices: 14, 15, 21, 22
-
         staticCollidableSprites.add(obstacles);
         add(obstacles);
+
+        var boulder = new Boulder();
+        boulder.setPosition(256, 144);
+        addEntity(boulder);
 
         // Dynamic Entities.
         // Create player
@@ -207,6 +209,7 @@ class PlayState extends FlxState
         var predatorGroup = spriteGroups[EntityPredator];
         var caveGroup = spriteGroups[EntityCave];
         var hitboxGroup = spriteGroups[EntityHitbox];
+        var boulderGroup = spriteGroups[EntityBoulder];
 
         // Collision resolution
 
@@ -218,6 +221,9 @@ class PlayState extends FlxState
         // Check cliff overlap
         FlxG.overlap(playerGroup, obstacles);
         FlxG.overlap(preyGroup, obstacles);
+
+        // Check boulder overlap
+        FlxG.overlap(playerGroup, boulderGroup, handleCollision);
 
         // Check cave overlap
         FlxG.overlap(playerGroup, caveGroup, handleCollision);

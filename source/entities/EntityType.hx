@@ -9,4 +9,5 @@ enum EntityType
     EntityRidge;
     EntityCave;
     EntityHitbox;
+    EntityBoulder;
 }

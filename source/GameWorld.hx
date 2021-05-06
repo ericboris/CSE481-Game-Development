@@ -57,6 +57,8 @@ class GameWorld
         return Math.atan2(cross, dot);
     }
 
+
+    /* CLIFF COLLISIONS */ 
     static public function handleDownCliffCollision(tile:FlxObject, entity:FlxObject)
     {
         handleCliff(entity, FlxObject.UP);
@@ -90,6 +92,9 @@ class GameWorld
         }
     }
 
+
+
+    /* VISION CHECKS */
     static public function checkVision(from:Entity, to:Entity)
     {
         if (checkSightRange(from, to))
@@ -101,6 +106,27 @@ class GameWorld
             }
         }
         return false;
+    }
+
+    static function checkSightRange(from:Entity, to:Entity)
+    {
+        var range = GameWorld.entityDistance(from, to);
+
+        var velocity = from.getSprite().velocity;
+        // Angle between positive x axis and velocity vector
+        var velocityAngle = GameWorld.pointAngle(1, 0, velocity.x, velocity.y);
+        // Angle between the two entities
+        var angleBetween = GameWorld.entityAngle(from, to);
+        var angle = angleBetween - velocityAngle;
+
+        return range < from.getSightRange() && Math.abs(angle) < from.getSightAngle() / 2;
+    }
+
+
+
+    static public function collidingWithObstacles(entity:Entity)
+    {
+        return PlayState.world.getObstacles().overlapsAt(0, 0, entity.getSprite());
     }
 
     static public function radians(degrees:Int)
@@ -138,19 +164,5 @@ class GameWorld
         {
             return levelArray[levelIndex];
         }
-    }
-
-    static function checkSightRange(from:Entity, to:Entity)
-    {
-        var range = GameWorld.entityDistance(from, to);
-
-        var velocity = from.getSprite().velocity;
-        // Angle between positive x axis and velocity vector
-        var velocityAngle = GameWorld.pointAngle(1, 0, velocity.x, velocity.y);
-        // Angle between the two entities
-        var angleBetween = GameWorld.entityAngle(from, to);
-        var angle = angleBetween - velocityAngle;
-
-        return range < from.getSightRange() && Math.abs(angle) < from.getSightAngle() / 2;
     }
 }

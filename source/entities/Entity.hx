@@ -85,19 +85,18 @@ class Entity
                 handleCaveCollision(cast entity);
             case EntityPredator:
                 handlePredatorCollision(cast entity);
+            case EntityBoulder:
+                handleBoulderCollision(cast entity);
             default:
         }
     }
 
     public function notifyHitboxCollision(hitbox:Hitbox, entity:Entity) {}
-
     public function handlePlayerCollision(player:Player) {}
-
     public function handlePreyCollision(prey:Prey) {}
-
     public function handleCaveCollision(cave:Cave) {}
-
     public function handlePredatorCollision(predator:Predator) {}
+    public function handleBoulderCollision(boulder:Boulder) {}
 
     /* Setters & Getters */
     public function setPosition(x:Float, y:Float)
@@ -196,5 +195,15 @@ class Entity
     public function getVelocityY():Float
     {
         return this.sprite.velocity.y;
+    }
+
+    public function getX()
+    {
+        return this.sprite.getMidpoint().x;
+    }
+    
+    public function getY()
+    {
+        return this.sprite.getMidpoint().y;
     }
 }

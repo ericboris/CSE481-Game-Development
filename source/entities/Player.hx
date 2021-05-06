@@ -33,6 +33,7 @@ class Player extends Entity
         sprite.setFacingFlip(FlxObject.LEFT, false, false);
         sprite.setFacingFlip(FlxObject.RIGHT, true, false);
 
+        sprite.animation.add("s", [2], 4, false);
         sprite.animation.add("lr", [19, 20, 21, 22], 4, false);
         sprite.animation.add("u", [7, 8, 9, 10], 4, false);
         sprite.animation.add("d", [1, 2, 3, 4], 4, false);
@@ -67,16 +68,26 @@ class Player extends Entity
             }
         }
 
-        if (depositingToCave && followers.length > 0)
+        if (depositingToCave)
         {
-            primaryFollower.setLeader(cave);
-            primaryFollower.herdedDisableFollowingRadius = true;
+            if (followers.length > 0)
+            {
+                primaryFollower.setLeader(cave);
+                primaryFollower.herdedDisableFollowingRadius = true;
+            }
         }
 
 
         // Assume that we are now out of range of the cave.
         // If we're still in range, we'll be notified within the following collision checking cycle.
         inRangeOfCave = false;
+
+
+        if (isJumpingCliff)
+        {
+            // TODO: Jumping animation
+            sprite.animation.play("s");
+        }
 
         super.update(elapsed);
     }
@@ -274,21 +285,33 @@ class Player extends Entity
         }
     }
 
+    public override function handleBoulderCollision(boulder:Boulder)
+    {
+        var direction = 0;
+
+        FlxG.collide(this.getSprite(), boulder.getSprite());
+        var diffX = boulder.getX() - getX();
+        var diffY = boulder.getY() - getY();
+        Console.log(this.sprite.touching);
+
+        if (sprite.touching & FlxObject.RIGHT > 0)
+            direction = FlxObject.RIGHT;
+        else if (sprite.touching & FlxObject.LEFT > 0)
+            direction = FlxObject.LEFT;
+        else if (sprite.touching & FlxObject.DOWN > 0)
+            direction = FlxObject.DOWN;
+        else if (sprite.touching & FlxObject.UP > 0)
+            direction = FlxObject.UP;
+
+        if (direction != 0)
+        {
+            boulder.push(direction);
+        }
+    }
+
     // Return the Player's speed.
     public function getSpeed()
     {
         return this.speed;
-    }
-
-    // Return the Player's x coordinate.
-    public function getX()
-    {
-        return this.sprite.x;
-    }
-    
-    // Return the Player's y coordinate.
-    public function getY()
-    {
-        return this.sprite.y;
     }
 }
