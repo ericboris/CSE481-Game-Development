@@ -38,8 +38,6 @@ class Player extends Entity
         sprite.animation.add("u", [7, 8, 9, 10], 4, false);
         sprite.animation.add("d", [1, 2, 3, 4], 4, false);
 
-        // sprite.screenCenter();
-
         sprite.setSize(6, 6);
         sprite.offset.set(4, 6);
 
@@ -250,7 +248,7 @@ class Player extends Entity
         {
             if (entity.type == EntityCave)
             {
-                inRangeOfCave = true;
+                //inRangeOfCave = true;
             }
         }
     }
@@ -292,7 +290,6 @@ class Player extends Entity
         FlxG.collide(this.getSprite(), boulder.getSprite());
         var diffX = boulder.getX() - getX();
         var diffY = boulder.getY() - getY();
-        Console.log(this.sprite.touching);
 
         if (sprite.touching & FlxObject.RIGHT > 0)
             direction = FlxObject.RIGHT;

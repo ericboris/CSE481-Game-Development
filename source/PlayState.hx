@@ -54,6 +54,10 @@ class PlayState extends FlxState
     // The level's score;
     var scoreText:FlxText;
 
+    // Screen transition
+    var transitioningToNextLevel:Bool = false;
+    var transitionScreen:FlxSprite;
+
     override public function create()
     {
         super.create();
@@ -99,19 +103,6 @@ class PlayState extends FlxState
         staticCollidableSprites.add(obstacles);
         add(obstacles);
 
-        /**
-        var boulder = new Boulder();
-        boulder.setPosition(256, 144);
-        addEntity(boulder);
-        */
-
-        /**
-        // Dynamic Entities.
-        // Create player
-        player = new Player();
-        addEntity(player);
-        */
-
         // Load entities from tilemap
         map.loadEntities(placeEntities, "entities");
 
@@ -132,9 +123,40 @@ class PlayState extends FlxState
         scoreText = new FlxText(0, 0, 180, "");
         scoreText.alpha = 0;
         add(scoreText);
+
+        // Set up transition screen
+        transitionScreen = new FlxSprite(0, 0);
+        transitionScreen.makeGraphic(TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight, FlxColor.BLACK);
+        transitionScreen.alpha = 1;
+        add(transitionScreen);
     }
 
-    override public function update(elapsed:Float)
+    function updateTransitionScreen()
+    {
+        // Check to load next level.
+        transitioningToNextLevel = player.isInRangeOfCave() && levelIsComplete();
+        if (FlxG.keys.anyPressed([N]))
+        {
+            transitioningToNextLevel = true;
+        }
+
+        // Update transition screen
+        if (transitioningToNextLevel)
+        {
+            transitionScreen.alpha += 0.03;
+            if (transitionScreen.alpha >= 1.0)
+            {
+                // Go to next level!
+                FlxG.switchState(new PlayState());
+            }
+        }
+        else if (transitionScreen.alpha > 0)
+        {
+            transitionScreen.alpha -= 0.03;
+        }
+    }
+
+    function updateScore()
     {
         scoreText.x = player.getX();
         scoreText.y = player.getY() - 16;
@@ -145,6 +167,13 @@ class PlayState extends FlxState
         {
             scoreText.alpha -= 0.01;
         }
+    }
+
+    override public function update(elapsed:Float)
+    {
+        updateTransitionScreen();
+        updateScore();
+
 
         // Update all entities
         for (entity in entities)
@@ -155,11 +184,6 @@ class PlayState extends FlxState
         // Do collision checks
         collisionChecks();
 
-        // Check to load next level.
-        if (FlxG.keys.anyPressed([N]) || player.isInRangeOfCave() && levelIsComplete())
-        {
-            FlxG.switchState(new PlayState());
-        }
         if (FlxG.keys.anyPressed([P]))
         {
             var prey = new Prey();
@@ -318,5 +342,10 @@ class PlayState extends FlxState
     public function getObstacles()
     {
         return obstacles;
+    }
+
+    public function triggerLevelTransition()
+    {
+        transitioningToNextLevel = true;
     }
 }
