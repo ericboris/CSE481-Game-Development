@@ -96,9 +96,9 @@ class GameWorld
 
 
     /* VISION CHECKS */
-    static public function checkVision(from:Entity, to:Entity)
+    static public function checkVision(from:Entity, to:Entity):Bool
     {
-        if (checkSightRange(from, to))
+        if (checkNearbySightRadius(from, to) || checkSightRange(from, to))
         {
             var obstacles = PlayState.world.getObstacles();
             if (obstacles.ray(from.getSprite().getMidpoint(), to.getSprite().getMidpoint(), null, 4))
@@ -109,7 +109,12 @@ class GameWorld
         return false;
     }
 
-    static function checkSightRange(from:Entity, to:Entity)
+    static function checkNearbySightRadius(from:Entity, to:Entity):Bool
+    {
+        return GameWorld.entityDistance(from, to) < from.getNearbySightRadius();
+    }
+
+    static function checkSightRange(from:Entity, to:Entity):Bool
     {
         var range = GameWorld.entityDistance(from, to);
 
