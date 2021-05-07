@@ -47,6 +47,7 @@ class Predator extends Dino
         this.sprite.velocity.x = Math.cos(moveAngle) * PREDATOR_SPEED;
         this.sprite.velocity.y = Math.sin(moveAngle) * PREDATOR_SPEED;
         this.sprite.elasticity = PREDATOR_ELASTICITY;
+        this.sprite.mass = 2.0;
 
         sprite.screenCenter();
 

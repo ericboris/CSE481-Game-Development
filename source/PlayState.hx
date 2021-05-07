@@ -137,7 +137,7 @@ class PlayState extends FlxState
         transitioningToNextLevel = player.isInRangeOfCave() && levelIsComplete();
         if (FlxG.keys.anyPressed([N]))
         {
-            transitioningToNextLevel = true;
+            FlxG.switchState(new PlayState());
         }
 
         // Update transition screen

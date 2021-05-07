@@ -29,6 +29,11 @@ class Dino extends Entity
     var herdedLeader:Entity;
     var herdedSpeed:Float;
 
+    var lastPosition:FlxPoint = new FlxPoint();
+    var framesStuck:Int = 0;
+    var herdedPath:Array<FlxPoint> = new Array<FlxPoint>();
+    var framesSincePathGenerated:Int = 0;
+
     public var herdedDisableFollowingRadius = false;
 
     /* State for unherded behavior */
@@ -40,7 +45,7 @@ class Dino extends Entity
         super();
 
         setSprite(20, 20, FlxColor.YELLOW);
-        sprite.mass = 0.5; // Make the dino easier to push by player.
+        sprite.mass = 0.4; // Make the dino easier to push by player.
         state = Unherded;
 
         idleTimer = 0;
@@ -65,6 +70,7 @@ class Dino extends Entity
             setUnherded();
         }
 
+        // Update animation
         if ((sprite.velocity.x != 0 || sprite.velocity.y != 0) && sprite.touching == FlxObject.NONE)
         {
             if (Math.abs(sprite.velocity.x) > Math.abs(sprite.velocity.y))
@@ -94,6 +100,8 @@ class Dino extends Entity
                     sprite.animation.play("d");
             }
         }
+
+        lastPosition = sprite.getPosition();
         super.update(elapsed);
     }
 
@@ -117,24 +125,73 @@ class Dino extends Entity
     function herded(elapsed:Float)
     {
         herdedSpeed = herdedPlayer.getSpeed();
-        var pos1 = herdedLeader.sprite.getPosition();
-        var pos2 = sprite.getPosition();
-        var dist = pos1.distanceTo(pos2);
+        var leaderPos = herdedLeader.sprite.getPosition();
+        var dinoPos = sprite.getPosition();
+        var dist = leaderPos.distanceTo(dinoPos);
+
+
+        if (dist < FOLLOWING_RADIUS)
+        {
+            // Slow dino down
+            sprite.velocity.scale(DAMPING_FACTOR);
+            framesStuck = 0;
+            return;
+        }
+
+        var positionDiff = new FlxPoint(lastPosition.x - dinoPos.x, lastPosition.y - dinoPos.y);
+        if (GameWorld.magnitude(positionDiff) < 4.0)
+        {
+            framesStuck++;
+        }
+        else
+        {
+            framesStuck = 0;
+        }
+        
+        if (framesStuck > 10 && (herdedPath.length == 0 || framesSincePathGenerated > 10))
+        {
+            // Attempt to pathfind towards herded leader
+            var newPath = PlayState.world.getObstacles().findPath(dinoPos, leaderPos);
+            if (newPath != null)
+            {
+                herdedPath = newPath;
+                herdedPath.reverse();
+                framesSincePathGenerated = 0;
+            }
+            framesStuck = 0;
+        }
+
+        if (herdedPath.length > 0)
+        {
+            // Follow the path towards the leader
+            var pathPoint = herdedPath[herdedPath.length-1];
+            var dir = new FlxPoint(pathPoint.x - dinoPos.x, pathPoint.y - dinoPos.y);
+            if (GameWorld.magnitude(dir) < 4.0)
+            {
+                herdedPath.pop();
+                if (herdedPath.length == 0) return;
+                pathPoint = herdedPath[herdedPath.length-1];
+                dir = new FlxPoint(pathPoint.x - dinoPos.x, pathPoint.y - dinoPos.y);
+            }
+
+            var angle = Math.atan2(dir.y, dir.x);
+            sprite.velocity.set(Math.cos(angle) * herdedSpeed, Math.sin(angle) * herdedSpeed);
+            framesSincePathGenerated++;
+        }
+        else
+        {
+            // Move directly towards leader
+            if (herdedDisableFollowingRadius || dist > FOLLOWING_RADIUS)
+            {
+                var dir = new FlxPoint(leaderPos.x - dinoPos.x, leaderPos.y - dinoPos.y);
+                var angle = Math.atan2(dir.y, dir.x);
+                sprite.velocity.set(Math.cos(angle) * herdedSpeed, Math.sin(angle) * herdedSpeed);
+            }
+        }
 
         if (dist > MAX_FOLLOWING_RADIUS)
         {
             setUnherded(true);
-        }
-        else if (herdedDisableFollowingRadius || dist > FOLLOWING_RADIUS)
-        {
-            var dir = new FlxPoint(pos1.x - pos2.x, pos1.y - pos2.y);
-            var angle = Math.atan2(dir.y, dir.x);
-            sprite.velocity.set(Math.cos(angle) * herdedSpeed, Math.sin(angle) * herdedSpeed);
-        }
-        else
-        {
-            // Slow dino down
-            sprite.velocity.scale(DAMPING_FACTOR);
         }
     }
 
@@ -193,7 +250,6 @@ class Dino extends Entity
         }
         else
         {
-            Console.log("FLEEING");
             var entity = GameWorld.getNearestEntity(this, seenEntities);
             var dir = new FlxPoint(this.sprite.x - entity.getSprite().x, this.sprite.y - entity.getSprite().y);
             var angle = Math.atan2(dir.y, dir.x);
