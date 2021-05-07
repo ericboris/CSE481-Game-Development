@@ -25,11 +25,18 @@ class Entity
     var isJumpingCliff:Bool;
     var canJumpCliffs = true;
 
+    var thought:Icon;
+
     public function new()
     {
         sprite = new SpriteWrapper<Entity>(this);
         hitboxes = new Array<Hitbox>();
         seenEntities = new Array<Entity>();
+
+        thought = new Icon(this, 0, -20);
+        thought.setText(50, "Hello");
+        thought.fadeIn();
+        PlayState.world.add(thought.sprite);
     }
 
     function setGraphic(width:Int, height:Int, dir:String, isAnimated:Bool)
@@ -59,6 +66,8 @@ class Entity
 
         // Update our sprite
         sprite.update(elapsed);
+
+        thought.update(elapsed);
 
         // Delete all seen entities.
         // These will be refilled in during the following collision check cycle.
