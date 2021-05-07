@@ -35,7 +35,7 @@ class Entity
 
         thought = new Icon(this, 0, -20);
         thought.setText(50, "Hello");
-        thought.fadeOut();
+        thought.fadeIn();
         PlayState.world.add(thought.sprite);
     }
 
@@ -63,6 +63,9 @@ class Entity
 
             sprite.velocity.set(0,0);
         }
+
+        // Update our sprite
+        sprite.update(elapsed);
 
         thought.update(elapsed);
 

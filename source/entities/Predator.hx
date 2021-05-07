@@ -9,14 +9,14 @@ import js.html.Console;
 class Predator extends Dino
 {
     /* Unherded state */
-    final SPEED = 24.0;
-    final ACCELERATION = 30.0;
+    final SPEED = 12.0;
+    final ACCELERATION = 20.0;
     final ELASTICITY = 0.9;
     final PURSUING_ELASTICITY = 0.3;
 
     /* Pursuing state */
-    final ANGULAR_ACCELERATION = GameWorld.toRadians(10);
-    final PURSUING_SPEED = 78.0;
+    final ANGULAR_ACCELERATION = GameWorld.toRadians(5);
+    final PURSUING_SPEED = 38.5;
     final SEEN_TIMER = 0.5;
 
     final SATIATED_TIMER = 1.0;
@@ -51,7 +51,7 @@ class Predator extends Dino
 
         sprite.screenCenter();
 
-        this.SIGHT_ANGLE = GameWorld.toRadians(50);
+        this.SIGHT_ANGLE = GameWorld.toRadians(60);
         this.SIGHT_RANGE = 200;
         this.NEARBY_SIGHT_RADIUS = 40;
 
@@ -86,8 +86,8 @@ class Predator extends Dino
             sprite.acceleration.x = 0;
             sprite.acceleration.y = 0;
 
-            sprite.velocity.x = Math.cos(angle) * maxSpeed;
-            sprite.velocity.y = Math.sin(angle) * maxSpeed;
+            sprite.velocity.x = Math.cos(angle) * speed * DAMPING_FACTOR;
+            sprite.velocity.y = Math.sin(angle) * speed * DAMPING_FACTOR;
         }
         else
         {
@@ -130,9 +130,9 @@ class Predator extends Dino
             var angleBetween = GameWorld.entityAngle(this, entity);
             var angleDiff = angleBetween - moveAngle;
 
-            if (angleDiff > 3.0 * Math.PI / 4.0)
+            if (angleDiff > Math.PI / 2.0)
             {
-                var startSpeed = PURSUING_SPEED / 2;
+                var startSpeed = UNHERDED_SPEED / 2;
                 sprite.velocity.set(Math.cos(angleBetween) * startSpeed, Math.sin(angleBetween) * startSpeed);
             }
 
