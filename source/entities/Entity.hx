@@ -34,8 +34,8 @@ class Entity
         seenEntities = new Array<Entity>();
 
         thought = new Icon(this, 0, -20);
-        thought.setText(50, "Hello");
-        thought.fadeIn();
+        thought.setText(20, "Hello");
+        thought.fadeOut();
         PlayState.world.add(thought.sprite);
     }
 
@@ -126,15 +126,15 @@ class Entity
 
     public function handleCliffCollision(direction:Int)
     {
-        if (!canJumpCliffs)
+        if (!canJumpCliffs || isJumpingCliff)
         {
             return;
         }
 
-        var jumpDist = 25;
+        var jumpDist = 24;
         
-        var endx = sprite.x;
-        var endy = sprite.y;
+        var endx = getX();
+        var endy = getY();
         var theta0 = 0.0;
         var theta1 = 0.0;
         var radiusX = jumpDist/2;
@@ -168,7 +168,8 @@ class Entity
         var starty = sprite.y;
         sprite.x = endx;
         sprite.y = endy;
-        var colliding = GameWorld.collidingWithObstacles(this);
+        // TODO: Reenable this collision check
+        var colliding = false;//GameWorld.collidingWithObstacles(this);
         sprite.x = startx;
         sprite.y = starty;
 

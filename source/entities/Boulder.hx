@@ -25,7 +25,6 @@ class Boulder extends Entity
         switch (direction)
         {
             case FlxObject.UP:
-                Console.log("Up!");
                 this.sprite.y -= PUSH_SPEED;
             case FlxObject.DOWN:
                 this.sprite.y += PUSH_SPEED;

@@ -5,6 +5,7 @@ import flixel.math.FlxMath;
 import flixel.FlxObject;
 import flixel.math.FlxPoint;
 import js.html.Console;
+import flixel.FlxG;
 
 class GameWorld
 {
@@ -132,7 +133,7 @@ class GameWorld
 
     static public function collidingWithObstacles(entity:Entity)
     {
-        return PlayState.world.getObstacles().overlapsAt(0, 0, entity.getSprite());
+        return FlxG.overlap(entity.getSprite(), PlayState.world.getStaticObstacles());
     }
 
     static public function radians(degrees:Int)

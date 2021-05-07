@@ -20,6 +20,7 @@ class PlayState extends FlxState
     static public final SCREEN_HEIGHT = 600;
 
     // Size of tiles/chunks
+    static public final SMALL_TILE_SIZE = 16;
     static public final TILE_WIDTH = 320;
     static public final TILE_HEIGHT = 240;
     
@@ -93,18 +94,23 @@ class PlayState extends FlxState
 
         obstacles = map.loadTilemap(AssetPaths.Tileset__png, "obstacles");
         obstacles.follow();
- 
-        // Make all obstacles collidable.
-        obstacles.setTileProperties(29, FlxObject.ANY, GameWorld.handleDownCliffCollision);
-        obstacles.setTileProperties(35, FlxObject.ANY, GameWorld.handleRightCliffCollision);
-        obstacles.setTileProperties(37, FlxObject.ANY, GameWorld.handleLeftCliffCollision);
-        obstacles.setTileProperties(43, FlxObject.ANY, GameWorld.handleUpCliffCollision);
-
-        staticCollidableSprites.add(obstacles);
         add(obstacles);
 
         // Load entities from tilemap
         map.loadEntities(placeEntities, "entities");
+        
+        // Make all obstacles collidable.
+        for (x in 0...obstacles.widthInTiles)
+        {
+            for (y in 0...obstacles.heightInTiles)
+            {
+                var tileNum = obstacles.getTile(x, y);
+                if (tileNum != 0)
+                {
+                    createTileCollider(x, y, tileNum);
+                }
+            }
+        }
 
         // Set world size
         FlxG.worldBounds.set(0, 0, TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight);
@@ -129,6 +135,28 @@ class PlayState extends FlxState
         transitionScreen.makeGraphic(TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight, FlxColor.BLACK);
         transitionScreen.alpha = 1;
         add(transitionScreen);
+    }
+
+    function createTileCollider(tileX:Float, tileY:Float, tileNum:Int)
+    {
+        var width = TileType.getWidthOfTile(tileNum);
+        var height = TileType.getHeightOfTile(tileNum);
+        if (width > 0 && height > 0)
+        {
+            var x = tileX * SMALL_TILE_SIZE + SMALL_TILE_SIZE/2 - width/2;
+            var y = tileY * SMALL_TILE_SIZE + SMALL_TILE_SIZE/2 - height/2;
+            
+            var collider = new StaticObject(x, y, width, height, tileNum);
+            /* Uncomment this to visualize the hitboxes*/
+            /*var collider = new FlxSprite(x,y);
+            collider.makeGraphic(width, height, FlxColor.BLACK);
+            collider.updateHitbox();*/
+            collider.immovable = true;
+            collider.visible = true;
+
+            staticCollidableSprites.add(collider);
+            add(collider);
+        }
     }
 
     function updateTransitionScreen()
@@ -259,7 +287,7 @@ class PlayState extends FlxState
 
         // Collision resolution -- physics
         FlxG.collide(collidableSprites, collidableSprites);
-        FlxG.collide(collidableSprites, staticCollidableSprites);
+        FlxG.overlap(collidableSprites, staticCollidableSprites, handleStaticCollision);
 
         // Vision checks
         for (predator in entityGroups[EntityPredator])
@@ -323,6 +351,25 @@ class PlayState extends FlxState
         e2.handleCollision(e1);
     }
 
+    function handleStaticCollision(s1:SpriteWrapper<Entity>, s2:StaticObject)
+    {
+        FlxObject.separate(s1, s2);
+
+        switch (s2.getTile())
+        {
+            case TileType.CLIFF_DOWN:
+                GameWorld.handleDownCliffCollision(s2, s1);
+            case TileType.CLIFF_UP:
+                GameWorld.handleUpCliffCollision(s2, s1);
+            case TileType.CLIFF_RIGHT:
+                GameWorld.handleRightCliffCollision(s2, s1);
+            case TileType.CLIFF_LEFT:
+                GameWorld.handleLeftCliffCollision(s2, s1);
+            default:
+                // Do nothing.
+        }
+    }
+
     public function getCaves()
     {
         return caves;
@@ -342,6 +389,11 @@ class PlayState extends FlxState
     public function getObstacles()
     {
         return obstacles;
+    }
+
+    public function getStaticObstacles()
+    {
+        return staticCollidableSprites;
     }
 
     public function triggerLevelTransition()
