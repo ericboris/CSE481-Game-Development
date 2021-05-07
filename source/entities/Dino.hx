@@ -5,6 +5,7 @@ import flixel.FlxObject;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import js.html.Console;
+import flixel.tile.FlxBaseTilemap;
 
 enum DinoState
 {
@@ -33,6 +34,7 @@ class Dino extends Entity
     var framesStuck:Int = 0;
     var herdedPath:Array<FlxPoint> = new Array<FlxPoint>();
     var framesSincePathGenerated:Int = 0;
+    var isPathfinding:Bool = false;
 
     public var herdedDisableFollowingRadius = false;
 
@@ -139,7 +141,7 @@ class Dino extends Entity
         }
 
         var positionDiff = new FlxPoint(lastPosition.x - dinoPos.x, lastPosition.y - dinoPos.y);
-        if (GameWorld.magnitude(positionDiff) < 4.0)
+        if (!GameWorld.checkVision(this, herdedLeader) || GameWorld.magnitude(positionDiff) < 10.0)
         {
             framesStuck++;
         }
@@ -148,21 +150,38 @@ class Dino extends Entity
             framesStuck = 0;
         }
         
-        if (framesStuck > 5 && (herdedPath.length == 0 || framesSincePathGenerated > 5))
+        // Check if the leader is pathfinding. If they are, also begin pathfinding to get around obstacle.
+        var isLeaderPathfinding = false;
+        if (Std.is(herdedLeader.getType(), Dino) && cast(herdedLeader, Dino).getIsPathfinding())
+        {
+            isLeaderPathfinding = true;
+        }
+
+        if ((isLeaderPathfinding || framesStuck > 5) && (herdedPath.length == 0 || framesSincePathGenerated > 2))
         {
             // Attempt to pathfind towards herded leader
-            var newPath = PlayState.world.getObstacles().findPath(leaderPos, dinoPos);
-            if (newPath != null)
-            {
-                herdedPath = newPath;
-                framesSincePathGenerated = 0;
+            var offset = 24;
+            if (sprite.touching & FlxObject.LEFT > 0)
+                dinoPos.x += offset;
+            else if (sprite.touching & FlxObject.RIGHT > 0)
+                dinoPos.x -= offset;
+            else if (sprite.touching & FlxObject.UP > 0)
+                dinoPos.y += offset;
+            else if (sprite.touching & FlxObject.DOWN > 0)
+                dinoPos.y -= offset;
+            var newPath = PlayState.world.getObstacles().findPath(leaderPos, dinoPos, true, false, NORMAL);
+            if (newPath != null)                     
+            {                                        
+                herdedPath = newPath;                
             }
+            framesSincePathGenerated = 0;
             framesStuck = 0;
         }
 
         if (herdedPath.length > 0)
         {
             // Follow the path towards the leader
+            isPathfinding = true;
             var pathPoint = herdedPath[herdedPath.length-1];
             var dir = new FlxPoint(pathPoint.x - dinoPos.x, pathPoint.y - dinoPos.y);
             if (GameWorld.magnitude(dir) < 4.0)
@@ -194,6 +213,13 @@ class Dino extends Entity
         }
     }
 
+    function moveTowards(position:FlxPoint, speed:Float)
+    {
+        var dir = new FlxPoint(position.x - getX(), position.y - getY());
+        var angle = Math.atan2(dir.y, dir.x);
+        sprite.velocity.set(Math.cos(angle) * speed, Math.sin(angle) * speed);
+    }
+
     /* State transition methods */
     public function setUnherded(notify:Bool = false)
     {
@@ -215,6 +241,11 @@ class Dino extends Entity
     public function getHerdedPlayer()
     {
         return herdedPlayer;
+    }
+
+    public function getIsPathfinding()
+    {
+        return isPathfinding;
     }
 
     function idle(elapsed:Float)
