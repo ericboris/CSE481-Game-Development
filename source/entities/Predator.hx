@@ -9,17 +9,17 @@ import js.html.Console;
 class Predator extends Dino
 {
     /* Unherded state */
-    final PREDATOR_SPEED = 35.0;
-    final PREDATOR_ACCELERATION = 11.0;
+    final PREDATOR_SPEED = 12.0;
+    final PREDATOR_ACCELERATION = 20.0;
     final PREDATOR_ELASTICITY = 0.9;
     final PREDATOR_PURSUING_ELASTICITY = 0.3;
 
     /* Pursuing state */
     final PREDATOR_ANGULAR_ACCELERATION = GameWorld.toRadians(5);
-    final PREDATOR_PURSUING_SPEED = 39.0;
-    final PREDATOR_SEEN_TIMER = 0.1;
+    final PREDATOR_PURSUING_SPEED = 38.5;
+    final PREDATOR_SEEN_TIMER = 1.0;
 
-    final SATIATED_TIMER = 5;
+    final SATIATED_TIMER = 1.0;
 
     var lastSeenTimer:Float = 0;
     var moveAngle:Float;

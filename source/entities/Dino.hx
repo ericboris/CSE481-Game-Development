@@ -125,8 +125,8 @@ class Dino extends Entity
     function herded(elapsed:Float)
     {
         herdedSpeed = herdedPlayer.getSpeed();
-        var leaderPos = herdedLeader.sprite.getPosition();
-        var dinoPos = sprite.getPosition();
+        var leaderPos = new FlxPoint(herdedLeader.getX(), herdedLeader.getY());
+        var dinoPos = new FlxPoint(getX(), getY());
         var dist = leaderPos.distanceTo(dinoPos);
 
 
@@ -148,14 +148,13 @@ class Dino extends Entity
             framesStuck = 0;
         }
         
-        if (framesStuck > 10 && (herdedPath.length == 0 || framesSincePathGenerated > 10))
+        if (framesStuck > 5 && (herdedPath.length == 0 || framesSincePathGenerated > 5))
         {
             // Attempt to pathfind towards herded leader
-            var newPath = PlayState.world.getObstacles().findPath(dinoPos, leaderPos);
+            var newPath = PlayState.world.getObstacles().findPath(leaderPos, dinoPos);
             if (newPath != null)
             {
                 herdedPath = newPath;
-                herdedPath.reverse();
                 framesSincePathGenerated = 0;
             }
             framesStuck = 0;

@@ -43,7 +43,7 @@ class Prey extends Dino
 
     public override function handlePlayerCollision(player:Player)
     {
-        if (state == Unherded)
+        if (state == Unherded || state == Fleeing)
         {
             // We only care about this collision if we are unherded.
             // Add to player's herd.
@@ -69,7 +69,7 @@ class Prey extends Dino
 
     public override function handlePreyCollision(prey: Prey)
     {
-        if (state == Unherded && prey.getState() == Herded)
+        if ((state == Unherded || state == Fleeing) && prey.getState() == Herded)
         {
             this.state = Herded;
             var player = prey.getHerdedPlayer();
