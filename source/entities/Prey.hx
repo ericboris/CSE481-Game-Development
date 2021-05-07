@@ -67,6 +67,18 @@ class Prey extends Dino
         }
     }
 
+    public override function handlePreyCollision(prey: Prey)
+    {
+        if (state == Unherded && prey.getState() == Herded)
+        {
+            this.state = Herded;
+            var player = prey.getHerdedPlayer();
+            player.addDino(this);
+            this.herdedLeader = player;
+            this.herdedPlayer = player;
+        }
+    }
+
     private override function unherded(elapsed:Float)
     {
         idle(elapsed);

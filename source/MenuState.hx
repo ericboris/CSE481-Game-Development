@@ -1,6 +1,7 @@
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.text.FlxText;
+import flixel.addons.ui.FlxButtonPlus;
 import flixel.ui.FlxButton;
 import openfl.media.Sound;
 

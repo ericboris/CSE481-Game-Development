@@ -156,6 +156,11 @@ class Dino extends Entity
         return state;
     }
 
+    public function getHerdedPlayer()
+    {
+        return herdedPlayer;
+    }
+
     function idle(elapsed:Float)
     {
         if (idleTimer <= 0)
