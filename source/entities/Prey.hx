@@ -15,17 +15,19 @@ class Prey extends Dino
 
         setGraphic(16, 16, AssetPaths.SlimeBlue__png, true);
         sprite.animation.add("d", [0, 1, 2, 3, 4, 5], 6, false);
-        sprite.animation.add("u", [6, 7, 8, 9, 10, 11], 6, false);
-        sprite.animation.add("l", [12, 13, 14, 15, 16, 17], 6, false);
-        sprite.animation.add("r", [18, 19, 20, 21, 22, 23], 6, false);
+        sprite.animation.add("l", [6, 7, 8, 9, 10, 11], 6, false);
+        sprite.animation.add("r", [12, 13, 14, 15, 16, 17], 6, false);
+        sprite.animation.add("u", [18, 19, 20, 21, 22, 23], 6, false);
         sprite.setSize(14, 14);
 
-        //setGraphic(32, 32, AssetPaths.BlueDragon__png, true);
-        //sprite.animation.add("d", [0, 1, 2, 3], 6, false);
-        //sprite.animation.add("u", [4, 5, 6, 7], 6, false);
-        //sprite.animation.add("l", [8, 9, 10, 11], 6, false);
-        //sprite.animation.add("r", [12, 13, 14, 15], 6, false);
-        //sprite.setSize(30, 30);
+        /**
+        setGraphic(32, 32, AssetPaths.BlueDragon__png, true);
+        sprite.animation.add("d", [0, 1, 2, 3], 4, false);
+        sprite.animation.add("u", [4, 5, 6, 7], 4, false);
+        sprite.animation.add("l", [8, 9, 10, 11], 4, false);
+        sprite.animation.add("r", [12, 13, 14, 15], 4, false);
+        sprite.setSize(30, 30);
+        */
 
         sprite.screenCenter();
 
