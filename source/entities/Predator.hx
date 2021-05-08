@@ -9,14 +9,14 @@ import js.html.Console;
 class Predator extends Dino
 {
     /* Unherded state */
-    final SPEED = 12.0;
-    final ACCELERATION = 20.0;
+    final SPEED = 24.0;
+    final ACCELERATION = 10.0;
     final ELASTICITY = 0.9;
     final PURSUING_ELASTICITY = 0.3;
 
     /* Pursuing state */
     final ANGULAR_ACCELERATION = GameWorld.toRadians(5);
-    final PURSUING_SPEED = 38.5;
+    final PURSUING_SPEED = 65.0;
     final SEEN_TIMER = 0.5;
 
     final SATIATED_TIMER = 1.0;
@@ -112,19 +112,20 @@ class Predator extends Dino
             sprite.acceleration.x = 0;
             sprite.acceleration.y = 0;
 
-            sprite.velocity.x = Math.cos(angle) * speed * DAMPING_FACTOR;
-            sprite.velocity.y = Math.sin(angle) * speed * DAMPING_FACTOR;
+            sprite.velocity.x = Math.cos(angle) * maxSpeed;
+            sprite.velocity.y = Math.sin(angle) * maxSpeed;
         }
         else
         {
             // Set sprite's acceleration to speed up in the same direction
-            sprite.acceleration.x = Math.cos(angle) * ACCELERATION;
-            sprite.acceleration.y = Math.sin(angle) * ACCELERATION;
+            sprite.velocity.x += Math.cos(angle) * ACCELERATION;
+            sprite.velocity.y += Math.sin(angle) * ACCELERATION;
         }
     }
 
     private override function unherded(elapsed:Float)
     {
+        this.sprite.elasticity = ELASTICITY;
         // Bounce off walls if colliding
         var horizontalCollision = sprite.touching & (FlxObject.LEFT | FlxObject.RIGHT);
         var verticalCollision = sprite.touching & (FlxObject.UP | FlxObject.DOWN);

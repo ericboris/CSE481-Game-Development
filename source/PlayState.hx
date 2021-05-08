@@ -10,6 +10,7 @@ import flixel.tile.FlxTilemap;
 import flixel.util.FlxColor;
 import js.html.Console;
 import flixel.text.FlxText;
+import flixel.FlxG;
 
 class PlayState extends FlxState
 {
@@ -20,6 +21,7 @@ class PlayState extends FlxState
     static public final SCREEN_HEIGHT = 600;
 
     // Size of tiles/chunks
+    static public final SMALL_TILE_SIZE = 16;
     static public final TILE_WIDTH = 320;
     static public final TILE_HEIGHT = 240;
     
@@ -37,6 +39,8 @@ class PlayState extends FlxState
     // Maps GroupdIds (defined above) to a group containing all of that type of entity
     var entityGroups:Map<EntityType, Array<Entity>>;
     var spriteGroups:Map<EntityType, FlxGroup>;
+    
+    var uncollidableTiles:Array<Int> = new Array<Int>();
 
     // A group containing all collidable entities
     var collidableSprites:FlxGroup;
@@ -96,15 +100,21 @@ class PlayState extends FlxState
 
         obstacles = map.loadTilemap(AssetPaths.Tileset__png, "obstacles");
         obstacles.follow();
- 
-        // Make all obstacles collidable.
-        obstacles.setTileProperties(29, FlxObject.ANY, GameWorld.handleDownCliffCollision);
-        obstacles.setTileProperties(35, FlxObject.ANY, GameWorld.handleRightCliffCollision);
-        obstacles.setTileProperties(37, FlxObject.ANY, GameWorld.handleLeftCliffCollision);
-        obstacles.setTileProperties(43, FlxObject.ANY, GameWorld.handleUpCliffCollision);
-
-        staticCollidableSprites.add(obstacles);
         add(obstacles);
+
+        // Make all obstacles collidable.
+        for (x in 0...obstacles.widthInTiles)
+        {
+            for (y in 0...obstacles.heightInTiles)
+            {
+                createTileCollider(x, y, obstacles);
+            }
+        }
+        // Set cliff collision handlers
+        obstacles.setTileProperties(TileType.CLIFF_DOWN, FlxObject.ANY, GameWorld.handleDownCliffCollision);
+        obstacles.setTileProperties(TileType.CLIFF_RIGHT, FlxObject.ANY, GameWorld.handleRightCliffCollision);
+        obstacles.setTileProperties(TileType.CLIFF_LEFT, FlxObject.ANY, GameWorld.handleLeftCliffCollision);
+        obstacles.setTileProperties(TileType.CLIFF_UP, FlxObject.ANY, GameWorld.handleUpCliffCollision);
 
         // Load entities from tilemap
         map.loadEntities(placeEntities, "entities");
@@ -132,6 +142,42 @@ class PlayState extends FlxState
         transitionScreen.makeGraphic(TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight, FlxColor.BLACK);
         transitionScreen.alpha = 1;
         add(transitionScreen);
+    }
+
+    function createTileCollider(tileX:Int, tileY:Int, obstacles:FlxTilemap)
+    {
+        var tileNum = obstacles.getTile(tileX, tileY);
+        if (tileNum == 0) return;
+
+        var width = TileType.getWidthOfTile(tileNum);
+        var height = TileType.getHeightOfTile(tileNum);
+        if (width == 16 && height == 16)
+        {
+            // This tile doesn't need a custom hitbox. Keep it in the tilemap.
+        }
+        else
+        {
+            if (!uncollidableTiles.contains(tileNum)) uncollidableTiles.push(tileNum);
+
+            var x = tileX * SMALL_TILE_SIZE + SMALL_TILE_SIZE/2 - width/2;
+            var y = tileY * SMALL_TILE_SIZE + SMALL_TILE_SIZE/2 - height/2;
+
+            var collider = new StaticObject(x, y, width, height, tileNum);
+            collider.immovable = true;
+            collider.visible = false;
+
+            /* Uncomment this to visualize the hitboxes*/
+            /*
+            var collider = new FlxSprite(x,y);
+            collider.makeGraphic(width, height, FlxColor.BLACK);
+            collider.updateHitbox();
+            collider.immovable = true;
+            collider.visible = true;
+            */
+
+            staticCollidableSprites.add(collider);
+            add(collider);
+        }
     }
 
     function updateTransitionScreen()
@@ -177,15 +223,14 @@ class PlayState extends FlxState
         updateTransitionScreen();
         updateScore();
 
-
+        // Do collision checks
+        collisionChecks();
+ 
         // Update all entities
         for (entity in entities)
         {
             entity.update(elapsed);
         }
-
-        // Do collision checks
-        collisionChecks();
 
         if (FlxG.keys.anyPressed([P]))
         {
@@ -276,6 +321,23 @@ class PlayState extends FlxState
         // Collision resolution -- physics
         FlxG.collide(collidableSprites, collidableSprites);
         FlxG.collide(collidableSprites, staticCollidableSprites);
+        
+        // Collide with tilemap.
+        // First, disable collisions for tiles that shouldn't be collided with.
+        for (tileNum in uncollidableTiles)
+        {
+            obstacles.setTileProperties(tileNum, FlxObject.NONE);
+        }
+
+        // Do collision check.
+        FlxG.collide(collidableSprites, obstacles);
+        
+        // Reenable collisions (these collisions are used when raycasting).
+        for (tileNum in uncollidableTiles)
+        {
+            obstacles.setTileProperties(tileNum, FlxObject.ANY);
+        }
+
 
         // Vision checks
         for (predator in entityGroups[EntityPredator])
@@ -358,6 +420,11 @@ class PlayState extends FlxState
     public function getObstacles()
     {
         return obstacles;
+    }
+
+    public function getStaticObstacles()
+    {
+        return staticCollidableSprites;
     }
 
     public function triggerLevelTransition()
