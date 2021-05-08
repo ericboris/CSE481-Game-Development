@@ -60,6 +60,8 @@ class PlayState extends FlxState
     var transitioningToNextLevel:Bool = false;
     var transitionScreen:FlxSprite;
 
+    var uncollidableTiles:Array<Int> = new Array<Int>();
+
     override public function create()
     {
         super.create();
@@ -142,7 +144,8 @@ class PlayState extends FlxState
     function createTileCollider(tileX:Int, tileY:Int, obstacles:FlxTilemap)
     {
         var tileNum = obstacles.getTile(tileX, tileY);
-        
+        if (tileNum == 0) return;
+
         var width = TileType.getWidthOfTile(tileNum);
         var height = TileType.getHeightOfTile(tileNum);
         if (width == 16 && height == 16)
@@ -151,7 +154,8 @@ class PlayState extends FlxState
         }
         else
         {
-            obstacles.setTileProperties(tileNum, FlxObject.NONE);
+            if (!uncollidableTiles.contains(tileNum)) uncollidableTiles.push(tileNum);
+
             var x = tileX * SMALL_TILE_SIZE + SMALL_TILE_SIZE/2 - width/2;
             var y = tileY * SMALL_TILE_SIZE + SMALL_TILE_SIZE/2 - height/2;
             
@@ -301,7 +305,16 @@ class PlayState extends FlxState
         // Collision resolution -- physics
         FlxG.collide(collidableSprites, collidableSprites);
         FlxG.collide(collidableSprites, staticCollidableSprites);
+
+        for (tileNum in uncollidableTiles)
+        {
+            obstacles.setTileProperties(tileNum, FlxObject.NONE);
+        }
         FlxG.collide(collidableSprites, obstacles);
+        for (tileNum in uncollidableTiles)
+        {
+            obstacles.setTileProperties(tileNum, FlxObject.ANY);
+        }
 
         // Vision checks
         for (predator in entityGroups[EntityPredator])
