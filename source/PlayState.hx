@@ -10,6 +10,7 @@ import flixel.tile.FlxTilemap;
 import flixel.util.FlxColor;
 import js.html.Console;
 import flixel.text.FlxText;
+import flixel.util.FlxSort;
 
 class PlayState extends FlxState
 {
@@ -94,12 +95,8 @@ class PlayState extends FlxState
 
         obstacles = map.loadTilemap(AssetPaths.Tileset__png, "obstacles");
         obstacles.follow();
-        //staticCollidableSprites.add(obstacles);
         add(obstacles);
 
-        // Load entities from tilemap
-        map.loadEntities(placeEntities, "entities");
-        
         // Make all obstacles collidable.
         for (x in 0...obstacles.widthInTiles)
         {
@@ -108,11 +105,14 @@ class PlayState extends FlxState
                 createTileCollider(x, y, obstacles);
             }
         }
-
+        // Set cliff collision handlers
         obstacles.setTileProperties(TileType.CLIFF_DOWN, FlxObject.ANY, GameWorld.handleDownCliffCollision);
         obstacles.setTileProperties(TileType.CLIFF_RIGHT, FlxObject.ANY, GameWorld.handleRightCliffCollision);
         obstacles.setTileProperties(TileType.CLIFF_LEFT, FlxObject.ANY, GameWorld.handleLeftCliffCollision);
         obstacles.setTileProperties(TileType.CLIFF_UP, FlxObject.ANY, GameWorld.handleUpCliffCollision);
+
+        // Load entities from tilemap
+        map.loadEntities(placeEntities, "entities");
         
         // Set world size
         FlxG.worldBounds.set(0, 0, TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight);
@@ -215,7 +215,6 @@ class PlayState extends FlxState
     {
         updateTransitionScreen();
         updateScore();
-
 
         // Update all entities
         for (entity in entities)
