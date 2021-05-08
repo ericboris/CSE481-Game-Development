@@ -24,7 +24,14 @@ class PlayState extends FlxState
     static public final SMALL_TILE_SIZE = 16;
     static public final TILE_WIDTH = 320;
     static public final TILE_HEIGHT = 240;
-    
+ 
+    static final GAME_ID = 202107;
+    static final GAME_KEY = "4fc8038359b26ec7a1044c1c6bc85745";
+    static final GAME_NAME = "dinosaurherd";
+    static final GAME_VERSION = 1;
+    static public var logger = new CapstoneLogger(GAME_ID, GAME_NAME, GAME_KEY, GAME_VERSION);
+    static public var createdLoggerSession = false;
+
     // Size of map (in # of tiles)
     var mapWidth = 2;
     var mapHeight = 2;
@@ -68,6 +75,18 @@ class PlayState extends FlxState
     override public function create()
     {
         super.create();
+
+        // Initialize logger
+        if (!createdLoggerSession)
+        {
+            var userId = logger.getSavedUserId();
+            if (userId == null)
+            {
+                userId = logger.generateUuid();
+                logger.setSavedUserId(userId);
+            }
+            //logger.startNewSession();
+        }
 
         // Set singleton reference
         world = this;
@@ -183,6 +202,7 @@ class PlayState extends FlxState
     function updateTransitionScreen()
     {
         // Check to load next level.
+        Console.log(player.isInRangeOfCave() + ", " + levelIsComplete());
         transitioningToNextLevel = player.isInRangeOfCave() && levelIsComplete();
         if (FlxG.keys.anyPressed([N]))
         {
@@ -220,11 +240,11 @@ class PlayState extends FlxState
 
     override public function update(elapsed:Float)
     {
-        updateTransitionScreen();
-        updateScore();
-
         // Do collision checks
         collisionChecks();
+ 
+        updateTransitionScreen();
+        updateScore();
  
         // Update all entities
         for (entity in entities)
