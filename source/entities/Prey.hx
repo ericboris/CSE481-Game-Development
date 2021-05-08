@@ -14,17 +14,21 @@ class Prey extends Dino
         this.type = EntityPrey;
 
         setGraphic(16, 16, AssetPaths.SlimeBlue__png, true);
+        sprite.animation.add("d", [0, 1, 2, 3, 4, 5], 6, false);
+        sprite.animation.add("u", [6, 7, 8, 9, 10, 11], 6, false);
+        sprite.animation.add("l", [12, 13, 14, 15, 16, 17], 6, false);
+        sprite.animation.add("r", [18, 19, 20, 21, 22, 23], 6, false);
+        sprite.setSize(14, 14);
 
-        sprite.setFacingFlip(FlxObject.LEFT, false, false);
-        sprite.setFacingFlip(FlxObject.RIGHT, true, false);
-
-        sprite.animation.add("lr", [3], 3, false);
-        // sprite.animation.add("u", [6, 7, 6, 8], 6, false);
-        // sprite.animation.add("d", [0, 1, 0, 2], 6, false);
+        //setGraphic(32, 32, AssetPaths.BlueDragon__png, true);
+        //sprite.animation.add("d", [0, 1, 2, 3], 6, false);
+        //sprite.animation.add("u", [4, 5, 6, 7], 6, false);
+        //sprite.animation.add("l", [8, 9, 10, 11], 6, false);
+        //sprite.animation.add("r", [12, 13, 14, 15], 6, false);
+        //sprite.setSize(30, 30);
 
         sprite.screenCenter();
 
-        sprite.setSize(8, 8);
         sprite.elasticity = PREY_ELASTICITY;
 
         this.SIGHT_ANGLE = GameWorld.toRadians(360);
@@ -38,7 +42,35 @@ class Prey extends Dino
             state = Fleeing;
         }
 
+        move();
+
         super.update(elapsed);
+    }
+
+    function move()
+    {
+        if (Math.abs(sprite.velocity.y) > Math.abs(sprite.velocity.x))
+        {
+            if (sprite.velocity.y >= 0)
+            {
+                sprite.animation.play("d");
+            }
+            else
+            {
+                sprite.animation.play("u");
+            }
+        }
+        else
+        {
+            if (sprite.velocity.x >= 0)
+            {
+                sprite.animation.play("r");
+            }
+            else
+            {
+                sprite.animation.play("l");
+            }
+        }
     }
 
     public override function handlePlayerCollision(player:Player)
