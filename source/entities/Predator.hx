@@ -34,14 +34,12 @@ class Predator extends Dino
         this.type = EntityPredator;
         this.canJumpCliffs = false;
 
-        setGraphic(16, 16, AssetPaths.RedDragon__png, true);
+        setGraphic(32, 32, AssetPaths.RedDragon__png, true);
 
-        sprite.setFacingFlip(FlxObject.LEFT, false, false);
-        sprite.setFacingFlip(FlxObject.RIGHT, true, false);
-
-        sprite.animation.add("lr", [8, 9, 10, 11], 0, false);
-        sprite.animation.add("u", [4, 5, 6, 7], 6, false);
         sprite.animation.add("d", [0, 1, 2, 3], 6, false);
+        sprite.animation.add("u", [4, 5, 6, 7], 6, false);
+        sprite.animation.add("l", [8, 9, 10, 11], 6, false);
+        sprite.animation.add("r", [12, 13, 14, 15], 6, false);
 
         moveAngle = GameWorld.random(0, Math.PI * 2.0);
         this.sprite.velocity.x = Math.cos(moveAngle) * SPEED;
@@ -55,7 +53,7 @@ class Predator extends Dino
         this.SIGHT_RANGE = 200;
         this.NEARBY_SIGHT_RADIUS = 40;
 
-        sprite.setSize(12, 12);
+        sprite.setSize(30, 30);
     }
 
     public override function update(elapsed:Float)
@@ -74,7 +72,35 @@ class Predator extends Dino
         if (state == Pursuing)
             pursuing(elapsed);
 
+        move();
+
         super.update(elapsed);
+    }
+
+    function move()
+    {
+        if (Math.abs(sprite.velocity.y) > Math.abs(sprite.velocity.x))
+        {
+            if (sprite.velocity.y >= 0)
+            {
+                sprite.animation.play("d");
+            }
+            else
+            {
+                sprite.animation.play("u");
+            }
+        }
+        else
+        {
+            if (sprite.velocity.x >= 0)
+            {
+                sprite.animation.play("r");
+            }
+            else
+            {
+                sprite.animation.play("l");
+            }
+        }
     }
 
     function speedUp(maxSpeed:Float)
