@@ -55,7 +55,7 @@ class Predator extends Dino
         this.SIGHT_RANGE = 200;
         this.NEARBY_SIGHT_RADIUS = 40;
 
-        sprite.setSize(8, 8);
+        sprite.setSize(12, 12);
     }
 
     public override function update(elapsed:Float)

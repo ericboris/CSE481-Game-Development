@@ -32,7 +32,7 @@ class Entity
         sprite = new SpriteWrapper<Entity>(this);
         hitboxes = new Array<Hitbox>();
         seenEntities = new Array<Entity>();
-
+        
         thought = new Icon(this, 0, -20);
         PlayState.world.add(thought.sprite);
     }
