@@ -9,23 +9,25 @@ import js.html.Console;
 class Predator extends Dino
 {
     /* Unherded state */
-    final SPEED = 24.0;
-    final ACCELERATION = 10.0;
-    final ELASTICITY = 0.9;
-    final PURSUING_ELASTICITY = 0.3;
+    static final SPEED = 24.0;
+    static final ACCELERATION = 10.0;
+    static final ELASTICITY = 0.9;
+    static final PURSUING_ELASTICITY = 0.3;
 
     /* Pursuing state */
-    final ANGULAR_ACCELERATION = GameWorld.toRadians(5);
-    final PURSUING_SPEED = 65.0;
-    final SEEN_TIMER = 0.5;
+    static final ANGULAR_ACCELERATION = GameWorld.toRadians(5);
+    static final PURSUING_SPEED = 65.0;
+    static final SEEN_TIMER = 0.5;
 
-    final SATIATED_TIMER = 1.0;
+    static final SATIATED_TIMER = 2.0;
 
     var lastSeenTimer:Float = 0;
     var moveAngle:Float;
 
     var satiated:Bool = false;
     var satiatedTimer:Float = 0;
+    static final FLASHING_RATE = 0.065;
+    var alphaRate:Float = FLASHING_RATE;
 
     public function new()
     {
@@ -67,6 +69,19 @@ class Predator extends Dino
             satiatedTimer -= elapsed;
             if (satiatedTimer < 0)
                 satiated = false;
+
+            sprite.alpha += alphaRate;
+            if (sprite.alpha <= 0.3 || sprite.alpha >= 1.0)
+            {
+                alphaRate *= -1;
+            }
+        }
+        else
+        {
+            if (sprite.alpha < 1.0)
+            {
+                sprite.alpha += FLASHING_RATE;
+            }
         }
 
         if (state == Pursuing)
