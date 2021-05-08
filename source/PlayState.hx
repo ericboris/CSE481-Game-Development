@@ -79,13 +79,18 @@ class PlayState extends FlxState
         // Initialize logger
         if (!createdLoggerSession)
         {
+            // Get user id
             var userId = logger.getSavedUserId();
             if (userId == null)
             {
+                // Generate new user id
                 userId = logger.generateUuid();
                 logger.setSavedUserId(userId);
             }
-            //logger.startNewSession();
+
+            // Start a new logging session.
+            // Only start the game once the callback has been called.
+            logger.startNewSession(userId, logNewSessionCallback);
         }
 
         // Set singleton reference
@@ -163,6 +168,12 @@ class PlayState extends FlxState
         add(transitionScreen);
     }
 
+    function logNewSessionCallback(initialized:Bool)
+    {
+        Console.log("Logger initialized: " + initialized);
+        createdLoggerSession = true;
+    }
+
     function createTileCollider(tileX:Int, tileY:Int, obstacles:FlxTilemap)
     {
         var tileNum = obstacles.getTile(tileX, tileY);
@@ -202,7 +213,6 @@ class PlayState extends FlxState
     function updateTransitionScreen()
     {
         // Check to load next level.
-        Console.log(player.isInRangeOfCave() + ", " + levelIsComplete());
         transitioningToNextLevel = player.isInRangeOfCave() && levelIsComplete();
         if (FlxG.keys.anyPressed([N]))
         {
