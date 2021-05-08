@@ -34,8 +34,6 @@ class Entity
         seenEntities = new Array<Entity>();
 
         thought = new Icon(this, 0, -20);
-        thought.setText(50, "Hello");
-        thought.fadeIn();
         PlayState.world.add(thought.sprite);
     }
 
@@ -234,5 +232,10 @@ class Entity
     public function getY()
     {
         return this.sprite.getMidpoint().y;
+    }
+
+    public function think(content:String, fadeOutDelay:Float=2.0):Void
+    {
+        thought.setContent(content, fadeOutDelay);
     }
 }

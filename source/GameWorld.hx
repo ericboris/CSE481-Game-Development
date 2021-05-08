@@ -14,6 +14,7 @@ class GameWorld
                             AssetPaths.tutorial2__json,
                             AssetPaths.tutorial3__json,
                             AssetPaths.Sandbox__json];
+    //static var encountersArray = [cave, prey, null, predator];
 
     static public function getNearestEntity(src:Entity, entities:Array<Entity>)
     {
@@ -171,4 +172,11 @@ class GameWorld
             return levelArray[levelIndex];
         }
     }
+    
+    /**
+    static public function getLevelNewEntity():Entity
+    {
+        return the new entity on this level
+    }
+    */
 }

@@ -191,6 +191,18 @@ class PlayState extends FlxState
             addEntity(prey);
         }
 
+        if (FlxG.keys.anyPressed([T]))
+        {
+            player.think("THOUGHT 2");
+        }
+
+        /**
+        if player within range (dist in gameworld) of entity from GameWorld.encounters[GameWorld.getLevelIndex()]
+        {
+            player.think("?");
+            entity.thing("!");
+        }
+        */
         super.update(elapsed);
     }
 

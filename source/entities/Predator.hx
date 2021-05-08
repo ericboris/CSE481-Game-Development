@@ -34,14 +34,14 @@ class Predator extends Dino
         this.type = EntityPredator;
         this.canJumpCliffs = false;
 
-        setGraphic(16, 16, AssetPaths.boss__png, true);
+        setGraphic(16, 16, AssetPaths.RedDragon__png, true);
 
         sprite.setFacingFlip(FlxObject.LEFT, false, false);
         sprite.setFacingFlip(FlxObject.RIGHT, true, false);
 
-        sprite.animation.add("lr", [0], 0, false);
-        // sprite.animation.add("u", [6, 7, 6, 8], 6, false);
-        // sprite.animation.add("d", [0, 1, 0, 2], 6, false);
+        sprite.animation.add("lr", [8, 9, 10, 11], 0, false);
+        sprite.animation.add("u", [4, 5, 6, 7], 6, false);
+        sprite.animation.add("d", [0, 1, 2, 3], 6, false);
 
         moveAngle = GameWorld.random(0, Math.PI * 2.0);
         this.sprite.velocity.x = Math.cos(moveAngle) * SPEED;
