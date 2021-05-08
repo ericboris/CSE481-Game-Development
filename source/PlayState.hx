@@ -94,6 +94,7 @@ class PlayState extends FlxState
 
         obstacles = map.loadTilemap(AssetPaths.Tileset__png, "obstacles");
         obstacles.follow();
+        //staticCollidableSprites.add(obstacles);
         add(obstacles);
 
         // Load entities from tilemap
@@ -104,14 +105,15 @@ class PlayState extends FlxState
         {
             for (y in 0...obstacles.heightInTiles)
             {
-                var tileNum = obstacles.getTile(x, y);
-                if (tileNum != 0)
-                {
-                    createTileCollider(x, y, tileNum);
-                }
+                createTileCollider(x, y, obstacles);
             }
         }
 
+        obstacles.setTileProperties(TileType.CLIFF_DOWN, FlxObject.ANY, GameWorld.handleDownCliffCollision);
+        obstacles.setTileProperties(TileType.CLIFF_RIGHT, FlxObject.ANY, GameWorld.handleRightCliffCollision);
+        obstacles.setTileProperties(TileType.CLIFF_LEFT, FlxObject.ANY, GameWorld.handleLeftCliffCollision);
+        obstacles.setTileProperties(TileType.CLIFF_UP, FlxObject.ANY, GameWorld.handleUpCliffCollision);
+        
         // Set world size
         FlxG.worldBounds.set(0, 0, TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight);
 
@@ -137,22 +139,34 @@ class PlayState extends FlxState
         add(transitionScreen);
     }
 
-    function createTileCollider(tileX:Float, tileY:Float, tileNum:Int)
+    function createTileCollider(tileX:Int, tileY:Int, obstacles:FlxTilemap)
     {
+        var tileNum = obstacles.getTile(tileX, tileY);
+        
         var width = TileType.getWidthOfTile(tileNum);
         var height = TileType.getHeightOfTile(tileNum);
-        if (width > 0 && height > 0)
+        if (width == 16 && height == 16)
         {
+            // This tile doesn't need a custom hitbox. Keep it in the tilemap.
+        }
+        else
+        {
+            obstacles.setTileProperties(tileNum, FlxObject.NONE);
             var x = tileX * SMALL_TILE_SIZE + SMALL_TILE_SIZE/2 - width/2;
             var y = tileY * SMALL_TILE_SIZE + SMALL_TILE_SIZE/2 - height/2;
             
             var collider = new StaticObject(x, y, width, height, tileNum);
+            collider.immovable = true;
+            collider.visible = false;
+            
             /* Uncomment this to visualize the hitboxes*/
-            /*var collider = new FlxSprite(x,y);
+            /*
+            var collider = new FlxSprite(x,y);
             collider.makeGraphic(width, height, FlxColor.BLACK);
-            collider.updateHitbox();*/
+            collider.updateHitbox();
             collider.immovable = true;
             collider.visible = true;
+            */
 
             staticCollidableSprites.add(collider);
             add(collider);
@@ -287,7 +301,8 @@ class PlayState extends FlxState
 
         // Collision resolution -- physics
         FlxG.collide(collidableSprites, collidableSprites);
-        FlxG.overlap(collidableSprites, staticCollidableSprites, handleStaticCollision);
+        FlxG.collide(collidableSprites, staticCollidableSprites);
+        FlxG.collide(collidableSprites, obstacles);
 
         // Vision checks
         for (predator in entityGroups[EntityPredator])
@@ -349,25 +364,6 @@ class PlayState extends FlxState
 
         e1.handleCollision(e2);
         e2.handleCollision(e1);
-    }
-
-    function handleStaticCollision(s1:SpriteWrapper<Entity>, s2:StaticObject)
-    {
-        FlxObject.separate(s1, s2);
-
-        switch (s2.getTile())
-        {
-            case TileType.CLIFF_DOWN:
-                GameWorld.handleDownCliffCollision(s2, s1);
-            case TileType.CLIFF_UP:
-                GameWorld.handleUpCliffCollision(s2, s1);
-            case TileType.CLIFF_RIGHT:
-                GameWorld.handleRightCliffCollision(s2, s1);
-            case TileType.CLIFF_LEFT:
-                GameWorld.handleLeftCliffCollision(s2, s1);
-            default:
-                // Do nothing.
-        }
     }
 
     public function getCaves()

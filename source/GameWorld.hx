@@ -133,7 +133,12 @@ class GameWorld
 
     static public function collidingWithObstacles(entity:Entity)
     {
-        return FlxG.overlap(entity.getSprite(), PlayState.world.getStaticObstacles());
+        var sprite = entity.getSprite();
+        var tilemap = PlayState.world.getObstacles();
+        var staticObstacles = PlayState.world.getStaticObstacles();
+        
+        var collision:Bool = tilemap.overlaps(sprite);
+        return collision || FlxG.overlap(sprite, staticObstacles);
     }
 
     static public function radians(degrees:Int)

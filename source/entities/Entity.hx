@@ -142,6 +142,7 @@ class Entity
         switch (direction)
         {
             case FlxObject.UP:
+                jumpDist = 32;
                 endy -= jumpDist;
                 theta0 = Math.PI/2;
                 theta1 = -Math.PI/2;
@@ -169,7 +170,7 @@ class Entity
         sprite.x = endx;
         sprite.y = endy;
         // TODO: Reenable this collision check
-        var colliding = false;//GameWorld.collidingWithObstacles(this);
+        var colliding = GameWorld.collidingWithObstacles(this);
         sprite.x = startx;
         sprite.y = starty;
 
@@ -194,7 +195,7 @@ class Entity
             sprite.path.add(pathX, pathY);
         }
         sprite.path.add(endx, endy);
-        sprite.path.start(null, 60.0);
+        sprite.path.start(null, 45.0);
     }
 
     public function getSightRange():Float
