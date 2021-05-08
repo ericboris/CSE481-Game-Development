@@ -133,8 +133,8 @@ class Predator extends Dino
         else
         {
             // Set sprite's acceleration to speed up in the same direction
-            sprite.velocity.x += Math.cos(angle) * ACCELERATION;
-            sprite.velocity.y += Math.sin(angle) * ACCELERATION;
+            sprite.acceleration.x = Math.cos(angle) * ACCELERATION;
+            sprite.acceleration.y = Math.sin(angle) * ACCELERATION;
         }
     }
 

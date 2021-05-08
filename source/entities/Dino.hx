@@ -105,15 +105,18 @@ class Dino extends Entity
         }
 
         newLeaderFlag = false;
-        lastPosition = sprite.getPosition();
+        lastPosition = new FlxPoint(getX(), getY());
         super.update(elapsed);
     }
 
     // Used by Player class to update herd ordering.
     public function setLeader(entity:Entity)
     {
-        herdedLeader = entity;
-        newLeaderFlag = true;
+        if (entity != herdedLeader)
+        {
+            herdedLeader = entity;
+            newLeaderFlag = true;
+        }
     }
 
     // Called by Player when the herd has been scattered
@@ -137,6 +140,7 @@ class Dino extends Entity
         if (dist > MAX_FOLLOWING_RADIUS)
         {
             // We are far away from our leader! Try following the player instead.
+            herdedLeader = herdedPlayer;
             leaderPos = new FlxPoint(herdedPlayer.getX(), herdedPlayer.getY());
             dist = leaderPos.distanceTo(dinoPos);
         }
@@ -151,8 +155,8 @@ class Dino extends Entity
         if (newLeaderFlag)
         {
             // We just got a new leader.
-            framesStuck = 0;
             herdedPath.resize(0);
+            framesStuck = 0;
         }
 
         if (!herdedDisableFollowingRadius && dist < FOLLOWING_RADIUS)
@@ -164,7 +168,9 @@ class Dino extends Entity
         }
 
         var positionDiff = new FlxPoint(lastPosition.x - dinoPos.x, lastPosition.y - dinoPos.y);
-        if (!GameWorld.checkVision(this, herdedLeader) || GameWorld.magnitude(positionDiff) < 10.0)
+        var visionCheck = !GameWorld.checkVision(this, herdedLeader);
+        var notMovingCheck = GameWorld.magnitude(positionDiff) < 0.5;
+        if (visionCheck || notMovingCheck)
         {
             framesStuck++;
         }
@@ -180,25 +186,20 @@ class Dino extends Entity
             isLeaderPathfinding = true;
         }
 
-        if ((isLeaderPathfinding || framesStuck > 4) && (herdedPath.length == 0 || framesSincePathGenerated > 5))
+        if (framesSincePathGenerated > 6)
+        {
+            herdedPath.resize(0);
+        }
+
+        if ((isLeaderPathfinding || framesStuck > 5) && herdedPath.length == 0)
         {
             // Attempt to pathfind towards herded leader
-            var offset = 24;
-            if (sprite.touching & FlxObject.LEFT > 0)
-                dinoPos.x += offset;
-            else if (sprite.touching & FlxObject.RIGHT > 0)
-                dinoPos.x -= offset;
-            else if (sprite.touching & FlxObject.UP > 0)
-                dinoPos.y += offset;
-            else if (sprite.touching & FlxObject.DOWN > 0)
-                dinoPos.y -= offset;
             var newPath = PlayState.world.getObstacles().findPath(leaderPos, dinoPos, true, false, NONE);
             if (newPath != null)                     
             {                                        
                 herdedPath = newPath;                
             }
             framesSincePathGenerated = 0;
-            framesStuck = 0;
         }
 
         if (herdedPath.length > 0)
@@ -222,6 +223,7 @@ class Dino extends Entity
         else
         {
             // Move directly towards leader
+            isPathfinding = false;
             if (herdedDisableFollowingRadius || dist > FOLLOWING_RADIUS)
             {
                 var dir = new FlxPoint(leaderPos.x - dinoPos.x, leaderPos.y - dinoPos.y);

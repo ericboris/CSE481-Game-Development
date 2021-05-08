@@ -22,6 +22,8 @@ class Player extends Entity
     var cave:Cave;
     var inRangeOfCave:Bool = false;
 
+    var frameCounter:Int = 0;
+
     public function new()
     {
         super();
@@ -52,7 +54,9 @@ class Player extends Entity
     {
         move();
         
-        reorganizeHerd();
+        frameCounter++;
+        if (frameCounter % 10 == 0)
+            reorganizeHerd();
 
         // Cave depositing logic
         if (!inRangeOfCave && depositingToCave)
