@@ -4,6 +4,7 @@ import entities.*;
 import flixel.math.FlxMath;
 import flixel.FlxObject;
 import flixel.math.FlxPoint;
+import flixel.FlxG;
 import js.html.Console;
 
 class GameWorld
@@ -129,11 +130,14 @@ class GameWorld
         return range < from.getSightRange() && Math.abs(angle) < from.getSightAngle() / 2;
     }
 
-
-
     static public function collidingWithObstacles(entity:Entity)
     {
-        return PlayState.world.getObstacles().overlapsAt(0, 0, entity.getSprite());
+        var sprite = entity.getSprite();
+        var tilemap = PlayState.world.getObstacles();
+        var staticObstacles = PlayState.world.getStaticObstacles();
+        
+        var collision:Bool = tilemap.overlaps(sprite);
+        return collision || FlxG.overlap(sprite, staticObstacles);
     }
 
     static public function radians(degrees:Int)

@@ -11,7 +11,7 @@ class Player extends Entity
     /* Hitbox id constants */
     static var INTERACT_HITBOX_ID = 0;
 
-    var speed:Float = 40.0;
+    var speed:Float = 70.0;
 
     // Array of followers. TODO: Should be linked list.
     var followers:Array<Dino>;
@@ -21,6 +21,8 @@ class Player extends Entity
     var depositingToCave:Bool = false;
     var cave:Cave;
     var inRangeOfCave:Bool = false;
+
+    var frameCounter:Int = 0;
 
     public function new()
     {
@@ -51,10 +53,12 @@ class Player extends Entity
     public override function update(elapsed:Float)
     {
         move();
+        
+        frameCounter++;
+        if (frameCounter % 10 == 0)
+            reorganizeHerd();
 
         // Cave depositing logic
-        reorganizeHerd();
-
         if (!inRangeOfCave && depositingToCave)
         {
             // We are no longer in range of cave. Set herd back to normal order.

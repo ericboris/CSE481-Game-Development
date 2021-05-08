@@ -63,7 +63,7 @@ class Entity
         }
 
         // Update our sprite
-        sprite.update(elapsed);
+        //sprite.update(elapsed);
 
         thought.update(elapsed);
 
@@ -191,7 +191,7 @@ class Entity
             sprite.path.add(pathX, pathY);
         }
         sprite.path.add(endx, endy);
-        sprite.path.start(null, 60.0);
+        sprite.path.start(null, 100.0);
     }
 
     public function getSightRange():Float

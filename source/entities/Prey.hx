@@ -30,6 +30,7 @@ class Prey extends Dino
         */
 
         sprite.screenCenter();
+        sprite.mass = 0.4;
 
         sprite.elasticity = PREY_ELASTICITY;
 
