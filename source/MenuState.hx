@@ -24,14 +24,14 @@ class MenuState extends FlxState
         playButton.y = FlxG.height - playButton.height - 10;
         add(playButton);
 
-        playButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav);
+        //playButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav);
 
         optionsButton = new FlxButton(0, 0, "Options", clickOptions);
         optionsButton.x = (FlxG.width / 2) + 10;
         optionsButton.y = FlxG.height - optionsButton.height - 10;
         add(optionsButton);
 
-        optionsButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav);
+        //optionsButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav);
 
         if (FlxG.sound.music == null)
         {
