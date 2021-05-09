@@ -4,6 +4,7 @@ import entities.*;
 import flixel.math.FlxPoint;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
+import flixel.util.FlxColor;
 import flixel.FlxG;
 import js.html.Console;
 
@@ -19,6 +20,8 @@ class Icon
     var shouldFadeOut:Bool = false;
 
     public var sprite:FlxSprite;
+    var width:Float = 0;
+    var height:Float = 0;
 
     public function new(centeredOn:Entity, x:Int, y:Int)
     {
@@ -30,35 +33,47 @@ class Icon
 
     public function setSprite(width:Int, height:Int, asset:String)
     {
+        this.width = width;
+        this.height = height;
         sprite = new FlxSprite();
         sprite.loadGraphic(asset, false, width, height);
         sprite.setGraphicSize(width, height);
     }
 
-    public function setText(content:String, size:Int=10)
+    public function setText(content:String, size:Int=11)
     {
-        sprite = new FlxText(0, 0, -1, content, size);
+        var text = new FlxText(0, 0, -1, content, size);
+        setContent(content, 0);
+        text.setBorderStyle(SHADOW, FlxColor.BLACK, 1, 1);
+
+        sprite = text;
     }
 
-    public function setContent(content:String, fadeOutDelay:Float)
+    public function setContent(content:String, fadeOutDelay:Float=0)
     {
         if (Std.is(sprite, FlxText))
         {
             var text:FlxText = cast sprite;
             text.text = content;
-            this.fadeOutDelay = fadeOutDelay;
-            this.shouldFadeOut = true;
-            sprite.alpha = 1;
+            this.width = text.textField.textWidth;
+            this.height = text.textField.textHeight;
+            
+            if (fadeOutDelay > 0)
+            {
+                fadeIn();
+                this.fadeOutDelay = fadeOutDelay;
+                this.shouldFadeOut = true;
+            }
         }
     }
 
     public function update(elapsed:Float)
     {
-        sprite.x = center.getX() + offsetX;
-        sprite.y = center.getY() + offsetY;
+        sprite.x = center.getX() - width/2 + offsetX;
+        sprite.y = center.getY() - height/2 + offsetY;
 
         fadeOutDelay -= elapsed;
-        if (shouldFadeOut && fadeOutDelay <= 0)
+        if (alphaRate == 0 && shouldFadeOut && fadeOutDelay <= 0)
         {
             fadeOut();
         }
@@ -68,6 +83,7 @@ class Icon
         {
             sprite.alpha = 0;
             alphaRate = 0;
+            shouldFadeOut = false;
         }
         else if (sprite.alpha >= 1)
         {

@@ -33,7 +33,7 @@ class Entity
         hitboxes = new Array<Hitbox>();
         seenEntities = new Array<Entity>();
         
-        thought = new Icon(this, 0, -20);
+        thought = new Icon(this, 0, -18);
         PlayState.world.add(thought.sprite);
     }
 
@@ -234,7 +234,7 @@ class Entity
         return this.sprite.getMidpoint().y;
     }
 
-    public function think(content:String, fadeOutDelay:Float=2.0):Void
+    public function think(content:String, fadeOutDelay:Float=2.5):Void
     {
         thought.setContent(content, fadeOutDelay);
     }
