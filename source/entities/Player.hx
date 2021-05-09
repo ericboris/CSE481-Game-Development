@@ -255,7 +255,7 @@ class Player extends Entity
         {
             if (entity.type == EntityCave)
             {
-                //inRangeOfCave = true;
+                handleCaveCollision(cast entity);
             }
         }
     }

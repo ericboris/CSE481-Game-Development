@@ -169,8 +169,9 @@ class PlayState extends FlxState
         var camera_h = TILE_HEIGHT/4;
         FlxG.camera.deadzone.set(camera_x - camera_w/2, camera_y - camera_h/2, camera_w, camera_h);
 
-        scoreText = new FlxText(0, 0, 180, "");
+        scoreText = new FlxText(0, 0, 0, "", 10);
         scoreText.alpha = 0;
+        scoreText.setBorderStyle(SHADOW, FlxColor.BLACK, 1, 1);
         add(scoreText);
 
         // Set up transition screen
@@ -178,7 +179,6 @@ class PlayState extends FlxState
         transitionScreen.makeGraphic(TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight, FlxColor.BLACK);
         transitionScreen.alpha = 1;
         add(transitionScreen);
-
     }
 
     function logNewSessionCallback(initialized:Bool)
@@ -250,9 +250,9 @@ class PlayState extends FlxState
 
     function updateScore()
     {
-        scoreText.x = player.getX();
-        scoreText.y = player.getY() - 16;
         scoreText.text = "" + Score.get();
+        scoreText.x = player.getX() - scoreText.textField.textWidth/2;
+        scoreText.y = player.getY() - scoreText.textField.textHeight/2 - 16;
 
         // Fade out score text.
         if (scoreText.alpha > 0)
@@ -286,11 +286,6 @@ class PlayState extends FlxState
             var prey = new Prey();
             prey.setPosition(player.getSprite().x, player.getSprite().y);
             addEntity(prey);
-        }
-
-        if (FlxG.keys.anyPressed([T]))
-        {
-            player.think("THOUGHT 2");
         }
 
         super.update(elapsed);
