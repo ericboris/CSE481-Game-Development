@@ -15,13 +15,15 @@ class GameWorld
                             AssetPaths.tutorial1__json,
                             AssetPaths.tutorial2__json,
                             AssetPaths.tutorial3__json,
-                            AssetPaths.Sandbox__json];
+                            AssetPaths.Sandbox__json,
+                            AssetPaths.boulder_test__json];
 
     // New entities to display reactions above.
     static var newEntities = [EntityCave,
                             EntityPrey,
                             EntityBoulder,
                             EntityPredator,
+                            EntityNull,
                             EntityNull];
 
     // Reactions shown above entities upon encountering player.
