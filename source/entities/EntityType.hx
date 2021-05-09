@@ -10,4 +10,5 @@ enum EntityType
     EntityCave;
     EntityHitbox;
     EntityBoulder;
+    EntityNull;
 }

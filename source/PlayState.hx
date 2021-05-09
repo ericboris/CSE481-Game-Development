@@ -62,8 +62,11 @@ class PlayState extends FlxState
     var transitioningToNextLevel:Bool = false;
     var transitionScreen:FlxSprite;
 
-    // TODO
-    // has seen new previously unseen entity
+    // This level's new, previously unseen entity.
+    var newEntity:EntityType;
+    var hasSeenNewEntity = false;
+    var playerReaction:String;
+    var entityReaction:String;
 
     override public function create()
     {
@@ -88,6 +91,11 @@ class PlayState extends FlxState
             entityGroups[type] = new Array<Entity>();
             spriteGroups[type] = new FlxGroup();
         }
+
+        // Must have call to getNewEntity before call to getNextMap
+        newEntity = GameWorld.getNewEntity();
+        playerReaction = GameWorld.getPlayerReaction(newEntity);
+        entityReaction = GameWorld.getEntityReaction(newEntity);
 
         // Set up the tilemap.
         map = new FlxOgmo3Loader(AssetPaths.DinoHerder__ogmo, GameWorld.getNextMap());
@@ -142,6 +150,7 @@ class PlayState extends FlxState
         transitionScreen.makeGraphic(TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight, FlxColor.BLACK);
         transitionScreen.alpha = 1;
         add(transitionScreen);
+
     }
 
     function createTileCollider(tileX:Int, tileY:Int, obstacles:FlxTilemap)
@@ -244,14 +253,7 @@ class PlayState extends FlxState
             player.think("THOUGHT 2");
         }
 
-        /**
-        if player within range (dist in gameworld) of entity from GameWorld.encounters[GameWorld.getLevelIndex()]
-        {
-            player.think("?");
-            entity.thing("!");
-        }
-        */
-
+        
         super.update(elapsed);
     }
 
@@ -356,6 +358,20 @@ class PlayState extends FlxState
                 if (GameWorld.checkVision(prey, predator))
                 {
                     prey.seen(predator);
+                }
+            }
+        }
+
+
+        if (newEntity != EntityNull)
+        {
+            for (entity in entityGroups[newEntity])
+            {
+                if (!hasSeenNewEntity && GameWorld.checkVision(player, entity)) // and in range
+                {
+                    player.think(playerReaction);
+                    entity.think(entityReaction);
+                    hasSeenNewEntity = true;
                 }
             }
         }
