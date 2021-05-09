@@ -48,6 +48,9 @@ class Player extends Entity
         addHitbox(interactHitbox);
 
         followers = new Array<Dino>();
+
+        this.SIGHT_ANGLE = GameWorld.toRadians(45);
+        this.SIGHT_RANGE = 100;
     }
 
     public override function update(elapsed:Float)

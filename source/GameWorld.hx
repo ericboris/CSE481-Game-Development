@@ -1,6 +1,7 @@
 package;
 
 import entities.*;
+import entities.EntityType;
 import flixel.math.FlxMath;
 import flixel.FlxObject;
 import flixel.math.FlxPoint;
@@ -15,7 +16,27 @@ class GameWorld
                             AssetPaths.tutorial2__json,
                             AssetPaths.tutorial3__json,
                             AssetPaths.Sandbox__json];
-    //static var encountersArray = [cave, prey, null, predator];
+
+    // New entities to display reactions above.
+    static var newEntities = [EntityCave,
+                            EntityPrey,
+                            EntityBoulder,
+                            EntityPredator,
+                            EntityNull];
+
+    // Reactions shown above entities upon encountering player.
+    static var entityReactions = [EntityCave => "V",
+                                EntityPrey => ":)",
+                                EntityBoulder => "V",
+                                EntityPredator => ">:(",
+                                EntityNull => ""];
+
+    // Reactions shown above player upon encountering entities.
+    static var playerReactions = [EntityCave => "?",
+                                EntityPrey => "?",
+                                EntityPredator => "!",
+                                EntityBoulder => "?",
+                                EntityNull => ""];
 
     static public function getNearestEntity(src:Entity, entities:Array<Entity>)
     {
@@ -176,11 +197,28 @@ class GameWorld
             return levelArray[levelIndex];
         }
     }
-    
+   
     /**
-    static public function getLevelNewEntity():Entity
+     * Return the current level's new, previously unseen Entity.
+     */
+    static public function getNewEntity():EntityType
     {
-        return the new entity on this level
+        return newEntities[levelIndex];
     }
-    */
+
+    /**
+     * Return EntityType e's reaction to seeing the player for the first time.
+     */
+    static public function getEntityReaction(e:EntityType):String
+    {
+        return entityReactions[e];
+    }
+
+    /**
+     * Return the player's reaction to seeing EntityType e for the first time.
+     */
+    static public function getPlayerReaction(e:EntityType):String
+    {
+        return playerReactions[e];
+    }
 }
