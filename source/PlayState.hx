@@ -61,6 +61,7 @@ class PlayState extends FlxState
     var obstacles:FlxTilemap;
 
     var caves:Array<Cave>;
+    var respawnCave:Cave;
 
     // The level's score;
     var scoreText:FlxText;
@@ -150,6 +151,9 @@ class PlayState extends FlxState
 
         // Load entities from tilemap
         map.loadEntities(placeEntities, "entities");
+        
+        // Set the initial respawn cave to be the cave nearest the player at level start.
+        respawnCave = cast GameWorld.getNearestEntity(player, entityGroups[EntityCave]);
 
         // Set world size
         FlxG.worldBounds.set(0, 0, TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight);
@@ -289,7 +293,6 @@ class PlayState extends FlxState
             player.think("THOUGHT 2");
         }
 
-        
         super.update(elapsed);
     }
 
@@ -482,5 +485,15 @@ class PlayState extends FlxState
     public function triggerLevelTransition()
     {
         transitioningToNextLevel = true;
+    }
+
+    public function getRespawnCave():Cave
+    {
+        return this.respawnCave;
+    }
+
+    public function setRespawnCave(cave:Cave):Void
+    {
+        this.respawnCave = cave;
     }
 }

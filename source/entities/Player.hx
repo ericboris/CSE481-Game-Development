@@ -270,6 +270,7 @@ class Player extends Entity
         depositingToCave = true;
         inRangeOfCave = true;
         this.cave = cave;
+        PlayState.world.setRespawnCave(cave);
     }
 
     public override function handlePredatorCollision(predator:Predator)
@@ -284,9 +285,11 @@ class Player extends Entity
             followers.resize(0);
 
             // Move player to nearest cave.
-            var caves = PlayState.world.getCaves();
-            var nearestCave = GameWorld.getNearestEntity(this, cast caves);
-            this.setPosition(nearestCave.sprite.x, nearestCave.sprite.y);
+            //var caves = PlayState.world.getCaves();
+            //var nearestCave = GameWorld.getNearestEntity(this, cast caves);
+            //this.setPosition(nearestCave.sprite.x, nearestCave.sprite.y);
+            var respawnCave = PlayState.world.getRespawnCave();
+            this.setPosition(respawnCave.getX(), respawnCave.getY());
         }
     }
 
