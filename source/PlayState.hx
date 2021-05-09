@@ -153,6 +153,24 @@ class PlayState extends FlxState
         // Set the initial respawn cave to be the cave nearest the player at level start.
         respawnCave = cast GameWorld.getNearestEntity(player, entityGroups[EntityCave]);
 
+        // Set up camera
+        setupCamera();
+
+        // Set up score counter
+        scoreText = new FlxText(0, 0, 0, "", 10);
+        scoreText.alpha = 0;
+        scoreText.setBorderStyle(SHADOW, FlxColor.BLACK, 1, 1);
+        add(scoreText);
+
+        // Set up transition screen
+        transitionScreen = new FlxSprite(0, 0);
+        transitionScreen.makeGraphic(TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight, FlxColor.BLACK);
+        transitionScreen.alpha = 1;
+        add(transitionScreen);
+    }
+
+    function setupCamera()
+    {
         // Set world size
         FlxG.worldBounds.set(0, 0, TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight);
 
@@ -166,17 +184,6 @@ class PlayState extends FlxState
         var camera_w = TILE_WIDTH/4;
         var camera_h = TILE_HEIGHT/4;
         FlxG.camera.deadzone.set(camera_x - camera_w/2, camera_y - camera_h/2, camera_w, camera_h);
-
-        scoreText = new FlxText(0, 0, 0, "", 10);
-        scoreText.alpha = 0;
-        scoreText.setBorderStyle(SHADOW, FlxColor.BLACK, 1, 1);
-        add(scoreText);
-
-        // Set up transition screen
-        transitionScreen = new FlxSprite(0, 0);
-        transitionScreen.makeGraphic(TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight, FlxColor.BLACK);
-        transitionScreen.alpha = 1;
-        add(transitionScreen);
     }
 
     function logNewSessionCallback(initialized:Bool)

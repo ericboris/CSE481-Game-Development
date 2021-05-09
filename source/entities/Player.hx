@@ -53,7 +53,8 @@ class Player extends Entity
         followers = new Array<Dino>();
 
         this.SIGHT_ANGLE = GameWorld.toRadians(45);
-        this.SIGHT_RANGE = 100;
+        this.SIGHT_RANGE = 120.0;
+        this.NEARBY_SIGHT_RADIUS = 120.0;
 
         this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__mp3);
     }

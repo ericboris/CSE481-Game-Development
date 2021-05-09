@@ -4,6 +4,7 @@ import flixel.text.FlxText;
 import flixel.addons.ui.FlxButtonPlus;
 import flixel.ui.FlxButton;
 import openfl.media.Sound;
+import flixel.util.FlxColor;
 
 class MenuState extends FlxState
 {
@@ -19,7 +20,14 @@ class MenuState extends FlxState
         titleText.alignment = CENTER;
         add(titleText);
 
+        var textColor = 0xFF404040;
+
         playButton = new FlxButton(0, 0, "Play", clickPlay);
+        playButton.scale.x = playButton.scale.y = 2.0;
+        playButton.updateHitbox();
+        playButton.label.setFormat(null, 24, textColor);
+        playButton.label.fieldWidth *= 2;
+
         playButton.x = (FlxG.width / 2) - playButton.width - 10;
         playButton.y = FlxG.height - playButton.height - 10;
         add(playButton);
@@ -27,6 +35,11 @@ class MenuState extends FlxState
         //playButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav);
 
         optionsButton = new FlxButton(0, 0, "Options", clickOptions);
+        optionsButton.scale.x = optionsButton.scale.y = 2.0;
+        optionsButton.updateHitbox();
+        optionsButton.label.setFormat(null, 24, textColor);
+        optionsButton.label.fieldWidth *= 2;
+        
         optionsButton.x = (FlxG.width / 2) + 10;
         optionsButton.y = FlxG.height - optionsButton.height - 10;
         add(optionsButton);

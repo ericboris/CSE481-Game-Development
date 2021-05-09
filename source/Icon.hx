@@ -7,6 +7,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import js.html.Console;
+import flixel.util.FlxColor;
 
 class Icon
 {

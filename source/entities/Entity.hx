@@ -234,7 +234,7 @@ class Entity
         return this.sprite.getMidpoint().y;
     }
 
-    public function think(content:String, fadeOutDelay:Float=2.5):Void
+    public function think(content:String, fadeOutDelay:Float=2.0):Void
     {
         thought.setContent(content, fadeOutDelay);
     }
