@@ -179,6 +179,7 @@ class PlayState extends FlxState
         transitionScreen.alpha = 1;
         add(transitionScreen);
 
+        FlxG.sound.playMusic(AssetPaths.Theme__mp3, 0.5, true);
     }
 
     function logNewSessionCallback(initialized:Bool)
@@ -287,7 +288,6 @@ class PlayState extends FlxState
             player.think("THOUGHT 2");
         }
 
-        
         super.update(elapsed);
     }
 
