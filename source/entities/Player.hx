@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
+import flixel.system.FlxSound;
 import js.html.Console;
 
 class Player extends Entity
@@ -24,6 +25,8 @@ class Player extends Entity
 
     var frameCounter:Int = 0;
 
+    var stepSound:FlxSound;
+
     public function new()
     {
         super();
@@ -36,9 +39,9 @@ class Player extends Entity
         sprite.setFacingFlip(FlxObject.RIGHT, true, false);
 
         sprite.animation.add("s", [2], 4, false);
-        sprite.animation.add("lr", [19, 20, 21, 22], 4, false);
-        sprite.animation.add("u", [7, 8, 9, 10], 4, false);
-        sprite.animation.add("d", [1, 2, 3, 4], 4, false);
+        sprite.animation.add("lr", [19, 20, 21, 22], 6, false);
+        sprite.animation.add("u", [7, 8, 9, 10], 6, false);
+        sprite.animation.add("d", [1, 2, 3, 4], 6, false);
 
         sprite.setSize(6, 6);
         sprite.offset.set(4, 6);
@@ -51,6 +54,8 @@ class Player extends Entity
 
         this.SIGHT_ANGLE = GameWorld.toRadians(45);
         this.SIGHT_RANGE = 100;
+
+        this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__ogg);
     }
 
     public override function update(elapsed:Float)
@@ -183,6 +188,8 @@ class Player extends Entity
 
         if ((sprite.velocity.x != 0 || sprite.velocity.y != 0) && sprite.touching == FlxObject.NONE)
         {
+            stepSound.play();
+
             switch (sprite.facing)
             {
                 case FlxObject.LEFT, FlxObject.RIGHT:

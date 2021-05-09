@@ -25,9 +25,9 @@ class GameWorld
                             EntityNull];
 
     // Reactions shown above entities upon encountering player.
-    static var entityReactions = [EntityCave => "V",
+    static var entityReactions = [EntityCave => "",
                                 EntityPrey => ":)",
-                                EntityBoulder => "V",
+                                EntityBoulder => "",
                                 EntityPredator => ">:(",
                                 EntityNull => ""];
 
