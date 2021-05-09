@@ -55,7 +55,7 @@ class Player extends Entity
         this.SIGHT_ANGLE = GameWorld.toRadians(45);
         this.SIGHT_RANGE = 100;
 
-        //this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__wav);
+        this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__mp3);
     }
 
     public override function update(elapsed:Float)
@@ -80,7 +80,7 @@ class Player extends Entity
 
         if (depositingToCave)
         {
-            if (followers.length > 0)
+            if (followers.length > 0 && primaryFollower != null)
             {
                 primaryFollower.setLeader(cave);
                 primaryFollower.herdedDisableFollowingRadius = true;
@@ -188,7 +188,7 @@ class Player extends Entity
 
         if ((sprite.velocity.x != 0 || sprite.velocity.y != 0) && sprite.touching == FlxObject.NONE)
         {
-            //stepSound.play();
+            stepSound.play();
 
             switch (sprite.facing)
             {

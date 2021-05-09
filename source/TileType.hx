@@ -15,9 +15,15 @@ class TileType
     public static final WATER = 16;
 
     public static final WATER_EDGE_RIGHT = 56;
+    public static final WATER_EDGE_LEFT = 58;
+    public static final WATER_EDGE_UP = 50;
+    public static final WATER_EDGE_DOWN = 64;
 
     // NC stands for "No Collide"
     public static final WATER_EDGE_RIGHT_NC = WATER_EDGE_RIGHT + 42;
+    public static final WATER_EDGE_LEFT_NC = WATER_EDGE_LEFT + 42;
+    public static final WATER_EDGE_UP_NC = WATER_EDGE_UP + 42;
+    public static final WATER_EDGE_DOWN_NC = WATER_EDGE_DOWN + 42;
     public static final WATER_NC = 103;
 
     public static final TREE_1 = 14;

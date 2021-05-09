@@ -58,8 +58,8 @@ class Boulder extends Entity
         {
             // TODO animate path
             sprite.path = new FlxPath();
-            sprite.path.add(sprite.x, sprite.y);
-            sprite.path.add(x, y);
+            sprite.path.add(getX(), getY());
+            sprite.path.add(x + sprite.width/2, y + sprite.height/2);
             sprite.path.onComplete = inWater;
             sprite.path.start(null, 70.0);
 

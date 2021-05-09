@@ -143,18 +143,10 @@ class PlayState extends FlxState
                 createTileCollider(x, y, obstacles);
             }
         }
+
         // Set cliff collision handlers
-        obstacles.setTileProperties(TileType.CLIFF_DOWN, FlxObject.ANY, CollisionHandler.handleDownCliffCollision);
-        obstacles.setTileProperties(TileType.CLIFF_RIGHT, FlxObject.ANY, CollisionHandler.handleRightCliffCollision);
-        obstacles.setTileProperties(TileType.CLIFF_LEFT, FlxObject.ANY, CollisionHandler.handleLeftCliffCollision);
-        obstacles.setTileProperties(TileType.CLIFF_UP, FlxObject.ANY, CollisionHandler.handleUpCliffCollision);
-
-        obstacles.setTileProperties(TileType.WATER, FlxObject.ANY, CollisionHandler.handleWaterCollision);
-        obstacles.setTileProperties(TileType.WATER_NC, FlxObject.NONE);
-        obstacles.setTileProperties(TileType.WATER_EDGE_RIGHT_NC, FlxObject.NONE);
-
-        obstacles.setTileProperties(TileType.WATER_EDGE_RIGHT, FlxObject.ANY, CollisionHandler.handleRightWaterEdgeCollision);
-
+        CollisionHandler.setTileCollisions(obstacles);
+        
         // Load entities from tilemap
         map.loadEntities(placeEntities, "entities");
         
