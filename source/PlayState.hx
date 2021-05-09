@@ -179,7 +179,6 @@ class PlayState extends FlxState
         transitionScreen.alpha = 1;
         add(transitionScreen);
 
-        FlxG.sound.playMusic(AssetPaths.Theme__mp3, 0.5, true);
     }
 
     function logNewSessionCallback(initialized:Bool)
