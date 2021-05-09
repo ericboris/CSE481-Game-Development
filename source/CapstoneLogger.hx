@@ -129,7 +129,8 @@ class CapstoneLogger
 			{
 				data = data.substr(5);
 				var parsedResults:Dynamic = Json.parse(data);
-				if (parsedResults.tstatus == 't')
+				Console.log(data);
+                if (parsedResults.tstatus == 't')
 				{
 					this.currentSessionId = parsedResults.r_data.sessionid;
 					sessionSuccess = true;

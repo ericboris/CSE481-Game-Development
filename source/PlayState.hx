@@ -250,6 +250,12 @@ class PlayState extends FlxState
 
     override public function update(elapsed:Float)
     {
+        if (!createdLoggerSession)
+        {
+            // Don't execute update method until logger session has been created.
+            return;
+        }
+
         // Do collision checks
         collisionChecks();
  
