@@ -144,10 +144,16 @@ class PlayState extends FlxState
             }
         }
         // Set cliff collision handlers
-        obstacles.setTileProperties(TileType.CLIFF_DOWN, FlxObject.ANY, GameWorld.handleDownCliffCollision);
-        obstacles.setTileProperties(TileType.CLIFF_RIGHT, FlxObject.ANY, GameWorld.handleRightCliffCollision);
-        obstacles.setTileProperties(TileType.CLIFF_LEFT, FlxObject.ANY, GameWorld.handleLeftCliffCollision);
-        obstacles.setTileProperties(TileType.CLIFF_UP, FlxObject.ANY, GameWorld.handleUpCliffCollision);
+        obstacles.setTileProperties(TileType.CLIFF_DOWN, FlxObject.ANY, CollisionHandler.handleDownCliffCollision);
+        obstacles.setTileProperties(TileType.CLIFF_RIGHT, FlxObject.ANY, CollisionHandler.handleRightCliffCollision);
+        obstacles.setTileProperties(TileType.CLIFF_LEFT, FlxObject.ANY, CollisionHandler.handleLeftCliffCollision);
+        obstacles.setTileProperties(TileType.CLIFF_UP, FlxObject.ANY, CollisionHandler.handleUpCliffCollision);
+
+        obstacles.setTileProperties(TileType.WATER, FlxObject.ANY, CollisionHandler.handleWaterCollision);
+        obstacles.setTileProperties(TileType.WATER_NC, FlxObject.NONE);
+        obstacles.setTileProperties(TileType.WATER_EDGE_RIGHT_NC, FlxObject.NONE);
+
+        obstacles.setTileProperties(TileType.WATER_EDGE_RIGHT, FlxObject.ANY, CollisionHandler.handleRightWaterEdgeCollision);
 
         // Load entities from tilemap
         map.loadEntities(placeEntities, "entities");
@@ -325,6 +331,11 @@ class PlayState extends FlxState
         spriteGroups[type].remove(sprite);
         collidableSprites.remove(sprite);
         remove(sprite);
+    }
+
+    public function removeFromCollidableSprites(entity:Entity)
+    {
+        collidableSprites.remove(entity.getSprite());
     }
 
     function collisionChecks()
