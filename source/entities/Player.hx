@@ -27,6 +27,7 @@ class Player extends Entity
 
     var stepSound:FlxSound;
     var killedSound:FlxSound;
+    var cliffJumpSound:FlxSound;
 
     var inCancellableAnimation:Bool=true;
 
@@ -66,8 +67,9 @@ class Player extends Entity
         this.SIGHT_RANGE = 120.0;
         this.NEARBY_SIGHT_RADIUS = 120.0;
 
-        this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__mp3, 1.0);
+        this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__mp3, 0.5);
         this.killedSound = FlxG.sound.load(AssetPaths.lose__mp3, 1.0);
+        this.cliffJumpSound = FlxG.sound.load(AssetPaths.cliffjump__mp3, 0.7);
     }
 
     public override function update(elapsed:Float)
@@ -110,6 +112,9 @@ class Player extends Entity
         {
             // TODO: Jumping animation
             sprite.animation.play("s");
+            cliffJumpSound.play();
+            FlxG.camera.shake(0.0001, 0.2);
+
         }
 
         super.update(elapsed);

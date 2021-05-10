@@ -9,7 +9,7 @@ class Prey extends Dino
 {
     final PREY_ELASTICITY = 0.9;
 
-    var stepSound:FlxSound;
+    var herdedSound:FlxSound;
 
     public function new()
     {
@@ -37,6 +37,8 @@ class Prey extends Dino
         sprite.mass = 0.4;
 
         sprite.elasticity = PREY_ELASTICITY;
+
+        herdedSound = FlxG.sound.load(AssetPaths.addedToHerd__mp3);
 
         this.SIGHT_ANGLE = GameWorld.toRadians(360);
         this.SIGHT_RANGE = 100;
@@ -88,6 +90,7 @@ class Prey extends Dino
             // We only care about this collision if we are unherded.
             // Add to player's herd.
             player.addDino(this);
+            herdedSound.play();
             herdedLeader = player;
             herdedPlayer = player;
             state = Herded;
