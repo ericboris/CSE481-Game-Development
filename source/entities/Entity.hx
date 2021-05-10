@@ -236,11 +236,11 @@ class Entity
         return this.sprite.getMidpoint().y;
     }
 
-    public function think(content:String, fadeOutDelay:Float=2.0):Void
+    public function think(content:String, fadeOutDelay:Float=2.5):Void
     {
         if (content == "V")
         {
-            thought.appear();
+            thought.appear(fadeOutDelay + 1.0);
         }
         else
         {

@@ -8,12 +8,16 @@ import flixel.util.FlxColor;
 import flixel.FlxG;
 import js.html.Console;
 import flixel.util.FlxColor;
+import flixel.tweens.FlxTween;
+import flixel.tweens.misc.NumTween;
+import flixel.tweens.FlxEase;
 
 class Icon
 {
     var center:Entity;
     var offsetX:Int;
     var offsetY:Int;
+    var tweenY:Float = 0.0;
 
     var alphaRate:Float = 0.0;
 
@@ -24,12 +28,25 @@ class Icon
     var width:Float = 0;
     var height:Float = 0;
 
+    var tween:NumTween;
+
     public function new(centeredOn:Entity, x:Int, y:Int)
     {
         this.center = centeredOn;
+        this.tween = FlxTween.num(0, 6, 2.5, {ease: FlxEase.quadInOut, type: FlxTweenType.PINGPONG}, updateTween);
+        setOffset(x, y);
+        setText("");
+    }
+
+    function updateTween(val:Float)
+    {
+        tweenY = val;
+    }
+
+    public function setOffset(x:Int, y:Int)
+    {
         this.offsetX = x;
         this.offsetY = y;
-        setText("");
     }
 
     function setNewFlxSprite(newSprite:FlxSprite)
@@ -50,7 +67,7 @@ class Icon
         sprite.setGraphicSize(width, height);
         this.width = width;
         this.height = height;
- 
+
         setNewFlxSprite(sprite);
     }
 
@@ -63,7 +80,7 @@ class Icon
         setNewFlxSprite(text);
     }
 
-    public function setContent(content:String, fadeOutDelay:Float=2.5)
+    public function setContent(content:String, fadeOutDelay:Float=3.5)
     {
         if (Std.is(sprite, FlxText))
         {
@@ -76,7 +93,7 @@ class Icon
         }
     }
 
-    public function appear(fadeOutDelay:Float=2.5)
+    public function appear(fadeOutDelay:Float=3.5)
     {
         if (fadeOutDelay > 0)
         {
@@ -89,8 +106,8 @@ class Icon
     public function update(elapsed:Float)
     {
         sprite.x = center.getX() - width/2 + offsetX;
-        sprite.y = center.getY() - height/2 + offsetY;
-
+        sprite.y = center.getY() - height/2 + offsetY - tweenY;
+        
         fadeOutDelay -= elapsed;
         if (alphaRate == 0 && shouldFadeOut && fadeOutDelay <= 0)
         {

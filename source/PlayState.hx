@@ -101,7 +101,7 @@ class PlayState extends FlxState
         }
 
         // Set singleton reference
-        world = this;
+        PlayState.world = this;
 
         // Hide the cursor
         FlxG.mouse.visible = false;
