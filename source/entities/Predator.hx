@@ -11,13 +11,13 @@ class Predator extends Dino
 {
     /* Unherded state */
     static final SPEED = 24.0;
-    static final ACCELERATION = 10.0;
+    static final ACCELERATION = 30.0;
     static final ELASTICITY = 0.9;
     static final PURSUING_ELASTICITY = 0.3;
 
     /* Pursuing state */
     static final ANGULAR_ACCELERATION = GameWorld.toRadians(5);
-    static final PURSUING_SPEED = 65.0;
+    static final PURSUING_SPEED = 70.0;
     static final SEEN_TIMER = 0.5;
 
     static final SATIATED_TIMER = 2.0;
