@@ -27,6 +27,11 @@ class Player extends Entity
 
     var stepSound:FlxSound;
 
+    var inCancellableAnimation:Bool=true;
+
+    // The item the player is currently holding. Null means nothing is held.
+    var heldItem:GroundItem;
+
     public function new()
     {
         super();
@@ -38,10 +43,14 @@ class Player extends Entity
         sprite.setFacingFlip(FlxObject.LEFT, false, false);
         sprite.setFacingFlip(FlxObject.RIGHT, true, false);
 
-        sprite.animation.add("s", [2], 4, false);
-        sprite.animation.add("lr", [19, 20, 21, 22], 6, false);
-        sprite.animation.add("u", [7, 8, 9, 10], 6, false);
-        sprite.animation.add("d", [1, 2, 3, 4], 6, false);
+        sprite.animation.add("s", [2, 1], 12, false);
+        sprite.animation.add("lr", [19, 20, 21, 22], 10, false);
+        sprite.animation.add("u", [7, 8, 9, 10], 10, false);
+        sprite.animation.add("d", [1, 2, 3, 4], 10, false);
+
+        sprite.animation.add("itemu", [30, 31, 32, 33, 34, 35], 20, false);
+        sprite.animation.add("itemlr", [42, 43, 44, 45, 46, 47], 20, false);
+        sprite.animation.add("itemd", [24, 25, 26, 27, 28, 29], 20, false);
 
         sprite.setSize(6, 6);
         sprite.offset.set(4, 6);
@@ -62,6 +71,7 @@ class Player extends Entity
     public override function update(elapsed:Float)
     {
         move();
+        updateItem();
         
         frameCounter++;
         if (frameCounter % 10 == 0)
@@ -187,10 +197,10 @@ class Player extends Entity
         angle *= Math.PI / 180;
         sprite.velocity.set(Math.cos(angle) * speed, Math.sin(angle) * speed);
 
-        if ((sprite.velocity.x != 0 || sprite.velocity.y != 0) && sprite.touching == FlxObject.NONE)
+        var canCancelAnimation = inCancellableAnimation || sprite.animation.finished;
+        if ((sprite.velocity.x != 0 || sprite.velocity.y != 0) && canCancelAnimation)
         {
             stepSound.play();
-
             switch (sprite.facing)
             {
                 case FlxObject.LEFT, FlxObject.RIGHT:
@@ -200,29 +210,39 @@ class Player extends Entity
                 case FlxObject.DOWN:
                     sprite.animation.play("d");
             }
+            inCancellableAnimation = true;
+        }
+    }
+
+    function updateItem()
+    {
+        if (heldItem != null)
+        {
+            var useKeyPressed = FlxG.keys.anyPressed([SPACE]);
+            if (useKeyPressed)
+            {
+                switch (sprite.facing)
+                {
+                    case FlxObject.LEFT, FlxObject.RIGHT:
+                        sprite.animation.play("itemlr");
+                    case FlxObject.UP:
+                        sprite.animation.play("itemu");
+                    case FlxObject.DOWN:
+                        sprite.animation.play("itemd");
+                }
+                inCancellableAnimation = false;
+                //item.use();
+            }
+        }
+        else
+        {
+            heldItem = new GroundItem();
         }
     }
 
     public function notifyUnherded(dino:Dino)
     {
-        /*var unherdedIndex = -1;
-        for (i in 0...followers.length)
-        {
-            if (unherdedIndex == -1 && followers[i].getState() == Unherded)
-            {
-                unherdedIndex = i;
-            }
-
-            if (unherdedIndex != -1 && i > unherdedIndex)
-            {
-                followers[i].setUnherded();
-            }
-        }
-
-        if (unherdedIndex != -1)
-        {
-            followers.resize(unherdedIndex);
-        }*/
+        // TODO: Scatter the line of prey that is following this player
         followers.remove(dino);
     }
 
@@ -240,14 +260,7 @@ class Player extends Entity
 
     public function notifyDeadFollower(dino:Dino)
     {
-        // TODO: Reimplement this w/ the sets
-        /*
-        var dinoIndex = followers.indexOf(dino);
-        for (i in dinoIndex...followers.length)
-        {
-            followers[i].notifyScattered();
-        }*/
-
+        // TODO: Scatter any following herd
         followers.remove(dino);
     }
 
@@ -293,9 +306,6 @@ class Player extends Entity
             followers.resize(0);
 
             // Move player to nearest cave.
-            //var caves = PlayState.world.getCaves();
-            //var nearestCave = GameWorld.getNearestEntity(this, cast caves);
-            //this.setPosition(nearestCave.sprite.x, nearestCave.sprite.y);
             var respawnCave = PlayState.world.getRespawnCave();
             this.setPosition(respawnCave.getX(), respawnCave.getY());
         }
@@ -323,6 +333,14 @@ class Player extends Entity
         if (direction != 0)
         {
             boulder.push(direction);
+        }
+    }
+
+    public override function handleGroundItemCollision(item:GroundItem)
+    {
+        if (heldItem == null)
+        {
+            heldItem = item;
         }
     }
 

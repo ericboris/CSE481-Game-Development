@@ -28,7 +28,11 @@ class Boulder extends Entity
 
     public function push(direction:Int)
     {
-        if (isInWater) return;
+        if (isInWater)
+        {
+            // Player doesn't interact with boulder once it's in the water.
+            return;
+        }
 
         var prevX = this.sprite.x;
         var prevY = this.sprite.y;
@@ -61,23 +65,10 @@ class Boulder extends Entity
             sprite.path.add(getX(), getY());
             sprite.path.add(x + sprite.width/2, y + sprite.height/2);
             sprite.path.onComplete = inWater;
-            sprite.path.start(null, 70.0);
+            sprite.path.start(null, 20.0);
 
             isInWater = true;
-
-            PlayState.world.removeFromCollidableSprites(this);
         }
-    }
-
-    public override function update(elapsed:Float)
-    {
-        if (isInWater && sprite.path != null && sprite.path.finished)
-        {
-            sprite.path = null;
-            //inWater();
-        }
-
-        super.update(elapsed);
     }
 
     public function inWater(path:FlxPath)

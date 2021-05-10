@@ -95,6 +95,8 @@ class Entity
                 handlePredatorCollision(cast entity);
             case EntityBoulder:
                 handleBoulderCollision(cast entity);
+            case EntityItem:
+                handleGroundItemCollision(cast entity);
             default:
         }
     }
@@ -105,6 +107,7 @@ class Entity
     public function handleCaveCollision(cave:Cave) {}
     public function handlePredatorCollision(predator:Predator) {}
     public function handleBoulderCollision(boulder:Boulder) {}
+    public function handleGroundItemCollision(item:GroundItem) {}
 
     /* Setters & Getters */
     public function setPosition(x:Float, y:Float)
