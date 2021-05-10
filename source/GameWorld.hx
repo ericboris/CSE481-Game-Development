@@ -15,6 +15,7 @@ class GameWorld
                             AssetPaths.tutorial1__json,
                             AssetPaths.tutorial2__json,
                             AssetPaths.tutorial3__json,
+                            AssetPaths.tutorial4__json,
                             AssetPaths.Sandbox__json,
                             AssetPaths.boulder_test__json];
 
@@ -22,9 +23,10 @@ class GameWorld
     static var newEntities = [EntityCave,
                             EntityPrey,
                             EntityBoulder,
+                            EntityNull,
                             EntityPredator,
                             EntityNull,
-                            EntityBoulder];
+                            EntityNull];
 
     // Reactions shown above entities upon encountering player.
     static var entityReactions = [EntityCave => "V",

@@ -38,7 +38,7 @@ class Prey extends Dino
 
         sprite.elasticity = PREY_ELASTICITY;
 
-        herdedSound = FlxG.sound.load(AssetPaths.addedToHerd__mp3);
+        herdedSound = FlxG.sound.load(AssetPaths.addedToHerd__mp3, 0.5);
 
         this.SIGHT_ANGLE = GameWorld.toRadians(360);
         this.SIGHT_RANGE = 100;
