@@ -304,6 +304,14 @@ class PlayState extends FlxState
             addEntity(prey);
         }
 
+        /**
+        if (playerIsCalling())
+        {
+            Console.log("PLAYER CALL RADIUS = " + player.getCallRadius());
+            callNearbyDinos(player.getCallRadius());
+        }
+        */
+
         this.sort(sortSprites);
 
         super.update(elapsed);
@@ -548,5 +556,29 @@ class PlayState extends FlxState
     public function setRespawnCave(cave:Cave):Void
     {
         this.respawnCave = cave;
+    }
+
+    private function playerIsCalling():Bool
+    {
+        return this.player.isPlayerCalling();
+    }
+
+    public function callNearbyDinos(callRadius:Float):Void
+    {
+        for (prey in entityGroups[EntityPrey])
+        {
+            var withinRange = GameWorld.entityDistance(player, prey) < callRadius;
+            var calledCanSeeCaller = GameWorld.checkVision(prey, player);
+
+            if (withinRange && calledCanSeeCaller)
+            {
+                //prey.think("<3");
+                (cast prey).addToHerd(player);
+            }
+            else
+            {
+                //prey.think("<\\3");
+            }
+        }
     }
 }

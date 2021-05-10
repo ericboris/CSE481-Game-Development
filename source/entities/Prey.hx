@@ -85,16 +85,14 @@ class Prey extends Dino
 
     public override function handlePlayerCollision(player:Player)
     {
+        /**
         if (state == Unherded || state == Fleeing)
         {
             // We only care about this collision if we are unherded.
             // Add to player's herd.
-            player.addDino(this);
-            herdedSound.play();
-            herdedLeader = player;
-            herdedPlayer = player;
-            state = Herded;
+            addToHerd(player);
         }
+        */
     }
 
     public override function handlePredatorCollision(predator:Predator)
@@ -111,15 +109,24 @@ class Prey extends Dino
         }
     }
 
+    public function addToHerd(player:Player)
+    {
+        if (state == Unherded)
+        {
+            player.addDino(this);
+            herdedSound.play();
+            herdedLeader = player;
+            herdedPlayer = player;
+            state = Herded;
+        }
+    }
+
     public override function handlePreyCollision(prey: Prey)
     {
         if ((state == Unherded || state == Fleeing) && prey.getState() == Herded)
         {
-            this.state = Herded;
             var player = prey.getHerdedPlayer();
-            player.addDino(this);
-            this.herdedLeader = player;
-            this.herdedPlayer = player;
+            addToHerd(player);
         }
     }
 
