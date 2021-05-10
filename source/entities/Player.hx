@@ -63,7 +63,6 @@ class Player extends Entity
         followers = new Array<Dino>();
 
         this.SIGHT_ANGLE = GameWorld.toRadians(45);
-        this.SIGHT_RANGE = 150;
         this.SIGHT_RANGE = 120.0;
         this.NEARBY_SIGHT_RADIUS = 120.0;
 
@@ -309,12 +308,10 @@ class Player extends Entity
             followers.resize(0);
 
             // Move player to nearest cave.
-            //var caves = PlayState.world.getCaves();
-            //var nearestCave = GameWorld.getNearestEntity(this, cast caves);
-            //this.setPosition(nearestCave.sprite.x, nearestCave.sprite.y);
+           
             FlxG.camera.shake(0.01, 0.2);
             FlxG.camera.fade(FlxColor.BLACK, 0.33, true);
-
+            
             var respawnCave = PlayState.world.getRespawnCave();
             this.setPosition(respawnCave.getX(), respawnCave.getY());
             killedSound.play();
