@@ -23,10 +23,14 @@ class CollisionHandler
         
         obstacles.setTileProperties(TileType.WATER_NC, FlxObject.NONE);
 
-        obstacles.setTileProperties(TileType.WATER_EDGE_RIGHT_NC, FlxObject.NONE);
-        obstacles.setTileProperties(TileType.WATER_EDGE_LEFT_NC, FlxObject.NONE);
-        obstacles.setTileProperties(TileType.WATER_EDGE_UP_NC, FlxObject.NONE);
-        obstacles.setTileProperties(TileType.WATER_EDGE_DOWN_NC, FlxObject.NONE);
+        obstacles.setTileProperties(TileType.WATER_EDGE_RIGHT+42, FlxObject.NONE);
+        obstacles.setTileProperties(TileType.WATER_EDGE_LEFT+42, FlxObject.NONE);
+        obstacles.setTileProperties(TileType.WATER_EDGE_UP+42, FlxObject.NONE);
+        obstacles.setTileProperties(TileType.WATER_EDGE_DOWN+42, FlxObject.NONE);
+        obstacles.setTileProperties(TileType.WATER_EDGE_UP_RIGHT+42, FlxObject.NONE);
+        obstacles.setTileProperties(TileType.WATER_EDGE_UP_LEFT+42, FlxObject.NONE);
+        obstacles.setTileProperties(TileType.WATER_EDGE_DOWN_RIGHT+42, FlxObject.NONE);
+        obstacles.setTileProperties(TileType.WATER_EDGE_DOWN_LEFT+42, FlxObject.NONE);
 
         obstacles.setTileProperties(TileType.WATER_EDGE_RIGHT, FlxObject.ANY, CollisionHandler.handleRightWaterEdgeCollision);
         obstacles.setTileProperties(TileType.WATER_EDGE_LEFT, FlxObject.ANY, CollisionHandler.handleLeftWaterEdgeCollision);
@@ -91,21 +95,37 @@ class CollisionHandler
     /* WATER RIDGE & BOULDER COLLISIONS */
     static public function handleRightWaterEdgeCollision(tile:FlxObject, entity:FlxObject)
     {
+        if (Math.abs(tile.y - entity.y) > Math.abs(tile.x - entity.x))
+        {
+            return;
+        }
         handleWaterEdge(tile, entity, FlxObject.RIGHT);
     }
 
     static public function handleLeftWaterEdgeCollision(tile:FlxObject, entity:FlxObject)
     {
+        if (Math.abs(tile.y - entity.y) > Math.abs(tile.x - entity.x))
+        {
+            return;
+        }
         handleWaterEdge(tile, entity, FlxObject.LEFT);
     }
 
     static public function handleUpWaterEdgeCollision(tile:FlxObject, entity:FlxObject)
     {
+        if (Math.abs(tile.y - entity.y) < Math.abs(tile.x - entity.x))
+        {
+            return;
+        }
         handleWaterEdge(tile, entity, FlxObject.UP);
     }
 
     static public function handleDownWaterEdgeCollision(tile:FlxObject, entity:FlxObject)
     {
+        if (Math.abs(tile.y - entity.y) < Math.abs(tile.x - entity.x))
+        {
+            return;
+        }
         handleWaterEdge(tile, entity, FlxObject.DOWN);
     }
 
@@ -120,36 +140,50 @@ class CollisionHandler
 
             if (entity.getType() == EntityBoulder)
             {
+                var boulder:Boulder = cast entity;
                 var tilemap = PlayState.world.getObstacles();
 
-                var expectedTile:Int = 0;
-                var offset = 0;
+                var waterOffset = tile.mapIndex;
                 switch (direction)
                 {
                     case FlxObject.RIGHT:
-                        expectedTile = TileType.WATER_EDGE_LEFT;
-                        offset = -2;
+                        waterOffset -= 1;
                     case FlxObject.LEFT:
-                        expectedTile = TileType.WATER_EDGE_RIGHT;
-                        offset = 2;
+                        waterOffset += 1;
                     case FlxObject.UP:
-                        expectedTile = TileType.WATER_EDGE_DOWN;
-                        offset = -tilemap.widthInTiles * 2;
+                        waterOffset -= tilemap.widthInTiles;
                     case FlxObject.DOWN:
-                        expectedTile = TileType.WATER_EDGE_UP;
-                        offset = tilemap.widthInTiles * 2;
+                        waterOffset += tilemap.widthInTiles;
                 }
 
-                var tileIndex = tilemap.getTileByIndex(tile.mapIndex + offset);
-                if (tileIndex == expectedTile)
+                var waterTileIndex = tilemap.getTileByIndex(waterOffset);
+                if (waterTileIndex == TileType.WATER)
                 {
-                    // Remove collider on adjacent edge
-                    tilemap.setTileByIndex(tile.mapIndex + offset, tileIndex + 42, false);
-                }
+                    disableWaterEdgeColliders(waterOffset, tilemap);
 
-                // Remove collider on current edge
-                tilemap.setTileByIndex(tile.mapIndex, tile.index + 42, false);
+                    var coords = tilemap.getTileCoordsByIndex(waterOffset, false);
+                    boulder.goIntoWater(coords.x, coords.y, waterOffset);
+                }
             }
         }
+    }
+
+    static function disableWaterEdgeColliders(index: Int, tilemap:FlxTilemap)
+    {
+        // Check all tiles around this tile, setting any cliffs to their no collision version.
+        var indices = [index-1, index+1, index+tilemap.widthInTiles, index-tilemap.widthInTiles];
+        for (i in indices)
+        {
+            var tile = tilemap.getTileByIndex(i);
+            Console.log("Hey " + i + " " + tile);
+            if (tile == TileType.WATER_EDGE_UP_RIGHT || tile == TileType.WATER_EDGE_UP || tile == TileType.WATER_EDGE_UP_LEFT
+             || tile == TileType.WATER_EDGE_RIGHT || tile == TileType.WATER_EDGE_LEFT
+             || tile == TileType.WATER_EDGE_DOWN_RIGHT || tile == TileType.WATER_EDGE_DOWN || tile == TileType.WATER_EDGE_DOWN_LEFT)
+            {
+                Console.log("Updating");
+                tilemap.setTileByIndex(i, tile+42);
+            }
+        }
+        Console.log("Done");
     }
 }

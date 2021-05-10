@@ -332,7 +332,7 @@ class PlayState extends FlxState
                 return 0;
             if (sprite1.health == -10)
                 return 1;
-            else if (sprite2.health == -1)
+            else if (sprite2.health == -10)
                 return -1;
 
             return cast((sprite1.y + sprite1.height/2) - (sprite2.y + sprite2.height/2));
@@ -418,20 +418,11 @@ class PlayState extends FlxState
         
         // Collide with tilemap.
         // First, disable collisions for tiles that shouldn't be collided with.
-        for (tileNum in uncollidableTiles)
-        {
-            obstacles.setTileProperties(tileNum, FlxObject.NONE);
-        }
-
+        toggleAdditionalTilemapCollisions(false);
         // Do collision check.
         FlxG.collide(collidableSprites, obstacles);
-        
-        // Reenable collisions (these collisions are used when raycasting).
-        for (tileNum in uncollidableTiles)
-        {
-            obstacles.setTileProperties(tileNum, FlxObject.ANY);
-        }
-
+        // Reenable the collisions.
+        toggleAdditionalTilemapCollisions(true);
 
         // Vision checks
         for (predator in entityGroups[EntityPredator])
@@ -466,6 +457,16 @@ class PlayState extends FlxState
                     hasSeenNewEntity = true;
                 }
             }
+        }
+    }
+
+    public function toggleAdditionalTilemapCollisions(toggle:Bool)
+    {
+        // Reenable collisions (these collisions are used when raycasting).
+        var collisions = toggle ? FlxObject.ANY : FlxObject.NONE;
+        for (tileNum in uncollidableTiles)
+        {
+            obstacles.setTileProperties(tileNum, collisions);
         }
     }
 

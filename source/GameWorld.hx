@@ -158,8 +158,10 @@ class GameWorld
         var sprite = entity.getSprite();
         var tilemap = PlayState.world.getObstacles();
         var staticObstacles = PlayState.world.getStaticObstacles();
-        
+
+        PlayState.world.toggleAdditionalTilemapCollisions(false);
         var collision:Bool = tilemap.overlaps(sprite);
+        PlayState.world.toggleAdditionalTilemapCollisions(true);
         return collision || FlxG.overlap(sprite, staticObstacles);
     }
 
