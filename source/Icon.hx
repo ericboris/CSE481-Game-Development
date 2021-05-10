@@ -80,7 +80,6 @@ class Icon
     {
         if (fadeOutDelay > 0)
         {
-            Console.log("Fading in.");
             fadeIn();
             this.fadeOutDelay = fadeOutDelay;
             this.shouldFadeOut = true;

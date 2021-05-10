@@ -13,6 +13,7 @@ import flixel.text.FlxText;
 import flixel.FlxG;
 import flixel.FlxBasic;
 import flixel.tile.FlxTile;
+import flixel.graphics.FlxGraphic;
 
 class PlayState extends FlxState
 {
@@ -218,7 +219,7 @@ class PlayState extends FlxState
             collider.visible = false;
 
             var sprite = new FlxSprite();
-            sprite.loadGraphic(AssetPaths.tree_test__png, false, 16, 16);
+            sprite.loadGraphic(FlxGraphic.fromFrame(obstacles.frames.frames[tileNum]), false, 16, 16);
             sprite.setSize(16, 16);
             sprite.x = tileX * SMALL_TILE_SIZE;
             sprite.y = tileY * SMALL_TILE_SIZE;
