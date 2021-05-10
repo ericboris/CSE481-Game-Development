@@ -327,6 +327,14 @@ class PlayState extends FlxState
         {
             var sprite1:FlxObject = cast obj1;
             var sprite2:FlxObject = cast obj2;
+
+            if (sprite1.health == -10 && sprite2.health == -10)
+                return 0;
+            if (sprite1.health == -10)
+                return 1;
+            else if (sprite2.health == -1)
+                return -1;
+
             return cast((sprite1.y + sprite1.height/2) - (sprite2.y + sprite2.height/2));
         }
     }

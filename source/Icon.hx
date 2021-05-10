@@ -11,6 +11,7 @@ import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
 import flixel.tweens.misc.NumTween;
 import flixel.tweens.FlxEase;
+import flash.display.BlendMode;
 
 class Icon
 {
@@ -58,6 +59,8 @@ class Icon
         this.sprite = newSprite;
         PlayState.world.add(sprite);
         sprite.alpha = 0;
+        // This is a hacky workaround to indicate that this sprite should be drawn on top.
+        sprite.health = -10;
     }
 
     public function setSprite(width:Int, height:Int, asset:String)
