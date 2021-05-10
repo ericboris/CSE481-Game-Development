@@ -308,7 +308,7 @@ class Player extends Entity
             followers.resize(0);
 
             // Move player to nearest cave.
-            
+           
             FlxG.camera.shake(0.01, 0.2);
             FlxG.camera.fade(FlxColor.BLACK, 0.33, true);
             
