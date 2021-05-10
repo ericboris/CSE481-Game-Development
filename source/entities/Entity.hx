@@ -27,6 +27,8 @@ class Entity
 
     var thought:Icon;
 
+    var isFadingOut:Bool = false;
+
     public function new()
     {
         sprite = new SpriteWrapper<Entity>(this);
@@ -50,6 +52,16 @@ class Entity
 
     public function update(elapsed:Float)
     {
+        if (isFadingOut)
+        {
+            sprite.alpha -= 0.05;
+            if (sprite.alpha <= 0)
+            {
+                PlayState.world.removeEntity(this);
+                return;
+            }
+        }
+
         if (isJumpingCliff)
         {
             if (sprite.path.finished)
@@ -60,6 +72,7 @@ class Entity
 
             sprite.velocity.set(0,0);
         }
+
 
         // Update our sprite
         //sprite.update(elapsed);
@@ -246,5 +259,15 @@ class Entity
         {
             thought.setContent(content, fadeOutDelay);
         }
+    }
+
+    public function getThought():Icon
+    {
+        return thought;
+    }
+
+    public function fadeOutAndRemove()
+    {
+        isFadingOut = true;
     }
 }

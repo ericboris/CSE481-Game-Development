@@ -373,6 +373,11 @@ class PlayState extends FlxState
         spriteGroups[type].remove(sprite, true);
         collidableSprites.remove(sprite, true);
         remove(sprite, true);
+
+        if (entity.getThought() != null)
+        {
+            remove(entity.getThought().sprite);
+        }
     }
 
     public function removeFromCollidableSprites(entity:Entity)

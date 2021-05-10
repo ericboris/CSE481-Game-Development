@@ -82,8 +82,7 @@ class CollisionHandler
             {
                 var boulder:Boulder = cast sprite.entity;
 
-                boulder.goIntoWater(tile.x, tile.y);
-                tilemap.setTileByIndex(tile.mapIndex, TileType.WATER_NC, false);
+                boulder.goIntoWater(tile.x, tile.y, tile.mapIndex);
             }
         }
     }

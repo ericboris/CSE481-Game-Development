@@ -9,6 +9,8 @@ class Boulder extends Entity
     final PUSH_SPEED = 0.4;
 
     var isInWater:Bool = false;
+    // The tile of water that the boulder is being pushed into.
+    var tileIndex:Int;
 
     public function new()
     {
@@ -58,11 +60,12 @@ class Boulder extends Entity
         }
     }
 
-    public function goIntoWater(x: Float, y: Float)
+    public function goIntoWater(x: Float, y: Float, tileIndex:Int)
     {
         if (!isInWater)
         {
             // TODO animate path
+            this.tileIndex = tileIndex;
             sprite.path = new FlxPath();
             sprite.path.add(getX(), getY());
             sprite.path.add(x + sprite.width/2, y + sprite.height/2);
@@ -75,8 +78,11 @@ class Boulder extends Entity
 
     public function inWater(path:FlxPath)
     {
-        PlayState.world.removeFromCollidableSprites(this);
+        this.fadeOutAndRemove();
 
-        // Set adjacent tile to no collisions, if it's a ridge in the correct orientation
+        // TODO: Set adjacent tile to no collisions, if it's a ridge in the correct orientation
+        // This is currently done in CollisionHandler.
+        var tilemap = PlayState.world.getObstacles();
+        tilemap.setTileByIndex(tileIndex, TileType.WATER_NC, true);
     }
 }
