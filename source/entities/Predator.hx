@@ -5,6 +5,7 @@ import flixel.FlxObject;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import js.html.Console;
+import flixel.system.FlxSound;
 
 class Predator extends Dino
 {
@@ -28,6 +29,9 @@ class Predator extends Dino
     var satiatedTimer:Float = 0;
     static final FLASHING_RATE = 0.065;
     var alphaRate:Float = FLASHING_RATE;
+
+    var attackRoar:FlxSound;
+    var hasRoared:Bool = false;
 
     public function new()
     {
@@ -56,6 +60,10 @@ class Predator extends Dino
         this.NEARBY_SIGHT_RADIUS = 40;
 
         sprite.setSize(30, 30);
+
+        this.attackRoar = FlxG.sound.load(AssetPaths.PredatorRoar1__mp3, 1.1);
+        attackRoar.proximity(sprite.x, sprite.y, FlxG.camera.target, FlxG.width * 0.6);
+    
     }
 
     public override function update(elapsed:Float)
@@ -194,9 +202,16 @@ class Predator extends Dino
                 // Return to Unherded state
                 this.sprite.elasticity = ELASTICITY;
                 this.state = Unherded;
+                hasRoared = false;
             }
         }
 
+        if (hasRoared == false) 
+        {
+            attackRoar.setPosition(sprite.x, sprite.y);
+            attackRoar.play();
+            hasRoared = true;
+        }
         speedUp(PURSUING_SPEED);
     }
 

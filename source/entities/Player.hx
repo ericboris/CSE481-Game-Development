@@ -26,6 +26,7 @@ class Player extends Entity
     var frameCounter:Int = 0;
 
     var stepSound:FlxSound;
+    var killedSound:FlxSound;
 
     public function new()
     {
@@ -53,9 +54,10 @@ class Player extends Entity
         followers = new Array<Dino>();
 
         this.SIGHT_ANGLE = GameWorld.toRadians(45);
-        this.SIGHT_RANGE = 100;
+        this.SIGHT_RANGE = 150;
 
-        this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__mp3);
+        this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__mp3, 1.0);
+        this.killedSound = FlxG.sound.load(AssetPaths.lose__mp3, 1.0);
     }
 
     public override function update(elapsed:Float)
@@ -295,8 +297,11 @@ class Player extends Entity
             //var caves = PlayState.world.getCaves();
             //var nearestCave = GameWorld.getNearestEntity(this, cast caves);
             //this.setPosition(nearestCave.sprite.x, nearestCave.sprite.y);
+            FlxG.camera.shake(0.01, 0.2);
+            FlxG.camera.fade(FlxColor.BLACK, 0.33, true);
             var respawnCave = PlayState.world.getRespawnCave();
             this.setPosition(respawnCave.getX(), respawnCave.getY());
+            killedSound.play();
         }
     }
 

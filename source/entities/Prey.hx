@@ -1,11 +1,15 @@
 package entities;
 
 import flixel.FlxObject;
+import flixel.FlxG;
 import js.html.Console;
+import flixel.system.FlxSound;
 
 class Prey extends Dino
 {
     final PREY_ELASTICITY = 0.9;
+
+    var stepSound:FlxSound;
 
     public function new()
     {
@@ -36,6 +40,7 @@ class Prey extends Dino
 
         this.SIGHT_ANGLE = GameWorld.toRadians(360);
         this.SIGHT_RANGE = 100;
+
     }
 
     public override function update(elapsed:Float)
@@ -45,12 +50,12 @@ class Prey extends Dino
             state = Fleeing;
         }
 
-        move();
+        move(elapsed);
 
         super.update(elapsed);
     }
 
-    function move()
+    function move(elapsed:Float)
     {
         if (Math.abs(sprite.velocity.y) > Math.abs(sprite.velocity.x))
         {
@@ -96,7 +101,8 @@ class Prey extends Dino
             // If Herded, notify the player that we just died
             if (state == Herded)
                 herdedPlayer.notifyDeadFollower(this);
-        
+                FlxG.camera.shake(0.005, 0.1);
+
             // Die instantly!
             PlayState.world.removeEntity(this);
         }
