@@ -13,6 +13,4 @@ class Obstacle extends Entity
         this.setSprite(width, height, color);
         this.sprite.immovable = true;
     }
-
-    override public function update(elapsed:Float) {}
 }

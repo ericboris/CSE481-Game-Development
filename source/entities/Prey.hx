@@ -18,10 +18,10 @@ class Prey extends Dino
         this.type = EntityPrey;
 
         setGraphic(16, 16, AssetPaths.SlimeBlue__png, true);
-        sprite.animation.add("d", [0, 1, 2, 3, 4, 5], 6, false);
-        sprite.animation.add("l", [6, 7, 8, 9, 10, 11], 6, false);
-        sprite.animation.add("r", [12, 13, 14, 15, 16, 17], 6, false);
-        sprite.animation.add("u", [18, 19, 20, 21, 22, 23], 6, false);
+        sprite.animation.add("d", [0, 1, 2, 3, 4, 5], 12, false);
+        sprite.animation.add("l", [6, 7, 8, 9, 10, 11], 12, false);
+        sprite.animation.add("r", [12, 13, 14, 15, 16, 17], 12, false);
+        sprite.animation.add("u", [18, 19, 20, 21, 22, 23], 12, false);
         sprite.setSize(14, 14);
 
         /**

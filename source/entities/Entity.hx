@@ -34,7 +34,6 @@ class Entity
         seenEntities = new Array<Entity>();
         
         thought = new Icon(this, 0, -18);
-        PlayState.world.add(thought.sprite);
     }
 
     function setGraphic(width:Int, height:Int, dir:String, isAnimated:Bool)
@@ -95,6 +94,8 @@ class Entity
                 handlePredatorCollision(cast entity);
             case EntityBoulder:
                 handleBoulderCollision(cast entity);
+            case EntityItem:
+                handleGroundItemCollision(cast entity);
             default:
         }
     }
@@ -105,6 +106,7 @@ class Entity
     public function handleCaveCollision(cave:Cave) {}
     public function handlePredatorCollision(predator:Predator) {}
     public function handleBoulderCollision(boulder:Boulder) {}
+    public function handleGroundItemCollision(item:GroundItem) {}
 
     /* Setters & Getters */
     public function setPosition(x:Float, y:Float)
@@ -236,6 +238,13 @@ class Entity
 
     public function think(content:String, fadeOutDelay:Float=2.5):Void
     {
-        thought.setContent(content, fadeOutDelay);
+        if (content == "V")
+        {
+            thought.appear(fadeOutDelay + 1.0);
+        }
+        else
+        {
+            thought.setContent(content, fadeOutDelay);
+        }
     }
 }
