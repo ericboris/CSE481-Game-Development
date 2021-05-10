@@ -1,8 +1,10 @@
 package entities;
 
 import flixel.FlxObject;
+import flixel.FlxG;
 import js.html.Console;
 import flixel.util.FlxPath;
+import flixel.system.FlxSound;
 
 class Boulder extends Entity
 {
@@ -11,6 +13,8 @@ class Boulder extends Entity
     var isInWater:Bool = false;
     // The tile of water that the boulder is being pushed into.
     var tileIndex:Int;
+
+    var splashSound:FlxSound;
 
     public function new()
     {
@@ -23,6 +27,8 @@ class Boulder extends Entity
         this.sprite.mass = 1000;
 
         this.thought.setSprite(16, 16, AssetPaths.down_arrow__png);
+
+        this.splashSound = FlxG.sound.load(AssetPaths.splash__mp3, 1.0);
     }
 
     public function isCollidable():Bool
@@ -78,6 +84,8 @@ class Boulder extends Entity
 
     public function inWater(path:FlxPath)
     {
+        splashSound.play();
+
         this.fadeOutAndRemove();
 
         // TODO: Set adjacent tile to no collisions, if it's a ridge in the correct orientation
