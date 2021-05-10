@@ -63,12 +63,9 @@ class Player extends Entity
         followers = new Array<Dino>();
 
         this.SIGHT_ANGLE = GameWorld.toRadians(45);
-<<<<<<< HEAD
         this.SIGHT_RANGE = 150;
-=======
         this.SIGHT_RANGE = 120.0;
         this.NEARBY_SIGHT_RADIUS = 120.0;
->>>>>>> ae7fc5691e13b63a4d2813f666278d3341719e99
 
         this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__mp3, 1.0);
         this.killedSound = FlxG.sound.load(AssetPaths.lose__mp3, 1.0);
@@ -312,14 +309,12 @@ class Player extends Entity
             followers.resize(0);
 
             // Move player to nearest cave.
-<<<<<<< HEAD
             //var caves = PlayState.world.getCaves();
             //var nearestCave = GameWorld.getNearestEntity(this, cast caves);
             //this.setPosition(nearestCave.sprite.x, nearestCave.sprite.y);
             FlxG.camera.shake(0.01, 0.2);
             FlxG.camera.fade(FlxColor.BLACK, 0.33, true);
-=======
->>>>>>> ae7fc5691e13b63a4d2813f666278d3341719e99
+
             var respawnCave = PlayState.world.getRespawnCave();
             this.setPosition(respawnCave.getX(), respawnCave.getY());
             killedSound.play();
