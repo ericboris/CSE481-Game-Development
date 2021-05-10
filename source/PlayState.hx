@@ -11,6 +11,8 @@ import flixel.util.FlxColor;
 import js.html.Console;
 import flixel.text.FlxText;
 import flixel.FlxG;
+import flixel.FlxBasic;
+import flixel.tile.FlxTile;
 
 class PlayState extends FlxState
 {
@@ -144,11 +146,11 @@ class PlayState extends FlxState
             }
         }
 
-        // Set cliff collision handlers
-        CollisionHandler.setTileCollisions(obstacles);
-        
         // Load entities from tilemap
         map.loadEntities(placeEntities, "entities");
+
+        // Set cliff collision handlers
+        CollisionHandler.setTileCollisions(obstacles);
         
         // Set the initial respawn cave to be the cave nearest the player at level start.
         respawnCave = cast GameWorld.getNearestEntity(player, entityGroups[EntityCave]);
@@ -163,8 +165,9 @@ class PlayState extends FlxState
         add(scoreText);
 
         // Set up transition screen
-        transitionScreen = new FlxSprite(0, 0);
-        transitionScreen.makeGraphic(TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight, FlxColor.BLACK);
+        // Set it so it covers the entire screen, and it's middle y is negative (this is for draw ordering reasons).
+        transitionScreen = new FlxSprite(0, -mapHeight);
+        transitionScreen.makeGraphic(TILE_WIDTH * mapWidth + 200, TILE_HEIGHT * mapHeight * 2, FlxColor.BLACK);
         transitionScreen.alpha = 1;
         add(transitionScreen);
     }
@@ -213,6 +216,13 @@ class PlayState extends FlxState
             var collider = new StaticObject(x, y, width, height, tileNum);
             collider.immovable = true;
             collider.visible = false;
+
+            var sprite = new FlxSprite();
+            sprite.loadGraphic(AssetPaths.tree_test__png, false, 16, 16);
+            sprite.setSize(16, 16);
+            sprite.x = tileX * SMALL_TILE_SIZE;
+            sprite.y = tileY * SMALL_TILE_SIZE;
+            add(sprite);
 
             /* Uncomment this to visualize the hitboxes*/
             /*
@@ -279,7 +289,7 @@ class PlayState extends FlxState
  
         updateTransitionScreen();
         updateScore();
- 
+
         // Update all entities
         for (entity in entities)
         {
@@ -293,7 +303,31 @@ class PlayState extends FlxState
             addEntity(prey);
         }
 
+        this.sort(sortSprites);
+
         super.update(elapsed);
+    }
+
+    function sortSprites(order:Int, obj1:FlxBasic, obj2:FlxBasic):Int {
+        if (obj1 == null || obj2 == null)
+        {
+            return 0;
+        }
+
+        var check1 = Std.is(obj1, FlxTilemap);
+        var check2 = Std.is(obj2, FlxTilemap);
+        if (check1 && check2)
+            return 0;
+        else if (check1)
+            return -1;
+        else if (check2)
+            return 1;
+        else
+        {
+            var sprite1:FlxObject = cast obj1;
+            var sprite2:FlxObject = cast obj2;
+            return cast((sprite1.y + sprite1.height/2) - (sprite2.y + sprite2.height/2));
+        }
     }
 
     // Adds entity to the world and respective sprite group.
@@ -327,9 +361,9 @@ class PlayState extends FlxState
 
         // Remove from FlxGroups
         var sprite = entity.getSprite();
-        spriteGroups[type].remove(sprite);
-        collidableSprites.remove(sprite);
-        remove(sprite);
+        spriteGroups[type].remove(sprite, true);
+        collidableSprites.remove(sprite, true);
+        remove(sprite, true);
     }
 
     public function removeFromCollidableSprites(entity:Entity)

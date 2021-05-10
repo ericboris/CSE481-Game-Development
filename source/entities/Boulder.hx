@@ -19,6 +19,8 @@ class Boulder extends Entity
         this.sprite.immovable = true;
         this.type = EntityBoulder;
         this.sprite.mass = 1000;
+
+        this.thought.setSprite(16, 16, AssetPaths.down_arrow__png);
     }
 
     public function isCollidable():Bool

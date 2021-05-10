@@ -32,13 +32,26 @@ class Icon
         setText("");
     }
 
+    function setNewFlxSprite(newSprite:FlxSprite)
+    {
+        if (sprite != null)
+        {
+            PlayState.world.remove(sprite);
+        }
+        this.sprite = newSprite;
+        PlayState.world.add(sprite);
+        sprite.alpha = 0;
+    }
+
     public function setSprite(width:Int, height:Int, asset:String)
     {
-        this.width = width;
-        this.height = height;
-        sprite = new FlxSprite();
+        var sprite = new FlxSprite();
         sprite.loadGraphic(asset, false, width, height);
         sprite.setGraphicSize(width, height);
+        this.width = width;
+        this.height = height;
+ 
+        setNewFlxSprite(sprite);
     }
 
     public function setText(content:String, size:Int=11)
@@ -47,10 +60,10 @@ class Icon
         setContent(content, 0);
         text.setBorderStyle(SHADOW, FlxColor.BLACK, 1, 1);
 
-        sprite = text;
+        setNewFlxSprite(text);
     }
 
-    public function setContent(content:String, fadeOutDelay:Float=0)
+    public function setContent(content:String, fadeOutDelay:Float=2.5)
     {
         if (Std.is(sprite, FlxText))
         {
@@ -58,13 +71,19 @@ class Icon
             text.text = content;
             this.width = text.textField.textWidth;
             this.height = text.textField.textHeight;
-            
-            if (fadeOutDelay > 0)
-            {
-                fadeIn();
-                this.fadeOutDelay = fadeOutDelay;
-                this.shouldFadeOut = true;
-            }
+
+            this.appear(fadeOutDelay);
+        }
+    }
+
+    public function appear(fadeOutDelay:Float=2.5)
+    {
+        if (fadeOutDelay > 0)
+        {
+            Console.log("Fading in.");
+            fadeIn();
+            this.fadeOutDelay = fadeOutDelay;
+            this.shouldFadeOut = true;
         }
     }
 

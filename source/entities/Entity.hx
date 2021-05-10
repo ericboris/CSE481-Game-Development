@@ -34,7 +34,6 @@ class Entity
         seenEntities = new Array<Entity>();
         
         thought = new Icon(this, 0, -18);
-        PlayState.world.add(thought.sprite);
     }
 
     function setGraphic(width:Int, height:Int, dir:String, isAnimated:Bool)
@@ -239,6 +238,13 @@ class Entity
 
     public function think(content:String, fadeOutDelay:Float=2.0):Void
     {
-        thought.setContent(content, fadeOutDelay);
+        if (content == "V")
+        {
+            thought.appear();
+        }
+        else
+        {
+            thought.setContent(content, fadeOutDelay);
+        }
     }
 }
