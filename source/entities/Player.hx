@@ -28,6 +28,10 @@ class Player extends Entity
     var stepSound:FlxSound;
     var killedSound:FlxSound;
     var cliffJumpSound:FlxSound;
+    var callSound:FlxSound;
+
+    var MIN_CALL_RADIUS:Int = 1;
+    var MAX_CALL_RADIUS:Int = 100;
 
     var inCancellableAnimation:Bool=true;
 
@@ -70,10 +74,12 @@ class Player extends Entity
         this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__mp3, 0.5);
         this.killedSound = FlxG.sound.load(AssetPaths.lose__mp3, 1.0);
         this.cliffJumpSound = FlxG.sound.load(AssetPaths.cliffjump__mp3, 0.7);
+        this.callSound = FlxG.sound.load(AssetPaths.call__mp3, 1.0);
     }
 
     public override function update(elapsed:Float)
     {
+        call();
         move();
         updateItem();
         
@@ -118,6 +124,27 @@ class Player extends Entity
         }
 
         super.update(elapsed);
+    }
+
+    function call():Void
+    {
+        var call = FlxG.keys.anyPressed([C]);
+        if (call)
+        {
+            if (!callSound.playing)
+            {
+                callSound.fadeIn(0.2, 0.0, 1.0);
+                callSound.play();
+            }
+            PlayState.world.callNearbyDinos(getCallRadius());
+        }
+        else
+        {
+            if (callSound.playing)
+            {
+                callSound.fadeOut(0.05, 0.0);
+            }
+        }
     }
 
     function reorganizeHerd()
@@ -360,5 +387,16 @@ class Player extends Entity
     public function getSpeed()
     {
         return this.speed;
+    }
+
+    // Return whether the player is calling.
+    public function isPlayerCalling():Bool
+    {
+        return callSound.playing && (getCallRadius() > MIN_CALL_RADIUS);
+    }
+
+    public function getCallRadius():Float
+    {
+        return callSound.volume * MAX_CALL_RADIUS;
     }
 }
