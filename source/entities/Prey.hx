@@ -42,7 +42,6 @@ class Prey extends Dino
 
         this.SIGHT_ANGLE = GameWorld.toRadians(360);
         this.SIGHT_RANGE = 100;
-
     }
 
     public override function update(elapsed:Float)
@@ -85,7 +84,7 @@ class Prey extends Dino
 
     public override function handlePlayerCollision(player:Player)
     {
-        /**
+        /*
         if (state == Unherded || state == Fleeing)
         {
             // We only care about this collision if we are unherded.
@@ -123,11 +122,13 @@ class Prey extends Dino
 
     public override function handlePreyCollision(prey: Prey)
     {
+        /* Collision with prey herds this prey
         if ((state == Unherded || state == Fleeing) && prey.getState() == Herded)
         {
             var player = prey.getHerdedPlayer();
             addToHerd(player);
         }
+        */
     }
 
     private override function unherded(elapsed:Float)

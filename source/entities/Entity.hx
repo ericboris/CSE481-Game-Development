@@ -136,12 +136,12 @@ class Entity
 
     public function handleCliffCollision(direction:Int)
     {
-        if (!canJumpCliffs)
+        if (!canJumpCliffs || isJumpingCliff)
         {
             return;
         }
 
-        var jumpDist = 30;
+        var jumpDist = 32;
 
         var start = new FlxPoint(sprite.x, sprite.y);
         var end = new FlxPoint(sprite.x, sprite.y);
@@ -172,16 +172,23 @@ class Entity
         }
 
         var control = new FlxPoint((end.x + start.x) / 2, (end.y + start.y) / 2);
-        control.x -= FlxMath.signOf(end.y - start.y) * 10;
-        control.y += FlxMath.signOf(end.x - start.x) * 20;
+        if (end.x - start.x != 0)
+            control.y -= 20;
+        if (end.y - start.y != 0)
+            control.x += 10;
         
-        var duration = 0.5;
+        var duration = 0.6;
         var options = {ease: FlxEase.sineInOut, type: ONESHOT, onComplete: function(tween:FlxTween)
         {
+            sprite.allowCollisions = FlxObject.ANY;
             isJumpingCliff = false;
         }};
+        Console.log([start, control, end]);
         FlxTween.quadPath(this.sprite, [start, control, end], duration, true, options);
+        sprite.velocity.x = 0;
+        sprite.velocity.y = 0;
         isJumpingCliff = true;
+        sprite.allowCollisions = FlxObject.NONE;
     }
 
     public function getSightRange():Float

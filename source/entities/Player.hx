@@ -160,12 +160,12 @@ class Player extends Entity
                 callSound.play();
             }
             maxCallRadius = FlxMath.maxInt(cast callSound.volume * MAX_CALL_RADIUS, cast maxCallRadius);
+            PlayState.world.callNearbyDinos(maxCallRadius);
         }
         else
         {
             if (maxCallRadius > 1)
             {
-                PlayState.world.callNearbyDinos(maxCallRadius);
                 callSound.fadeOut(0.05, 0.0);
                 maxCallRadius = 0;
             }
