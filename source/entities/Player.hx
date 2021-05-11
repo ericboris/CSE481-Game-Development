@@ -160,12 +160,12 @@ class Player extends Entity
                 callSound.play();
             }
             maxCallRadius = FlxMath.maxInt(cast callSound.volume * MAX_CALL_RADIUS, cast maxCallRadius);
+            PlayState.world.callNearbyDinos(maxCallRadius);
         }
         else
         {
             if (maxCallRadius > 1)
             {
-                PlayState.world.callNearbyDinos(maxCallRadius);
                 callSound.fadeOut(0.05, 0.0);
                 maxCallRadius = 0;
             }
@@ -363,16 +363,21 @@ class Player extends Entity
                 follower.setUnherded();
             }
             followers.resize(0);
-
-            // Move player to nearest cave.
-           
-            FlxG.camera.shake(0.01, 0.2);
-            FlxG.camera.fade(FlxColor.BLACK, 0.33, true);
-            
-            var respawnCave = PlayState.world.getRespawnCave();
-            this.setPosition(respawnCave.getX(), respawnCave.getY());
-            killedSound.play();
+            respawn();
         }
+    }
+
+    public function respawn()
+    {
+        PlayLogger.recordPlayerDeath(this);
+
+        // Move player to nearest cave.
+        FlxG.camera.shake(0.01, 0.2);
+        FlxG.camera.fade(FlxColor.BLACK, 0.33, true);
+        
+        var respawnCave = PlayState.world.getRespawnCave();
+        this.setPosition(respawnCave.getX(), respawnCave.getY());
+        killedSound.play();
     }
 
     public override function handleBoulderCollision(boulder:Boulder)

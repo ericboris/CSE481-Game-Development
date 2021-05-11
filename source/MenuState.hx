@@ -16,6 +16,11 @@ class MenuState extends FlxState
     {
         super.create();
 
+        if (!PlayLogger.loggerInitialized())
+        {
+            PlayLogger.initializeLogger();
+        }
+
         titleText = new FlxText(210, 180, 400, "Dino Herder", 70);
         titleText.alignment = CENTER;
         add(titleText);

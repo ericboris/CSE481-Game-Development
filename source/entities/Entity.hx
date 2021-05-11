@@ -6,6 +6,9 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxPath;
 import flixel.util.FlxColor;
 import js.html.Console;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 
 class Entity
 {
@@ -64,12 +67,6 @@ class Entity
 
         if (isJumpingCliff)
         {
-            if (sprite.path.finished)
-            {
-                sprite.path = null;
-                isJumpingCliff = false;
-            }
-
             sprite.velocity.set(0,0);
         }
 
@@ -139,51 +136,34 @@ class Entity
 
     public function handleCliffCollision(direction:Int)
     {
-        if (!canJumpCliffs)
+        if (!canJumpCliffs || isJumpingCliff)
         {
             return;
         }
 
-        var jumpDist = 25;
-        
-        var endx = sprite.x;
-        var endy = sprite.y;
-        var theta0 = 0.0;
-        var theta1 = 0.0;
-        var radiusX = jumpDist/2;
-        var radiusY = jumpDist/2;
+        var jumpDist = 32;
+
+        var start = new FlxPoint(sprite.x, sprite.y);
+        var end = new FlxPoint(sprite.x, sprite.y);
         switch (direction)
         {
             case FlxObject.UP:
-                endy -= jumpDist;
-                theta0 = Math.PI/2;
-                theta1 = -Math.PI/2;
-                radiusX /= 1.5;
+                end.y -= jumpDist;
             case FlxObject.DOWN:
-                endy += jumpDist;
-                theta0 = -Math.PI/2;
-                theta1 = Math.PI/2;
-                radiusX /= 1.5;
+                end.y += jumpDist;
             case FlxObject.LEFT:
-                endx -= jumpDist;
-                theta0 = 2 * Math.PI;
-                theta1 = Math.PI;
-                radiusY /= 1.5;
+                end.x -= jumpDist;
             case FlxObject.RIGHT:
-                endx += jumpDist;
-                theta0 = Math.PI;
-                theta1 = 2 * Math.PI;
-                radiusY /= 1.5;
+                end.x += jumpDist;
             default:
         }
 
-        var startx = sprite.x;
-        var starty = sprite.y;
-        sprite.x = endx;
-        sprite.y = endy;
+        // Check if sprite will land on a tile if they jump
+        sprite.x = end.x;
+        sprite.y = end.y;
         var colliding = GameWorld.collidingWithObstacles(this);
-        sprite.x = startx;
-        sprite.y = starty;
+        sprite.x = start.x;
+        sprite.y = start.y;
 
         if (colliding)
         {
@@ -191,22 +171,24 @@ class Entity
             return;
         }
 
-        var centerX = (endx + sprite.x) / 2;
-        var centerY = (endy + sprite.y) / 2;
-
-
-        isJumpingCliff = true;
-        sprite.path = new FlxPath();
-        var pathLength = 10;
-        for (i in 0...pathLength)
+        var control = new FlxPoint((end.x + start.x) / 2, (end.y + start.y) / 2);
+        if (end.x - start.x != 0)
+            control.y -= 20;
+        if (end.y - start.y != 0)
+            control.x += 10;
+        
+        var duration = 0.6;
+        var options = {ease: FlxEase.sineInOut, type: ONESHOT, onComplete: function(tween:FlxTween)
         {
-            var theta = cast(i, Float) / cast(pathLength, Float) * (theta1 - theta0) + theta0;
-            var pathX = centerX + Math.cos(theta) * radiusX;
-            var pathY = centerY + Math.sin(theta) * radiusY;
-            sprite.path.add(pathX, pathY);
-        }
-        sprite.path.add(endx, endy);
-        sprite.path.start(null, 100.0);
+            sprite.allowCollisions = FlxObject.ANY;
+            isJumpingCliff = false;
+        }};
+        Console.log([start, control, end]);
+        FlxTween.quadPath(this.sprite, [start, control, end], duration, true, options);
+        sprite.velocity.x = 0;
+        sprite.velocity.y = 0;
+        isJumpingCliff = true;
+        sprite.allowCollisions = FlxObject.NONE;
     }
 
     public function getSightRange():Float

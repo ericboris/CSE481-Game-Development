@@ -19,6 +19,10 @@ class GameWorld
                             AssetPaths.canyon__json,
                             AssetPaths.Sandbox__json,
                             AssetPaths.boulder_test__json];
+    static public function levelId()
+    {
+        return levelIndex;
+    }
 
     // New entities to display reactions above.
     static var newEntities = [EntityCave,
@@ -162,8 +166,10 @@ class GameWorld
         var sprite = entity.getSprite();
         var tilemap = PlayState.world.getObstacles();
         var staticObstacles = PlayState.world.getStaticObstacles();
-        
+
+        PlayState.world.toggleAdditionalTilemapCollisions(false);
         var collision:Bool = tilemap.overlaps(sprite);
+        PlayState.world.toggleAdditionalTilemapCollisions(true);
         return collision || FlxG.overlap(sprite, staticObstacles);
     }
 
