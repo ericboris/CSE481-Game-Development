@@ -7,8 +7,11 @@ class Hitbox extends Entity
     var owner:Entity;
     var id:Int;
 
-    var offsetX:Float;
-    var offsetY:Float;
+    var offsetX:Float = 0;
+    var offsetY:Float = 0;
+
+    var active:Bool = true;
+    var activeFrames:Int = -1;
 
     public function new(owner:Entity, id:Int)
     {
@@ -24,13 +27,20 @@ class Hitbox extends Entity
 
     public override function update(elapsed:Float)
     {
+        if (active && activeFrames > 0)
+        {
+            activeFrames--;
+            if (activeFrames == 0)
+            {
+                active = false;
+            }
+        }
+
         // Center on owner's position
         var ownerSprite = owner.getSprite();
         var centerX = ownerSprite.x + ownerSprite.width / 2 - sprite.width / 2;
         var centerY = ownerSprite.y + ownerSprite.height / 2 - sprite.height / 2;
         sprite.setPosition(centerX + offsetX, centerY + offsetY);
-
-        super.update(elapsed);
     }
 
     public function getId()
@@ -40,7 +50,16 @@ class Hitbox extends Entity
 
     public override function handleCollision(entity:Entity)
     {
-        owner.notifyHitboxCollision(this, entity);
+        if (active)
+        {
+            owner.notifyHitboxCollision(this, entity);
+        }
+    }
+
+    public function setActive(active:Bool = true, frames:Int = -1)
+    {
+        this.active = active;
+        this.activeFrames = frames;
     }
 
     public function setOffset(x:Float, y:Float)
@@ -48,4 +67,11 @@ class Hitbox extends Entity
         offsetX = x;
         offsetY = y;
     }
+
+    // Set this object's hitbox, relative to the player's center
+    public function setSize(width:Float, height:Float)
+    {
+        this.sprite.setSize(width, height);
+    }
+
 }

@@ -139,6 +139,7 @@ class PlayState extends FlxState
         scoreText = new FlxText(0, 0, 0, "", 10);
         scoreText.alpha = 0;
         scoreText.setBorderStyle(SHADOW, FlxColor.BLACK, 1, 1);
+        scoreText.health = -10;
         add(scoreText);
 
         // Set up transition screen
@@ -146,6 +147,7 @@ class PlayState extends FlxState
         transitionScreen = new FlxSprite(0, -mapHeight);
         transitionScreen.makeGraphic(TILE_WIDTH * mapWidth + 200, TILE_HEIGHT * mapHeight * 2, FlxColor.BLACK);
         transitionScreen.alpha = 1;
+        transitionScreen.health = -10;
         add(transitionScreen);
 
         PlayLogger.startLevel(GameWorld.levelId());
@@ -379,6 +381,7 @@ class PlayState extends FlxState
         FlxG.overlap(playerGroup, collidableSprites, handleCollision);
         FlxG.overlap(preyGroup, collidableSprites, handleCollision);
         FlxG.overlap(hitboxGroup, collidableSprites, handleCollision);
+        FlxG.overlap(hitboxGroup, caveGroup, handleCollision);
 
         // Check cliff overlap
         FlxG.overlap(playerGroup, obstacles);

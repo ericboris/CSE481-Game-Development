@@ -177,13 +177,12 @@ class Entity
         if (end.y - start.y != 0)
             control.x += 10;
         
-        var duration = 0.6;
+        var duration = 0.4;
         var options = {ease: FlxEase.sineInOut, type: ONESHOT, onComplete: function(tween:FlxTween)
         {
             sprite.allowCollisions = FlxObject.ANY;
             isJumpingCliff = false;
         }};
-        Console.log([start, control, end]);
         FlxTween.quadPath(this.sprite, [start, control, end], duration, true, options);
         sprite.velocity.x = 0;
         sprite.velocity.y = 0;

@@ -12,7 +12,8 @@ import flixel.util.FlxSpriteUtil; // For drawing call radius
 class Player extends Entity
 {
     /* Hitbox id constants */
-    static var INTERACT_HITBOX_ID = 0;
+    static final INTERACT_HITBOX_ID = 0;
+    static final STICK_HITBOX_ID    = 1;
 
     var speed:Float = 70.0;
 
@@ -41,6 +42,9 @@ class Player extends Entity
     // The item the player is currently holding. Null means nothing is held.
     var heldItem:GroundItem;
 
+    var interactHitbox:Hitbox;
+    var stickHitbox:Hitbox;
+
     public function new()
     {
         super();
@@ -52,7 +56,10 @@ class Player extends Entity
         sprite.setFacingFlip(FlxObject.LEFT, false, false);
         sprite.setFacingFlip(FlxObject.RIGHT, true, false);
 
-        sprite.animation.add("s", [2, 1], 12, false);
+        sprite.animation.add("slr", [18], 15, false);
+        sprite.animation.add("su", [6], 15, false);
+        sprite.animation.add("sd", [2], 15, false);
+
         sprite.animation.add("lr", [19, 20, 21, 22], 10, false);
         sprite.animation.add("u", [7, 8, 9, 10], 10, false);
         sprite.animation.add("d", [1, 2, 3, 4], 10, false);
@@ -64,9 +71,17 @@ class Player extends Entity
         sprite.setSize(6, 6);
         sprite.offset.set(4, 6);
 
-        var interactHitbox = new Hitbox(this, INTERACT_HITBOX_ID);
-        interactHitbox.getSprite().makeGraphic(24, 24, FlxColor.BLUE);
+        interactHitbox = new Hitbox(this, INTERACT_HITBOX_ID);
+        interactHitbox.setSize(24, 24);
+        interactHitbox.setOffset(0,0);
+        interactHitbox.setActive();
         addHitbox(interactHitbox);
+
+        stickHitbox = new Hitbox(this, STICK_HITBOX_ID);
+        stickHitbox.setSize(24, 24);
+        stickHitbox.setOffset(0,0);
+        stickHitbox.setActive(false);
+        addHitbox(stickHitbox);
 
         followers = new Array<Dino>();
 
@@ -120,10 +135,22 @@ class Player extends Entity
         if (isJumpingCliff)
         {
             // TODO: Jumping animation
-            sprite.animation.play("s");
             cliffJumpSound.play();
             FlxG.camera.shake(0.0001, 0.2);
+            switch (sprite.facing)
+            {
+                case FlxObject.LEFT, FlxObject.RIGHT:
+                    sprite.animation.play("slr");
+                case FlxObject.UP:
+                    sprite.animation.play("su");
+                case FlxObject.DOWN:
+                    sprite.animation.play("sd");
+            }
+        }
 
+        if (sprite.animation.finished)
+        {
+            inCancellableAnimation = true;
         }
 
         super.update(elapsed);
@@ -250,6 +277,20 @@ class Player extends Entity
         {
             // Player is not moving
             sprite.velocity.set(0, 0);
+            
+            if (inCancellableAnimation)
+            {
+                switch (sprite.facing)
+                {
+                    case FlxObject.LEFT, FlxObject.RIGHT:
+                        sprite.animation.play("slr");
+                    case FlxObject.UP:
+                        sprite.animation.play("su");
+                    case FlxObject.DOWN:
+                        sprite.animation.play("sd");
+                }
+                inCancellableAnimation = true;
+            }
             return;
         }
 
@@ -257,7 +298,8 @@ class Player extends Entity
         sprite.velocity.set(Math.cos(angle) * speed, Math.sin(angle) * speed);
 
         var canCancelAnimation = inCancellableAnimation || sprite.animation.finished;
-        if ((sprite.velocity.x != 0 || sprite.velocity.y != 0) && canCancelAnimation)
+        var isMoving = sprite.velocity.x != 0 || sprite.velocity.y != 0;
+        if (isMoving && canCancelAnimation)
         {
             stepSound.play();
             switch (sprite.facing)
@@ -278,7 +320,7 @@ class Player extends Entity
         if (heldItem != null)
         {
             var useKeyPressed = FlxG.keys.anyPressed([SPACE]);
-            if (useKeyPressed)
+            if (useKeyPressed && inCancellableAnimation)
             {
                 switch (sprite.facing)
                 {
@@ -290,6 +332,8 @@ class Player extends Entity
                         sprite.animation.play("itemd");
                 }
                 inCancellableAnimation = false;
+
+                stickHitbox.setActive(true, 20);
                 //item.use();
             }
         }
@@ -335,7 +379,19 @@ class Player extends Entity
         {
             if (entity.type == EntityCave)
             {
-                //inRangeOfCave = true;
+                handleCaveCollision(cast entity);
+            }
+        }
+        else if (hitbox.getId() == STICK_HITBOX_ID)
+        {
+            if (entity.type == EntityPrey)
+            {
+                var prey:Prey = cast entity;
+            }
+            else if (entity.type == EntityPredator)
+            {
+                var predator:Predator = cast entity;
+                predator.hitWithStick();
             }
         }
     }

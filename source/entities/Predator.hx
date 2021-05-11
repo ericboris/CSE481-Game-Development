@@ -21,6 +21,7 @@ class Predator extends Dino
     static final SEEN_TIMER = 1.0;
 
     static final SATIATED_TIMER = 2.0;
+    static final DAZED_TIMER = 1.5;
 
     var lastSeenEntity:Entity;
     var lastSeenTimer:Float = 0;
@@ -33,6 +34,9 @@ class Predator extends Dino
 
     var attackRoar:FlxSound;
     var hasRoared:Bool = false;
+
+    var dazed:Bool = false;
+    var dazedTimer:Float = 0;
 
     public function new()
     {
@@ -67,10 +71,35 @@ class Predator extends Dino
     
     }
 
+    function flash()
+    {
+        sprite.alpha += alphaRate;
+        if (sprite.alpha <= 0.3 || sprite.alpha >= 1.0)
+        {
+            alphaRate *= -1;
+        }
+    }
+
     public override function update(elapsed:Float)
     {
-        if (seenEntities.length > 0)
-            state = Pursuing;
+        if (dazed)
+        {
+            dazedTimer -= elapsed;
+            if (dazedTimer < 0)
+            {
+                dazed = false;
+            }
+
+            flash();
+        }
+        else
+        {
+            // Can only puruse if not dazed.
+            if (seenEntities.length > 0)
+            {
+                state = Pursuing;
+            }
+        }
 
         if (satiated)
         {
@@ -78,15 +107,17 @@ class Predator extends Dino
             satiatedTimer -= elapsed;
             if (satiatedTimer < 0)
                 satiated = false;
+            flash();
+        }
 
-            sprite.alpha += alphaRate;
-            if (sprite.alpha <= 0.3 || sprite.alpha >= 1.0)
-            {
-                alphaRate *= -1;
-            }
+        if (dazed || satiated)
+        {
+            // Flash while in these states.
+            flash();
         }
         else
         {
+            // If not in these states, return to completely opaque.
             if (sprite.alpha < 1.0)
             {
                 sprite.alpha += FLASHING_RATE;
@@ -230,9 +261,23 @@ class Predator extends Dino
         speedUp(PURSUING_SPEED);
     }
 
+    public function hitWithStick()
+    {
+        if (!dazed)
+        {
+            sprite.velocity.x *= -1;
+            sprite.velocity.y *= -1;
+        }
+
+        this.dazed = true;
+        this.dazedTimer = DAZED_TIMER;
+        this.state = Unherded;
+    }
+
     public function canEat(entity:Entity)
     {
-        if (!satiated)
+        var canEat = !satiated && !dazed;
+        if (canEat)
         {
             // Eat this entity! Set satiated to true and reverse direction.
             sprite.velocity.x *= -1;
