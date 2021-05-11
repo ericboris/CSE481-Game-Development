@@ -9,7 +9,12 @@ class PlayLogger
     static final GAME_ID = 202107;
     static final GAME_KEY = "4fc8038359b26ec7a1044c1c6bc85745";
     static final GAME_NAME = "dinosaurherd";
-    static final GAME_VERSION = 1;
+ 
+    static final DEBUG_VERSION = 1;
+    static final MAY_11_VERSION = 2;
+
+    static final GAME_VERSION = MAY_11_VERSION;    
+
     static var logger = new CapstoneLogger(GAME_ID, GAME_NAME, GAME_KEY, GAME_VERSION);
     static var createdLoggerSession = false;
 
