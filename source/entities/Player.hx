@@ -5,7 +5,9 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.system.FlxSound;
+import flixel.math.FlxMath;
 import js.html.Console;
+import flixel.util.FlxSpriteUtil; // For drawing call radius
 
 class Player extends Entity
 {
@@ -32,6 +34,7 @@ class Player extends Entity
 
     var MIN_CALL_RADIUS:Int = 1;
     var MAX_CALL_RADIUS:Int = 100;
+    var maxCallRadius:Int = 0;
 
     var inCancellableAnimation:Bool=true;
 
@@ -128,7 +131,8 @@ class Player extends Entity
 
     function call():Void
     {
-        var call = FlxG.keys.anyPressed([C]);
+        /**
+        var call = FlxG.keys.pressed.C;
         if (call)
         {
             if (!callSound.playing)
@@ -143,6 +147,27 @@ class Player extends Entity
             if (callSound.playing)
             {
                 callSound.fadeOut(0.05, 0.0);
+            }
+        }
+        */
+        //FlxSpriteUtil.drawCircle(this.sprite, -1, -1, maxCallRadius);
+
+        if (FlxG.keys.pressed.C)
+        {
+            if (!callSound.playing)
+            {
+                callSound.fadeIn(0.2, 0.0, 1.0);
+                callSound.play();
+            }
+            maxCallRadius = FlxMath.maxInt(cast callSound.volume * MAX_CALL_RADIUS, cast maxCallRadius);
+        }
+        else
+        {
+            if (maxCallRadius > 1)
+            {
+                PlayState.world.callNearbyDinos(maxCallRadius);
+                callSound.fadeOut(0.05, 0.0);
+                maxCallRadius = 0;
             }
         }
     }

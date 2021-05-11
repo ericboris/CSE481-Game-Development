@@ -541,6 +541,7 @@ class PlayState extends FlxState
         {
             var withinRange = GameWorld.entityDistance(player, prey) < callRadius;
             var calledCanSeeCaller = GameWorld.checkVision(prey, player);
+            Console.log("CALL RADIUS = " + callRadius);
 
             if (withinRange && calledCanSeeCaller)
             {
