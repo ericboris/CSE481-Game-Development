@@ -5,6 +5,10 @@ import flixel.FlxG;
 import js.html.Console;
 import flixel.util.FlxPath;
 import flixel.system.FlxSound;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.math.FlxPoint;
+import flixel.math.FlxMath;
 
 class Boulder extends Entity
 {
@@ -72,17 +76,22 @@ class Boulder extends Entity
         {
             // TODO animate path
             this.tileIndex = tileIndex;
-            sprite.path = new FlxPath();
-            sprite.path.add(getX(), getY());
-            sprite.path.add(x + sprite.width/2, y + sprite.height/2);
-            sprite.path.onComplete = inWater;
-            sprite.path.start(null, 20.0);
 
+            var start = new FlxPoint(sprite.x, sprite.y);
+            var end = new FlxPoint(x, y);
+            
+            var control = new FlxPoint((end.x + start.x) / 2, (end.y + start.y) / 2);
+            control.x -= FlxMath.signOf(start.y - end.y) * 8;
+            control.y += FlxMath.signOf(start.x - end.x) * 8;
+            
+            var duration = 0.8;
+            var options = {ease: FlxEase.quadInOut, type: ONESHOT, onComplete:inWater};
+            FlxTween.quadPath(this.sprite, [start, control, end], duration, true, options);
             isInWater = true;
         }
     }
 
-    public function inWater(path:FlxPath)
+    public function inWater(tween:FlxTween)
     {
         splashSound.play();
 
