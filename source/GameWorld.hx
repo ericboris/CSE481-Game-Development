@@ -18,6 +18,10 @@ class GameWorld
                             AssetPaths.tutorial4__json,
                             AssetPaths.Sandbox__json,
                             AssetPaths.boulder_test__json];
+    static public function levelId()
+    {
+        return levelIndex;
+    }
 
     // New entities to display reactions above.
     static var newEntities = [EntityCave,

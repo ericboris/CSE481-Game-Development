@@ -28,13 +28,6 @@ class PlayState extends FlxState
     static public final TILE_WIDTH = 320;
     static public final TILE_HEIGHT = 240;
  
-    static final GAME_ID = 202107;
-    static final GAME_KEY = "4fc8038359b26ec7a1044c1c6bc85745";
-    static final GAME_NAME = "dinosaurherd";
-    static final GAME_VERSION = 1;
-    static public var logger = new CapstoneLogger(GAME_ID, GAME_NAME, GAME_KEY, GAME_VERSION);
-    static public var createdLoggerSession = false;
-
     // Size of map (in # of tiles)
     var mapWidth = 2;
     var mapHeight = 2;
@@ -82,23 +75,6 @@ class PlayState extends FlxState
     override public function create()
     {
         super.create();
-
-        // Initialize logger
-        if (!createdLoggerSession)
-        {
-            // Get user id
-            var userId = logger.getSavedUserId();
-            if (userId == null)
-            {
-                // Generate new user id
-                userId = logger.generateUuid();
-                logger.setSavedUserId(userId);
-            }
-
-            // Start a new logging session.
-            // Only start the game once the callback has been called.
-            logger.startNewSession(userId, logNewSessionCallback);
-        }
 
         // Set singleton reference
         PlayState.world = this;
@@ -171,6 +147,8 @@ class PlayState extends FlxState
         transitionScreen.makeGraphic(TILE_WIDTH * mapWidth + 200, TILE_HEIGHT * mapHeight * 2, FlxColor.BLACK);
         transitionScreen.alpha = 1;
         add(transitionScreen);
+
+        PlayLogger.startLevel(GameWorld.levelId());
     }
 
     function setupCamera()
@@ -188,12 +166,6 @@ class PlayState extends FlxState
         var camera_w = TILE_WIDTH/4;
         var camera_h = TILE_HEIGHT/4;
         FlxG.camera.deadzone.set(camera_x - camera_w/2, camera_y - camera_h/2, camera_w, camera_h);
-    }
-
-    function logNewSessionCallback(initialized:Bool)
-    {
-        Console.log("Logger initialized: " + initialized);
-        createdLoggerSession = true;
     }
 
     function createTileCollider(tileX:Int, tileY:Int, obstacles:FlxTilemap)
@@ -225,18 +197,15 @@ class PlayState extends FlxState
             sprite.y = tileY * SMALL_TILE_SIZE;
             add(sprite);
 
-            /* Uncomment this to visualize the hitboxes*/
-            /*
-            var collider = new FlxSprite(x,y);
-            collider.makeGraphic(width, height, FlxColor.BLACK);
-            collider.updateHitbox();
-            collider.immovable = true;
-            collider.visible = true;
-            */
-
             staticCollidableSprites.add(collider);
             add(collider);
         }
+    }
+
+    function nextLevel()
+    {
+        PlayLogger.endLevel();
+        FlxG.switchState(new PlayState());
     }
 
     function updateTransitionScreen()
@@ -245,7 +214,7 @@ class PlayState extends FlxState
         transitioningToNextLevel = player.isInRangeOfCave() && levelIsComplete();
         if (FlxG.keys.anyPressed([N]))
         {
-            FlxG.switchState(new PlayState());
+            nextLevel();
         }
 
         // Update transition screen
@@ -255,7 +224,7 @@ class PlayState extends FlxState
             if (transitionScreen.alpha >= 1.0)
             {
                 // Go to next level!
-                FlxG.switchState(new PlayState());
+                nextLevel();
             }
         }
         else if (transitionScreen.alpha > 0)
@@ -279,11 +248,13 @@ class PlayState extends FlxState
 
     override public function update(elapsed:Float)
     {
-        if (!createdLoggerSession)
+        if (!PlayLogger.loggerInitialized())
         {
             // Don't execute update method until logger session has been created.
             return;
         }
+
+        PlayLogger.incrementTime(elapsed);
 
         // Do collision checks
         collisionChecks();

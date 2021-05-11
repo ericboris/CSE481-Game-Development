@@ -338,16 +338,21 @@ class Player extends Entity
                 follower.setUnherded();
             }
             followers.resize(0);
-
-            // Move player to nearest cave.
-           
-            FlxG.camera.shake(0.01, 0.2);
-            FlxG.camera.fade(FlxColor.BLACK, 0.33, true);
-            
-            var respawnCave = PlayState.world.getRespawnCave();
-            this.setPosition(respawnCave.getX(), respawnCave.getY());
-            killedSound.play();
+            respawn();
         }
+    }
+
+    public function respawn()
+    {
+        PlayLogger.recordPlayerDeath(this);
+
+        // Move player to nearest cave.
+        FlxG.camera.shake(0.01, 0.2);
+        FlxG.camera.fade(FlxColor.BLACK, 0.33, true);
+        
+        var respawnCave = PlayState.world.getRespawnCave();
+        this.setPosition(respawnCave.getX(), respawnCave.getY());
+        killedSound.play();
     }
 
     public override function handleBoulderCollision(boulder:Boulder)

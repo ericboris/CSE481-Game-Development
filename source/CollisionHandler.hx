@@ -175,15 +175,12 @@ class CollisionHandler
         for (i in indices)
         {
             var tile = tilemap.getTileByIndex(i);
-            Console.log("Hey " + i + " " + tile);
             if (tile == TileType.WATER_EDGE_UP_RIGHT || tile == TileType.WATER_EDGE_UP || tile == TileType.WATER_EDGE_UP_LEFT
              || tile == TileType.WATER_EDGE_RIGHT || tile == TileType.WATER_EDGE_LEFT
              || tile == TileType.WATER_EDGE_DOWN_RIGHT || tile == TileType.WATER_EDGE_DOWN || tile == TileType.WATER_EDGE_DOWN_LEFT)
             {
-                Console.log("Updating");
                 tilemap.setTileByIndex(i, tile+42);
             }
         }
-        Console.log("Done");
     }
 }
