@@ -16,6 +16,7 @@ class GameWorld
                             AssetPaths.tutorial2__json,
                             AssetPaths.tutorial3__json,
                             AssetPaths.tutorial4__json,
+                            AssetPaths.canyon__json,
                             AssetPaths.Sandbox__json,
                             AssetPaths.boulder_test__json];
 
@@ -25,6 +26,7 @@ class GameWorld
                             EntityBoulder,
                             EntityNull,
                             EntityPredator,
+                            EntityNull,
                             EntityNull,
                             EntityNull];
 
