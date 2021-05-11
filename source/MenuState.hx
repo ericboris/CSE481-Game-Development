@@ -12,6 +12,8 @@ class MenuState extends FlxState
     var titleText:FlxText;
     var optionsButton:FlxButton;
 
+    static final BASE_VOLUME = 0.7;
+
     override public function create()
     {
         super.create();
@@ -55,6 +57,8 @@ class MenuState extends FlxState
         {
             FlxG.sound.playMusic(AssetPaths.Theme__mp3, 0.5, true);
         }
+
+        FlxG.sound.volume = BASE_VOLUME;
     }
 
     override public function update(elapsed:Float)

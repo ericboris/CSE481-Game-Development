@@ -92,9 +92,9 @@ class Player extends Entity
 
         this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__mp3, 0.4);
         this.killedSound = FlxG.sound.load(AssetPaths.lose__mp3, 1.0);
-        this.cliffJumpSound = FlxG.sound.load(AssetPaths.cliffjump__mp3, 0.7);
-        this.callSound = FlxG.sound.load(AssetPaths.call__mp3, 0.9);
-        this.swipeSound = FlxG.sound.load(AssetPaths.PlayerSwipe__mp3, 1.0);
+        this.cliffJumpSound = FlxG.sound.load(AssetPaths.cliffjump__mp3, 0.85);
+        this.callSound = FlxG.sound.load(AssetPaths.call__mp3, 0.8);
+        this.swipeSound = FlxG.sound.load(AssetPaths.PlayerSwipe__mp3, 0.8);
     }
 
     public override function update(elapsed:Float)
