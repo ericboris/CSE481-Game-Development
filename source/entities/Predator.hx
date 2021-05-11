@@ -20,8 +20,8 @@ class Predator extends Dino
     static final PURSUING_SPEED = 70.0;
     static final SEEN_TIMER = 1.0;
 
-    static final SATIATED_TIMER = 2.0;
-    static final DAZED_TIMER = 1.5;
+    static final SATIATED_TIMER = 3.0;
+    static final DAZED_TIMER = 2.5;
 
     var lastSeenEntity:Entity;
     var lastSeenTimer:Float = 0;
@@ -66,7 +66,7 @@ class Predator extends Dino
 
         sprite.setSize(20, 20);
 
-        this.attackRoar = FlxG.sound.load(AssetPaths.PredatorRoar1__mp3, 0.8);
+        this.attackRoar = FlxG.sound.load(AssetPaths.PredatorRoar1__mp3, 0.7);
         attackRoar.proximity(sprite.x, sprite.y, FlxG.camera.target, FlxG.width * 0.6);
     
     }

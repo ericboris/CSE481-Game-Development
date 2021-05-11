@@ -191,7 +191,7 @@ class Dino extends Entity
             herdedPath.resize(0);
         }
 
-        if ((isLeaderPathfinding || framesStuck > 5) && herdedPath.length == 0)
+        if ((isLeaderPathfinding || framesStuck > 8) && herdedPath.length == 0)
         {
             // Attempt to pathfind towards herded leader
             var newPath = PlayState.world.getObstacles().findPath(leaderPos, dinoPos, true, false, NONE);

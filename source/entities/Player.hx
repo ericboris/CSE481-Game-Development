@@ -32,6 +32,7 @@ class Player extends Entity
     var killedSound:FlxSound;
     var cliffJumpSound:FlxSound;
     var callSound:FlxSound;
+    var swipeSound:FlxSound;
 
     var MIN_CALL_RADIUS:Int = 1;
     var MAX_CALL_RADIUS:Int = 100;
@@ -78,7 +79,7 @@ class Player extends Entity
         addHitbox(interactHitbox);
 
         stickHitbox = new Hitbox(this, STICK_HITBOX_ID);
-        stickHitbox.setSize(24, 24);
+        stickHitbox.setSize(20, 20);
         stickHitbox.setOffset(0,0);
         stickHitbox.setActive(false);
         addHitbox(stickHitbox);
@@ -89,10 +90,11 @@ class Player extends Entity
         this.SIGHT_RANGE = 120.0;
         this.NEARBY_SIGHT_RADIUS = 120.0;
 
-        this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__mp3, 0.5);
+        this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__mp3, 0.4);
         this.killedSound = FlxG.sound.load(AssetPaths.lose__mp3, 1.0);
         this.cliffJumpSound = FlxG.sound.load(AssetPaths.cliffjump__mp3, 0.7);
-        this.callSound = FlxG.sound.load(AssetPaths.call__mp3, 1.0);
+        this.callSound = FlxG.sound.load(AssetPaths.call__mp3, 0.9);
+        this.swipeSound = FlxG.sound.load(AssetPaths.PlayerSwipe__mp3, 1.0);
     }
 
     public override function update(elapsed:Float)
@@ -333,8 +335,9 @@ class Player extends Entity
                 }
                 inCancellableAnimation = false;
 
-                stickHitbox.setActive(true, 20);
-                //item.use();
+                stickHitbox.setActive(true, 8);
+                swipeSound.stop();
+                swipeSound.play();
             }
         }
         else
@@ -355,9 +358,8 @@ class Player extends Entity
         { 
             // Remove entity from world
             followers.remove(dino);
-            PlayState.world.removeEntity(dino);
             PlayState.world.incrementScore(1);
-            depositingToCave = false;
+            PlayState.world.removeEntity(dino);
         }
     }
 

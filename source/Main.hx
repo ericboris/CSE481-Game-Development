@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxGame;
+import flixel.FlxG;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 
