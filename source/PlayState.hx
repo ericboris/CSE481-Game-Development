@@ -540,15 +540,16 @@ class PlayState extends FlxState
 
     public function callNearbyDinos(callRadius:Float):Void
     {   
-        for (prey in entityGroups[EntityPrey])
+        for (entity in entityGroups[EntityPrey])
         {   
+            var prey:Prey = cast entity;
             var withinRange = GameWorld.entityDistance(player, prey) < callRadius;
             if (withinRange)
             {
                 var calledCanSeeCaller = GameWorld.checkVision(prey, player);
                 if (calledCanSeeCaller)
                 {   
-                    (cast prey).addToHerd(player);
+                    prey.addToHerd(player);
                 }
             }
         }
