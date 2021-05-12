@@ -48,6 +48,10 @@ class GameWorld
                                 EntityBoulder => "?",
                                 EntityNull => ""];
 
+    // Tutorial info to show the player at the start of a relevant level.
+    static var tutorialInformation = [0 => "Arrows to Move",
+                                      1 => "C to call Dinos"];
+
     static public function getNearestEntity(src:Entity, entities:Array<Entity>)
     {
         var nearestEntity = null;
@@ -232,5 +236,13 @@ class GameWorld
     static public function getPlayerReaction(e:EntityType):String
     {
         return playerReactions[e];
+    }
+
+    /**
+     * Return the current level's tutorial information.
+     */
+    static public function getTutorialInformation():String
+    {
+        return tutorialInformation[levelIndex];
     }
 }

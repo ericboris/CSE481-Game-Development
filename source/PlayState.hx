@@ -101,6 +101,8 @@ class PlayState extends FlxState
         playerReaction = GameWorld.getPlayerReaction(newEntity);
         entityReaction = GameWorld.getEntityReaction(newEntity);
 
+        var tutorialInformation = GameWorld.getTutorialInformation();
+
         // Set up the tilemap.
         map = new FlxOgmo3Loader(AssetPaths.DinoHerder__ogmo, GameWorld.getNextMap());
 
@@ -149,6 +151,9 @@ class PlayState extends FlxState
         transitionScreen.alpha = 1;
         transitionScreen.health = -10;
         add(transitionScreen);
+
+        var tutorialText = new FlxText(player.getX(), player.getY() + 5, tutorialInformation);
+        add(tutorialText);
 
         PlayLogger.startLevel(GameWorld.levelId());
     }

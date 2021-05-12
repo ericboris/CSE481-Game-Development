@@ -117,6 +117,7 @@ class Prey extends Dino
             herdedLeader = player;
             herdedPlayer = player;
             state = Herded;
+            think("<3");
         }
     }
 
