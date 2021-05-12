@@ -8,6 +8,20 @@ import flixel.math.FlxPoint;
 import flixel.FlxG;
 import js.html.Console;
 
+class TutorialText
+{
+    public var text:String;
+    public var x:Float;
+    public var y:Float;
+
+    public function new(text:String, x:Float, y:Float)
+    {
+        this.text = text;
+        this.x = x;
+        this.y = y;
+    }
+}
+
 class GameWorld
 {
     static var levelIndex = 0;
@@ -49,8 +63,10 @@ class GameWorld
                                 EntityNull => ""];
 
     // Tutorial info to show the player at the start of a relevant level.
-    static var tutorialInformation = [0 => "Arrows to Move",
-                                      1 => "C to call Dinos"];
+    static var tutorialInformation: Map<Int, Array<TutorialText>>
+                                                = [0 => [new TutorialText("Arrow keys to move", 184, 215)],
+                                                   1 => [new TutorialText("Hold C to call Dinos", 120, 270),
+                                                         new TutorialText("Deliver Dinos to the cave!", 470, 145)]];
 
     static public function getNearestEntity(src:Entity, entities:Array<Entity>)
     {
@@ -94,43 +110,6 @@ class GameWorld
         var cross = x1 * y2 - x2 * y1;
         return Math.atan2(cross, dot);
     }
-
-
-    /* CLIFF COLLISIONS */ 
-    static public function handleDownCliffCollision(tile:FlxObject, entity:FlxObject)
-    {
-        handleCliff(entity, FlxObject.UP);
-    }
-
-    static public function handleUpCliffCollision(tile:FlxObject, entity:FlxObject)
-    {
-        handleCliff(entity, FlxObject.DOWN);
-    }
-
-    static public function handleRightCliffCollision(tile:FlxObject, entity:FlxObject)
-    {
-        handleCliff(entity, FlxObject.LEFT);
-    }
-
-    static public function handleLeftCliffCollision(tile:FlxObject, entity:FlxObject)
-    {
-        handleCliff(entity, FlxObject.RIGHT);
-    }
-
-    static function handleCliff(entity:FlxObject, direction:Int)
-    {
-        if (Std.is(entity, SpriteWrapper))
-        {
-            var sprite:SpriteWrapper<Entity> = cast entity;
-            var entity = sprite.entity;
-            if (entity.getSprite().facing == direction)
-            {
-                entity.handleCliffCollision(direction);
-            }
-        }
-    }
-
-
 
     /* VISION CHECKS */
     static public function checkVision(from:Entity, to:Entity):Bool
@@ -241,8 +220,16 @@ class GameWorld
     /**
      * Return the current level's tutorial information.
      */
-    static public function getTutorialInformation():String
+    static public function getTutorialInformation():Array<TutorialText>
     {
-        return tutorialInformation[levelIndex];
+        var info = tutorialInformation[levelIndex];
+        if (info == null)
+        {
+            return new Array<TutorialText>();
+        }
+        else
+        {
+            return tutorialInformation[levelIndex];
+        }
     }
 }

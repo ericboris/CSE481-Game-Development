@@ -34,9 +34,10 @@ class Player extends Entity
     var callSound:FlxSound;
     var swipeSound:FlxSound;
 
-    var MIN_CALL_RADIUS:Int = 1;
-    var MAX_CALL_RADIUS:Int = 100;
-    var maxCallRadius:Int = 0;
+    final MIN_CALL_RADIUS:Int = 1;
+    final MAX_CALL_RADIUS:Int = 100;
+    final CALL_GROWTH_RATE:Int = 3;
+    var callRadius:Int = 0;
 
     var inCancellableAnimation:Bool=true;
 
@@ -191,15 +192,19 @@ class Player extends Entity
                 callSound.fadeIn(0.2, 0.0, 1.0);
                 callSound.play();
             }
-            maxCallRadius = FlxMath.maxInt(cast callSound.volume * MAX_CALL_RADIUS, cast maxCallRadius);
-            PlayState.world.callNearbyDinos(maxCallRadius);
+            callRadius += CALL_GROWTH_RATE;
+            if (callRadius > MAX_CALL_RADIUS)
+            {
+                callRadius = MAX_CALL_RADIUS;
+            }
+            PlayState.world.callNearbyDinos(callRadius);
         }
         else
         {
-            if (maxCallRadius > 1)
+            if (callRadius > 1)
             {
                 callSound.fadeOut(0.05, 0.0);
-                maxCallRadius = 0;
+                callRadius = 0;
             }
         }
     }

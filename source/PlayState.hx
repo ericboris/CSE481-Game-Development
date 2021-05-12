@@ -100,8 +100,14 @@ class PlayState extends FlxState
         newEntity = GameWorld.getNewEntity();
         playerReaction = GameWorld.getPlayerReaction(newEntity);
         entityReaction = GameWorld.getEntityReaction(newEntity);
-
-        var tutorialInformation = GameWorld.getTutorialInformation();
+        // Add any tutorial information.
+        for (tutorial in GameWorld.getTutorialInformation())
+        {
+            var tutorialText = new FlxText(tutorial.x, tutorial.y, tutorial.text);
+            tutorialText.x -= tutorialText.width / 2;
+            tutorialText.health = -9;
+            add(tutorialText);
+        }
 
         // Set up the tilemap.
         map = new FlxOgmo3Loader(AssetPaths.DinoHerder__ogmo, GameWorld.getNextMap());
@@ -152,11 +158,6 @@ class PlayState extends FlxState
         transitionScreen.alpha = 1;
         transitionScreen.health = -10;
         add(transitionScreen);
-
-        var tutorialText = new FlxText(player.getX(), player.getY() + 5, tutorialInformation);
-        tutorialText.x -= tutorialText.width / 2;
-        tutorialText.health = -9;
-        add(tutorialText);
 
         PlayLogger.startLevel(GameWorld.levelId());
     }
@@ -284,14 +285,6 @@ class PlayState extends FlxState
             prey.setPosition(player.getSprite().x, player.getSprite().y);
             addEntity(prey);
         }
-
-        /**
-        if (playerIsCalling())
-        {
-            Console.log("PLAYER CALL RADIUS = " + player.getCallRadius());
-            callNearbyDinos(player.getCallRadius());
-        }
-        */
 
         this.sort(sortSprites);
 
@@ -476,7 +469,7 @@ class PlayState extends FlxState
         {
             case "player":
                 player = new Player();
-                player.setPosition(x, y);
+                player.setPosition(x, y, true);
                 addEntity(player);
             case "prey":
                 var prey = new Prey();
@@ -561,11 +554,7 @@ class PlayState extends FlxState
             var withinRange = GameWorld.entityDistance(player, prey) < callRadius;
             if (withinRange)
             {
-                var calledCanSeeCaller = GameWorld.checkVision(prey, player);
-                if (calledCanSeeCaller)
-                {   
-                    prey.addToHerd(player);
-                }
+                prey.addToHerd(player);
             }
         }
     }
