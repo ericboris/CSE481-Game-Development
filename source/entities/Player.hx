@@ -71,6 +71,9 @@ class Player extends Entity
 
         sprite.setSize(6, 6);
         sprite.offset.set(4, 6);
+        
+        sprite.facing = FlxObject.DOWN;
+        sprite.animation.play("sd");
 
         interactHitbox = new Hitbox(this, INTERACT_HITBOX_ID);
         interactHitbox.setSize(24, 24);

@@ -114,6 +114,7 @@ class PlayState extends FlxState
 
         obstacles = map.loadTilemap(AssetPaths.Tileset__png, "obstacles");
         obstacles.follow();
+        obstacles.health = -9;
         add(obstacles);
 
         // Make all obstacles collidable.
@@ -153,6 +154,8 @@ class PlayState extends FlxState
         add(transitionScreen);
 
         var tutorialText = new FlxText(player.getX(), player.getY() + 5, tutorialInformation);
+        tutorialText.x -= tutorialText.width / 2;
+        tutorialText.health = -9;
         add(tutorialText);
 
         PlayLogger.startLevel(GameWorld.levelId());
@@ -313,6 +316,13 @@ class PlayState extends FlxState
         {
             var sprite1:FlxObject = cast obj1;
             var sprite2:FlxObject = cast obj2;
+
+            if (sprite1.health == -9 && sprite2.health == -9)
+                return 0;
+            else if (sprite1.health == -9)
+                return -1;
+            else if (sprite2.health == -9)
+                return 1;
 
             if (sprite1.health == -10 && sprite2.health == -10)
                 return 0;

@@ -121,7 +121,7 @@ class Entity
     /* Setters & Getters */
     public function setPosition(x:Float, y:Float)
     {
-        sprite.setPosition(x, y);
+        sprite.setPosition(x + sprite.width/2, y + sprite.height/2);
     }
 
     public function getSprite()
