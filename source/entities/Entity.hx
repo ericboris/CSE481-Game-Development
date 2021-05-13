@@ -82,10 +82,6 @@ class Entity
             {
                 var angle = Math.atan2(nextJump.y - sprite.y, nextJump.x - sprite.x);
                 var magn = GameWorld.pointDistance(sprite.x, sprite.y, nextJump.x, nextJump.y);
-                Console.log(sprite.x + ", " + sprite.y);
-                Console.log(nextJump.x + ", " + nextJump.y);
-                Console.log(angle * 180 / Math.PI);
-                Console.log(magn);
 
                 var multipliers = [0.8, 0.9, 1.0, 1.4, 1.5];
                 for (m in multipliers)
