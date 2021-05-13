@@ -12,6 +12,7 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.misc.NumTween;
 import flixel.tweens.FlxEase;
 import flash.display.BlendMode;
+import flixel.math.FlxMath;
 
 class Icon
 {
@@ -34,7 +35,8 @@ class Icon
     public function new(centeredOn:Entity, x:Int, y:Int)
     {
         this.center = centeredOn;
-        this.tween = FlxTween.num(0, 6, 2.5, {ease: FlxEase.quadInOut, type: FlxTweenType.PINGPONG}, updateTween);
+        var offset = FlxG.random.float(-0.1, 0.1);
+        this.tween = FlxTween.num(0, 6, 2.5 + offset, {ease: FlxEase.quadInOut, type: FlxTweenType.PINGPONG}, updateTween);
         setOffset(x, y);
         setText("");
     }

@@ -40,7 +40,7 @@ class Entity
         hitboxes = new Array<Hitbox>();
         seenEntities = new Array<Entity>();
         
-        thought = new Icon(this, 0, -18);
+        thought = new Icon(this, 0, -16);
     }
 
     function setGraphic(width:Int, height:Int, dir:String, isAnimated:Bool)
@@ -80,8 +80,24 @@ class Entity
 
             if (nextJump != null)
             {
-                jumpTo(nextJump.x, nextJump.y);
-                sprite.health = PlayState.world.topLayerSortIndex();
+                var angle = Math.atan2(nextJump.y - sprite.y, nextJump.x - sprite.x);
+                var magn = GameWorld.pointDistance(sprite.x, sprite.y, nextJump.x, nextJump.y);
+                Console.log(sprite.x + ", " + sprite.y);
+                Console.log(nextJump.x + ", " + nextJump.y);
+                Console.log(angle * 180 / Math.PI);
+                Console.log(magn);
+
+                var multipliers = [0.8, 0.9, 1.0, 1.4, 1.5];
+                for (m in multipliers)
+                {
+                    var jumpX = Math.cos(angle) * magn * m;
+                    var jumpY = Math.sin(angle) * magn * m;
+                    var canJump = jumpTo(sprite.x + jumpX, sprite.y + jumpY, true);
+                    if (canJump)
+                    {
+                        break;
+                    }
+                }
                 nextJump = null;
             }
         }
@@ -168,29 +184,29 @@ class Entity
 
         var jumpDist = 28;
 
-        var end = new FlxPoint(sprite.x, sprite.y);
+        var jumpX:Float = 0;
+        var jumpY:Float = 0;
         switch (direction)
         {
             case FlxObject.UP:
-                end.y -= jumpDist;
+                jumpY = -jumpDist;
             case FlxObject.DOWN:
-                end.y += jumpDist;
+                jumpY = jumpDist;
             case FlxObject.LEFT:
-                end.x -= jumpDist;
+                jumpX = -jumpDist;
             case FlxObject.RIGHT:
-                end.x += jumpDist;
-            default:
+                jumpX = jumpDist;
         }
 
-        jumpTo(end.x, end.y, false);
+        nextJump = new FlxPoint(sprite.x + jumpX, sprite.y + jumpY);
     }
 
-    public function jumpTo(x:Float, y:Float, collisionCheck:Bool = true, ?completeCallback: Entity -> Void)
+    public function jumpTo(x:Float, y:Float, collisionCheck:Bool = true, ?completeCallback: Entity -> Void):Bool
     {
         if (isJumping)
         {
             Console.log("Already jumping.");
-            return;
+            return false;
         }
 
         var start = new FlxPoint(sprite.x, sprite.y);
@@ -199,16 +215,14 @@ class Entity
         if (collisionCheck)
         {
             // Check if sprite will land on a tile if they jump
-            sprite.x = end.x;
-            sprite.y = end.y;
+            sprite.setPosition(end.x, end.y);
             var colliding = GameWorld.collidingWithObstacles(this);
-            sprite.x = start.x;
-            sprite.y = start.y;
+            sprite.setPosition(start.x, start.y);
 
             if (colliding)
             {
                 // Don't jump off cliff if we're jumping into an obstacle.
-                return;
+                return false;
             }
         }
 
@@ -235,6 +249,8 @@ class Entity
         sprite.velocity.y = 0;
         sprite.allowCollisions = FlxObject.NONE;
         isJumping = true;
+
+        return true;
     }
 
     public function getSightRange():Float

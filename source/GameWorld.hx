@@ -159,9 +159,11 @@ class GameWorld
         var staticObstacles = PlayState.world.getStaticObstacles();
 
         PlayState.world.toggleAdditionalTilemapCollisions(false);
-        var collision:Bool = tilemap.overlaps(sprite);
+        var collision1:Bool = tilemap.overlaps(sprite);
         PlayState.world.toggleAdditionalTilemapCollisions(true);
-        return collision || FlxG.overlap(sprite, staticObstacles);
+        
+        var collision2:Bool = FlxG.overlap(sprite, staticObstacles);
+        return collision1 || collision2;
     }
 
     static public function radians(degrees:Int)

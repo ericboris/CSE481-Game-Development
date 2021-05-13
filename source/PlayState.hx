@@ -130,16 +130,14 @@ class PlayState extends FlxState
         // Load tiles from tile maps
         ground = map.loadTilemap(AssetPaths.Tileset__png, "ground");
         ground.useScaleHack = true;
-        ground.follow();
+        ground.pixelPerfectRender = true;
         add(ground);
 
         obstacles = map.loadTilemap(AssetPaths.Tileset__png, "obstacles");
-        obstacles.useScaleHack = true;
-
+        ground.useScaleHack = true;
+        ground.pixelPerfectRender = true;
         mapWidth = obstacles.widthInTiles;
         mapHeight = obstacles.heightInTiles;
-        
-        obstacles.follow();
         obstacles.health = bottomLayerSortIndex();
         add(obstacles);
 
@@ -196,6 +194,8 @@ class PlayState extends FlxState
         var camera_w = CHUNK_WIDTH/4;
         var camera_h = CHUNK_HEIGHT/4;
         FlxG.camera.deadzone.set(camera_x - camera_w/2, camera_y - camera_h/2, camera_w, camera_h);
+    
+        FlxG.camera.pixelPerfectRender = true;
     }
 
     function createTileCollider(tileX:Int, tileY:Int, obstacles:FlxTilemap)
@@ -529,7 +529,7 @@ class PlayState extends FlxState
 
     public function toggleAdditionalTilemapCollisions(toggle:Bool)
     {
-        // Reenable collisions (these collisions are used when raycasting).
+        // Enable/Disable collisions (these collisions are used when raycasting).
         var collisions = toggle ? FlxObject.ANY : FlxObject.NONE;
         for (tileNum in uncollidableTiles)
         {

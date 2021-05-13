@@ -16,7 +16,7 @@ class Player extends Entity
     static final INTERACT_HITBOX_ID = 0;
     static final STICK_HITBOX_ID    = 1;
 
-    static final SPEED = 70.0;
+    static final SPEED = 85.0;
     static final DEBUG_SPEED = 120.0;
 
     var speed:Float = SPEED;
@@ -177,6 +177,7 @@ class Player extends Entity
 
         if (FlxG.keys.pressed.C)
         {
+            Console.log(sprite.x + " " + sprite.y + " " + GameWorld.collidingWithObstacles(this));
             if (!callSound.playing)
             {
                 callSound.fadeIn(0.2, 0.0, 1.0);
@@ -438,6 +439,7 @@ class Player extends Entity
             }
             followers.resize(0);
             respawn();
+            think("!", 2.0);
         }
     }
 
