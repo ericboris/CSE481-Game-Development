@@ -16,7 +16,10 @@ class Player extends Entity
     static final INTERACT_HITBOX_ID = 0;
     static final STICK_HITBOX_ID    = 1;
 
-    var speed:Float = 70.0;
+    static final SPEED = 70.0;
+    static final DEBUG_SPEED = 120.0;
+
+    var speed:Float = SPEED;
 
     // Array of followers. TODO: Should be linked list.
     var followers:Array<Dino>;
@@ -92,6 +95,10 @@ class Player extends Entity
 
         followers = new Array<Dino>();
 
+        if (PlayState.DEBUG)
+        {
+            this.speed = DEBUG_SPEED;
+        }
         this.SIGHT_ANGLE = GameWorld.toRadians(45);
         this.SIGHT_RANGE = 120.0;
         this.NEARBY_SIGHT_RADIUS = 120.0;
@@ -377,6 +384,7 @@ class Player extends Entity
             followers.remove(dino);
             PlayState.world.incrementScore(1);
             PlayState.world.removeEntity(dino);
+            PlayState.world.numPreyCollected++;
             depositingToCave = false;
         }
     }
@@ -407,9 +415,9 @@ class Player extends Entity
             if (entity.type == EntityPrey)
             {
                 var prey:Prey = cast entity;
-                if (FlxG.random.bool(2))
+                if (FlxG.random.bool(3))
                 {
-                    prey.think(":(", 0.3);
+                    prey.think(":(", 0.4);
                 }
 
                 var diffX = prey.getX() - getX();
@@ -453,6 +461,7 @@ class Player extends Entity
 
     public function respawn()
     {
+        PlayState.world.numPlayerDeaths++;
         PlayLogger.recordPlayerDeath(this);
 
         // Move player to nearest cave.

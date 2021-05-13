@@ -14,6 +14,9 @@ import flixel.FlxG;
 import flixel.FlxBasic;
 import flixel.tile.FlxTile;
 import flixel.graphics.FlxGraphic;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxTimer;
 
 class PlayState extends FlxState
 {
@@ -27,6 +30,8 @@ class PlayState extends FlxState
     static public final TILE_SIZE = 16;
     static public final CHUNK_WIDTH = 320;
     static public final CHUNK_HEIGHT = 240;
+
+    static public final DEBUG = true;
 
     // Size of map (in # of tiles)
     var mapWidth = 0;
@@ -64,6 +69,7 @@ class PlayState extends FlxState
 
     // Screen transition
     var transitioningToNextLevel:Bool = false;
+    var onEndScreen:Bool = false;
     var transitionScreen:FlxSprite;
 
     // This level's new, previously unseen entity.
@@ -71,6 +77,12 @@ class PlayState extends FlxState
     var hasSeenNewEntity = false;
     var playerReaction:String;
     var entityReaction:String;
+
+    // Used for score display
+    public var numPlayerDeaths:Int = 0;
+    public var numPreyDeaths:Int = 0;
+    public var numPreyCollected:Int = 0;
+    public var numPrey:Int = 0;
 
     override public function create()
     {
@@ -121,12 +133,13 @@ class PlayState extends FlxState
         add(ground);
 
         obstacles = map.loadTilemap(AssetPaths.Tileset__png, "obstacles");
-        obstacles.follow();
-        obstacles.health = -9;
-        add(obstacles);
 
         mapWidth = obstacles.widthInTiles;
         mapHeight = obstacles.heightInTiles;
+        
+        obstacles.follow();
+        obstacles.health = bottomLayerSortIndex();
+        add(obstacles);
 
         // Make all obstacles collidable.
         for (x in 0...obstacles.widthInTiles)
@@ -153,14 +166,14 @@ class PlayState extends FlxState
         scoreText = new FlxText(0, 0, 0, "", 10);
         scoreText.alpha = 0;
         scoreText.setBorderStyle(SHADOW, FlxColor.BLACK, 1, 1);
-        scoreText.health = -10;
+        scoreText.health = topLayerSortIndex();
         add(scoreText);
 
         // Set up transition screen
         transitionScreen = new FlxSprite(-10, -10);
         transitionScreen.makeGraphic(TILE_SIZE * mapWidth + 10, TILE_SIZE * mapHeight + 10, FlxColor.BLACK);
         transitionScreen.alpha = 1;
-        transitionScreen.health = -10;
+        transitionScreen.health = topLayerSortIndex() + 1;
         add(transitionScreen);
 
         PlayLogger.startLevel(GameWorld.levelId());
@@ -219,17 +232,61 @@ class PlayState extends FlxState
 
     function nextLevel()
     {
-        PlayLogger.endLevel();
-        FlxG.switchState(new PlayState());
+        onEndScreen = true;
+        
+        var debugSkip = DEBUG && FlxG.keys.anyPressed([M]);
+        if (this.numPrey == 0 || debugSkip)
+        {
+            // There are no prey on this level, so skip displaying the score.
+            FlxG.switchState(new PlayState());
+            return;
+        }
+
+        this.clear();
+
+        // DIsplay the score for this level.
+        var scoreString = "Saved: " + numPreyCollected + " / " + numPrey;
+        
+        var levelScoreText = new FlxText(0, 0, 0, scoreString, 18);
+        levelScoreText.health = transitionScreen.health + 1;
+        levelScoreText.alpha = 0;
+        this.add(transitionScreen);
+        this.add(levelScoreText);
+
+        var camera = FlxG.camera;
+        var x = camera.scroll.x + camera.width/2 - levelScoreText.width/2;
+        var y = camera.scroll.y + camera.height/2 - levelScoreText.height/2;
+        levelScoreText.setPosition(x, y);
+        
+        var setAlpha = function (f:Float) {
+            levelScoreText.alpha = f;
+        };
+
+        Console.log(getFirstNull());
+        Console.log(scoreString);
+
+        var fadeOptions = {ease: FlxEase.quadInOut, onComplete: function (tween:FlxTween) {
+            var fadeOutOptions = {ease:FlxEase.quadInOut, onComplete: function (tween:FlxTween) {
+                PlayLogger.endLevel();
+                FlxG.switchState(new PlayState());
+            }};
+            FlxTween.num(1.0, 0, 1.0, fadeOutOptions, setAlpha);
+        }};
+        FlxTween.num(0, 1.0, 1.5, fadeOptions, setAlpha);
     }
 
     function updateTransitionScreen()
     {
+        if (onEndScreen) return;
+
         // Check to load next level.
         transitioningToNextLevel = player.isInRangeOfCave() && levelIsComplete();
-        if (FlxG.keys.anyPressed([N]))
+        if (DEBUG)
         {
-            nextLevel();
+            if (FlxG.keys.anyPressed([N]))
+            {
+                transitioningToNextLevel = true;
+            }
         }
 
         // Update transition screen
@@ -269,8 +326,14 @@ class PlayState extends FlxState
             return;
         }
 
-        PlayLogger.incrementTime(elapsed);
+        if (onEndScreen)
+        {
+            // Don't run any additional updates because we are currently on the ending screen.
+            return;
+        }
 
+        PlayLogger.incrementTime(elapsed);
+ 
         // Do collision checks
         collisionChecks();
  
@@ -283,17 +346,30 @@ class PlayState extends FlxState
             entity.update(elapsed);
         }
 
-        if (FlxG.keys.anyPressed([P]))
+        if (DEBUG)
         {
-            var prey = new Prey();
-            prey.setPosition(player.getSprite().x, player.getSprite().y);
-            addEntity(prey);
+            if (FlxG.keys.anyPressed([P]))
+            {
+                var prey = new Prey();
+                prey.setPosition(player.getSprite().x, player.getSprite().y);
+                addEntity(prey);
+            }
         }
 
         this.sort(sortSprites);
-
         super.update(elapsed);
     }
+    
+    public function topLayerSortIndex()
+    {
+        return mapHeight * TILE_SIZE * 2;
+    }
+
+    public function bottomLayerSortIndex()
+    {
+        return -mapHeight * TILE_SIZE;
+    }
+
 
     function sortSprites(order:Int, obj1:FlxBasic, obj2:FlxBasic):Int {
         if (obj1 == null || obj2 == null)
@@ -314,21 +390,15 @@ class PlayState extends FlxState
             var sprite1:FlxObject = cast obj1;
             var sprite2:FlxObject = cast obj2;
 
-            if (sprite1.health == -9 && sprite2.health == -9)
-                return 0;
-            else if (sprite1.health == -9)
-                return -1;
-            else if (sprite2.health == -9)
-                return 1;
+            var y1 = sprite1.y + sprite1.height/2;
+            if (sprite1.health != 1)
+                y1 = sprite1.health;
 
-            if (sprite1.health == -10 && sprite2.health == -10)
-                return 0;
-            if (sprite1.health == -10)
-                return 1;
-            else if (sprite2.health == -10)
-                return -1;
+            var y2 = sprite2.y + sprite2.height/2;
+            if (sprite2.health != 1)
+                y2 = sprite2.health;
 
-            return cast((sprite1.y + sprite1.height/2) - (sprite2.y + sprite2.height/2));
+            return cast(y1 - y2);
         }
     }
 
@@ -476,6 +546,7 @@ class PlayState extends FlxState
                 player.setPosition(x, y, true);
                 addEntity(player);
             case "prey":
+                numPrey++;
                 var prey = new Prey();
                 prey.setPosition(x, y);
                 addEntity(prey);

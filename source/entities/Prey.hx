@@ -99,9 +99,11 @@ class Prey extends Dino
             // If Herded, notify the player that we just died
             if (state == Herded)
                 herdedPlayer.notifyDeadFollower(this);
-                FlxG.camera.shake(0.005, 0.1);
+            
+            FlxG.camera.shake(0.005, 0.1);
 
             // Die instantly!
+            PlayState.world.numPreyDeaths++;
             PlayState.world.removeEntity(this);
         }
     }

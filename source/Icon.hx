@@ -54,13 +54,13 @@ class Icon
     {
         if (sprite != null)
         {
-            PlayState.world.remove(sprite);
+            PlayState.world.remove(sprite, true);
         }
         this.sprite = newSprite;
         PlayState.world.add(sprite);
         sprite.alpha = 0;
         // This is a hacky workaround to indicate that this sprite should be drawn on top.
-        sprite.health = -10;
+        sprite.health = PlayState.world.topLayerSortIndex();
     }
 
     public function setSprite(width:Int, height:Int, asset:String)

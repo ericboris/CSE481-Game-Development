@@ -12,7 +12,10 @@ class Main extends Sprite
         super();
         addChild(new FlxGame(PlayState.SCREEN_WIDTH, PlayState.SCREEN_HEIGHT, MenuState, 1.0, 60, 60, true, false));
 
-        // For debugging purposes
-        addChild(new FPS(10, 10, 0xffffff));
+        if (PlayState.DEBUG)
+        {
+            // For debugging purposes
+            addChild(new FPS(10, 10, 0xffffff));
+        }
     }
 }
