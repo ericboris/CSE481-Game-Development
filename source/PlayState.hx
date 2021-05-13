@@ -234,7 +234,7 @@ class PlayState extends FlxState
     {
         onEndScreen = true;
         
-        var debugSkip = DEBUG && FlxG.keys.anyPressed([M]);
+        var debugSkip = DEBUG && FlxG.keys.anyPressed([N]);
         if (this.numPrey == 0 || debugSkip)
         {
             // There are no prey on this level, so skip displaying the score.
@@ -272,7 +272,7 @@ class PlayState extends FlxState
             }};
             FlxTween.num(1.0, 0, 1.0, fadeOutOptions, setAlpha);
         }};
-        FlxTween.num(0, 1.0, 1.5, fadeOptions, setAlpha);
+        FlxTween.num(0, 1.0, 1.0, fadeOptions, setAlpha);
     }
 
     function updateTransitionScreen()
@@ -285,7 +285,7 @@ class PlayState extends FlxState
         {
             if (FlxG.keys.anyPressed([N]))
             {
-                transitioningToNextLevel = true;
+                nextLevel();
             }
         }
 
@@ -372,9 +372,17 @@ class PlayState extends FlxState
 
 
     function sortSprites(order:Int, obj1:FlxBasic, obj2:FlxBasic):Int {
-        if (obj1 == null || obj2 == null)
+        if (obj1 == null && obj2 == null)
         {
             return 0;
+        }
+        else if (obj1 == null)
+        {
+            return -1;
+        }
+        else if (obj2 == null)
+        {
+            return 1;
         }
 
         var check1 = Std.is(obj1, FlxTilemap);
@@ -463,13 +471,6 @@ class PlayState extends FlxState
         FlxG.overlap(playerGroup, collidableSprites, handleCollision);
         FlxG.overlap(preyGroup, collidableSprites, handleCollision);
         FlxG.overlap(hitboxGroup, collidableSprites, handleCollision);
-
-        // Check cliff overlap
-        FlxG.overlap(playerGroup, obstacles);
-        FlxG.overlap(preyGroup, obstacles);
-
-        // Check boulder overlap
-        FlxG.overlap(playerGroup, boulderGroup, handleCollision);
 
         // Check cave overlap
         FlxG.overlap(playerGroup, caveGroup, handleCollision);

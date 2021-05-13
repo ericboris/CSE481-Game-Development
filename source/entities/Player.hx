@@ -115,7 +115,7 @@ class Player extends Entity
         call();
         move();
         updateItem();
-        
+ 
         frameCounter++;
         if (frameCounter % 10 == 0)
             reorganizeHerd();
@@ -147,7 +147,7 @@ class Player extends Entity
         inRangeOfCave = false;
 
 
-        if (isJumpingCliff)
+        if (isJumping)
         {
             // TODO: Jumping animation
             cliffJumpSound.play();
@@ -475,7 +475,7 @@ class Player extends Entity
 
     public override function handleBoulderCollision(boulder:Boulder)
     {
-        if (!boulder.isCollidable()) return;
+        if (!boulder.isCollidable() || isJumping) return;
 
         var direction = 0;
 
@@ -494,7 +494,7 @@ class Player extends Entity
 
         if (direction != 0)
         {
-            boulder.push(direction);
+            boulder.push(this, direction);
         }
     }
 

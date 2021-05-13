@@ -42,31 +42,64 @@ class CollisionHandler
     /* CLIFF COLLISIONS */ 
     static public function handleDownCliffCollision(tile:FlxObject, entity:FlxObject)
     {
-        handleCliff(entity, FlxObject.UP);
+        handleCliff(tile, entity, FlxObject.UP);
     }
 
     static public function handleUpCliffCollision(tile:FlxObject, entity:FlxObject)
     {
-        handleCliff(entity, FlxObject.DOWN);
+        handleCliff(tile, entity, FlxObject.DOWN);
     }
 
     static public function handleRightCliffCollision(tile:FlxObject, entity:FlxObject)
     {
-        handleCliff(entity, FlxObject.LEFT);
+        handleCliff(tile, entity, FlxObject.LEFT);
     }
 
     static public function handleLeftCliffCollision(tile:FlxObject, entity:FlxObject)
     {
-        handleCliff(entity, FlxObject.RIGHT);
+        handleCliff(tile, entity, FlxObject.RIGHT);
     }
 
-    static function handleCliff(entity:FlxObject, direction:Int)
+    static function handleCliff(tile: FlxObject, entity:FlxObject, direction:Int)
     {
         if (Std.is(entity, SpriteWrapper))
         {
             var sprite:SpriteWrapper<Entity> = cast entity;
             var entity = sprite.entity;
-            if (entity.getSprite().facing == direction)
+
+            var diffX = (tile.x + tile.width/2) - entity.getX();
+            var diffY = (tile.y + tile.height/2) - entity.getY();
+            var isFacing = false;
+            switch (direction)
+            {
+                case FlxObject.UP:
+                    isFacing = diffY < 0 && Math.abs(diffY) > Math.abs(diffX);
+                case FlxObject.DOWN:
+                    isFacing = diffY > 0 && Math.abs(diffY) > Math.abs(diffX);
+                case FlxObject.LEFT:
+                    isFacing = diffX < 0 && Math.abs(diffY) < Math.abs(diffX);
+                case FlxObject.RIGHT:
+                    isFacing = diffX > 0 && Math.abs(diffY) < Math.abs(diffX);
+            }
+
+            if (entity.getType() == EntityBoulder)
+            {
+                var boulder:Boulder = cast entity;
+                boulder.setFacingCliff(direction);
+                switch (direction)
+                {
+                    case FlxObject.UP:
+                        boulder.setFacingCliff(FlxObject.DOWN);
+                    case FlxObject.DOWN:
+                        boulder.setFacingCliff(FlxObject.UP);
+                    case FlxObject.LEFT:
+                        boulder.setFacingCliff(FlxObject.RIGHT);
+                    case FlxObject.RIGHT:
+                        boulder.setFacingCliff(FlxObject.LEFT);
+                }
+            }
+
+            if (isFacing)
             {
                 entity.handleCliffCollision(direction);
             }

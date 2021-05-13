@@ -12,13 +12,15 @@ import flixel.math.FlxMath;
 
 class Boulder extends Entity
 {
-    final PUSH_SPEED = 0.4;
+    final PUSH_SPEED = 1.0;
 
     var isInWater:Bool = false;
     // The tile of water that the boulder is being pushed into.
     var tileIndex:Int;
 
     var splashSound:FlxSound;
+
+    var facingCliff:Int = 0;
 
     public function new()
     {
@@ -28,7 +30,7 @@ class Boulder extends Entity
 
         this.sprite.immovable = true;
         this.type = EntityBoulder;
-        this.sprite.mass = 1000;
+        this.canJumpCliffs = false;
 
         this.thought.setSprite(16, 16, AssetPaths.down_arrow__png);
 
@@ -40,13 +42,56 @@ class Boulder extends Entity
         return !isInWater;
     }
 
-    public function push(direction:Int)
+    public function setFacingCliff(dir: Int)
+    {
+        this.facingCliff = dir;
+    }
+
+    public function push(entity:Entity, direction:Int)
     {
         if (isInWater)
         {
             // Player doesn't interact with boulder once it's in the water.
             return;
         }
+
+        if (facingCliff != 0)
+        {
+            var shouldJump = false;
+            var diffY = entity.getY() - getY();
+            var diffX = entity.getX() - getX();
+
+            var jumpDist = 6;
+            var jumpX = 0;
+            var jumpY = 0;
+            switch (facingCliff)
+            {
+                case FlxObject.UP:
+                    jumpY = -jumpDist;
+                    shouldJump = diffY > 0 && Math.abs(diffY) > Math.abs(diffX);
+                case FlxObject.DOWN:
+                    jumpY = jumpDist;
+                    shouldJump = diffY < 0 && Math.abs(diffY) > Math.abs(diffX);
+                case FlxObject.LEFT:
+                    jumpX = -jumpDist;
+                    shouldJump = diffX < 0 && Math.abs(diffY) < Math.abs(diffX);
+                case FlxObject.RIGHT:
+                    jumpX = jumpDist;
+                    shouldJump = diffX > 0 && Math.abs(diffY) < Math.abs(diffX);
+            }
+
+            if (shouldJump)
+            {
+                var secondJump = function (entity:Entity)
+                {
+                    //entity.setPosition(entity.getX() + jumpX * 6, entity.getY() + jumpY * 6);
+                    entity.nextJump = new FlxPoint(entity.getX() + jumpX * 5, entity.getY() + jumpY * 5);
+                }
+                entity.jumpTo(entity.getX() + jumpX, entity.getY() + jumpY, false, secondJump);
+            }
+        }
+
+        this.facingCliff = 0;
 
         var prevX = this.sprite.x;
         var prevY = this.sprite.y;

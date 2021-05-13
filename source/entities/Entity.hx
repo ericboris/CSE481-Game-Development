@@ -25,12 +25,14 @@ class Entity
 
     var seenEntities:Array<Entity>;
 
-    var isJumpingCliff:Bool;
+    var isJumping:Bool;
     var canJumpCliffs = true;
 
     var thought:Icon;
 
     var isFadingOut:Bool = false;
+
+    public var nextJump: FlxPoint = null;
 
     public function new()
     {
@@ -65,14 +67,24 @@ class Entity
             }
         }
 
-        if (isJumpingCliff)
+        if (isJumping)
         {
+            // sprite health is used as a hacky workaround for draw ordering.
+            sprite.health = PlayState.world.topLayerSortIndex();
             sprite.velocity.set(0,0);
         }
+        else
+        {
+            // sprite health is used as a hacky workaround for draw ordering.
+            sprite.health = 1;
 
-
-        // Update our sprite
-        //sprite.update(elapsed);
+            if (nextJump != null)
+            {
+                jumpTo(nextJump.x, nextJump.y);
+                sprite.health = PlayState.world.topLayerSortIndex();
+                nextJump = null;
+            }
+        }
 
         thought.update(elapsed);
 
@@ -149,14 +161,13 @@ class Entity
 
     public function handleCliffCollision(direction:Int)
     {
-        if (!canJumpCliffs || isJumpingCliff)
+        if (!canJumpCliffs || isJumping)
         {
             return;
         }
 
         var jumpDist = 32;
 
-        var start = new FlxPoint(sprite.x, sprite.y);
         var end = new FlxPoint(sprite.x, sprite.y);
         switch (direction)
         {
@@ -171,17 +182,34 @@ class Entity
             default:
         }
 
-        // Check if sprite will land on a tile if they jump
-        sprite.x = end.x;
-        sprite.y = end.y;
-        var colliding = GameWorld.collidingWithObstacles(this);
-        sprite.x = start.x;
-        sprite.y = start.y;
+        jumpTo(end.x, end.y);
+    }
 
-        if (colliding)
+    public function jumpTo(x:Float, y:Float, collisionCheck:Bool = true, ?completeCallback: Entity -> Void)
+    {
+        if (isJumping)
         {
-            // Don't jump off cliff if we're jumping into an obstacle.
+            Console.log("Already jumping.");
             return;
+        }
+
+        var start = new FlxPoint(sprite.x, sprite.y);
+        var end = new FlxPoint(x, y);
+
+        if (collisionCheck)
+        {
+            // Check if sprite will land on a tile if they jump
+            sprite.x = end.x;
+            sprite.y = end.y;
+            var colliding = GameWorld.collidingWithObstacles(this);
+            sprite.x = start.x;
+            sprite.y = start.y;
+
+            if (colliding)
+            {
+                // Don't jump off cliff if we're jumping into an obstacle.
+                return;
+            }
         }
 
         var control = new FlxPoint((end.x + start.x) / 2, (end.y + start.y) / 2);
@@ -194,13 +222,19 @@ class Entity
         var options = {ease: FlxEase.sineInOut, type: ONESHOT, onComplete: function(tween:FlxTween)
         {
             sprite.allowCollisions = FlxObject.ANY;
-            isJumpingCliff = false;
+            isJumping = false;
+
+            if (completeCallback != null)
+            {
+                completeCallback(this);
+            }
         }};
         FlxTween.quadPath(this.sprite, [start, control, end], duration, true, options);
+        
         sprite.velocity.x = 0;
         sprite.velocity.y = 0;
-        isJumpingCliff = true;
         sprite.allowCollisions = FlxObject.NONE;
+        isJumping = true;
     }
 
     public function getSightRange():Float
@@ -241,6 +275,16 @@ class Entity
     public function getY()
     {
         return this.sprite.getMidpoint().y;
+    }
+
+    public function getTopLeftX()
+    {
+        return this.sprite.x;
+    }
+
+    public function getTopLeftY()
+    {
+        return this.sprite.y;
     }
 
     public function think(content:String, fadeOutDelay:Float=2.5):Void
