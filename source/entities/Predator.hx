@@ -274,6 +274,11 @@ class Predator extends Dino
         this.state = Unherded;
     }
 
+    public function isDazed()
+    {
+        return satiated || dazed;
+    }
+
     public function canEat(entity:Entity)
     {
         var canEat = !satiated && !dazed;

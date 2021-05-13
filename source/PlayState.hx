@@ -403,7 +403,7 @@ class PlayState extends FlxState
         FlxG.overlap(preyGroup, caveGroup, handleCollision);
 
         // Collision resolution -- physics
-        FlxG.collide(collidableSprites, collidableSprites);
+        FlxG.overlap(collidableSprites, collidableSprites, handleSeparationCollision);
         FlxG.collide(collidableSprites, staticCollidableSprites);
         
         // Collide with tilemap.
@@ -498,6 +498,38 @@ class PlayState extends FlxState
 
         e1.handleCollision(e2);
         e2.handleCollision(e1);
+    }
+
+    function handleSeparationCollision(s1:SpriteWrapper<Entity>, s2:SpriteWrapper<Entity>)
+    {
+        var e1 = s1.entity;
+        var e2 = s2.entity;
+
+        var player:Player = null;
+        if (e1.getType() == EntityPlayer) player = cast e1;
+        if (e2.getType() == EntityPlayer) player = cast e2;
+
+        var prey:Prey = null;
+        if (e1.getType() == EntityPrey) prey = cast e1;
+        if (e2.getType() == EntityPrey) prey = cast e2;
+
+        var pred:Predator = null;
+        if (e1.getType() == EntityPredator) pred = cast e1;
+        if (e2.getType() == EntityPredator) pred = cast e2;
+
+        if (player != null && prey != null && prey.getHerdedPlayer() == player)
+        {
+            return;
+        }
+        else if (pred != null && pred.isDazed())
+        {
+            return;
+        }
+        else
+        {
+            // Only separate them if the other conditions are not met.
+            FlxObject.separate(s1, s2);
+        }
     }
 
     public function getCaves()

@@ -38,6 +38,7 @@ class Player extends Entity
     final MAX_CALL_RADIUS:Int = 100;
     final CALL_GROWTH_RATE:Int = 3;
     var callRadius:Int = 0;
+    var isCalling:Bool = false;
 
     var inCancellableAnimation:Bool=true;
 
@@ -197,16 +198,23 @@ class Player extends Entity
             {
                 callRadius = MAX_CALL_RADIUS;
             }
+            isCalling = true;
             PlayState.world.callNearbyDinos(callRadius);
         }
         else
         {
+            isCalling = false;
             if (callRadius > 1)
             {
-                callSound.fadeOut(0.05, 0.0);
+                callSound.fadeOut(0.1, 0.0);
                 callRadius = 0;
             }
         }
+    }
+
+    public function getIsCalling():Bool
+    {
+        return isCalling;
     }
 
     function reorganizeHerd()
