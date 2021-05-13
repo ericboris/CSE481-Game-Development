@@ -99,6 +99,10 @@ class Predator extends Dino
             {
                 state = Pursuing;
             }
+            else
+            {
+                state = Unherded;
+            }
         }
 
         if (satiated)
@@ -271,7 +275,7 @@ class Predator extends Dino
 
         this.dazed = true;
         this.dazedTimer = DAZED_TIMER;
-        this.state = Unherded;
+        this.state = Fleeing;
     }
 
     public function isDazed()

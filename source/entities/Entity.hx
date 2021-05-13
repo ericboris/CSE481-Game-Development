@@ -131,6 +131,12 @@ class Entity
         }
     }
 
+    public function updatePosition(x:Float, y:Float)
+    {
+        sprite.x += x;
+        sprite.y += y;
+    }
+
     public function getSprite()
     {
         return sprite;

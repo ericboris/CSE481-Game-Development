@@ -106,6 +106,8 @@ class PlayState extends FlxState
             var tutorialText = new FlxText(tutorial.x, tutorial.y, tutorial.text);
             tutorialText.x -= tutorialText.width / 2;
             tutorialText.health = -9;
+            tutorialText.alignment = CENTER;
+            //tutorialText.borderStyle = SHADOW;
             add(tutorialText);
         }
 
@@ -152,9 +154,8 @@ class PlayState extends FlxState
         add(scoreText);
 
         // Set up transition screen
-        // Set it so it covers the entire screen, and it's middle y is negative (this is for draw ordering reasons).
-        transitionScreen = new FlxSprite(0, -mapHeight);
-        transitionScreen.makeGraphic(TILE_WIDTH * mapWidth + 200, TILE_HEIGHT * mapHeight * 2, FlxColor.BLACK);
+        transitionScreen = new FlxSprite(-10, -10);
+        transitionScreen.makeGraphic(TILE_WIDTH * mapWidth + 10, TILE_HEIGHT * mapHeight + 10, FlxColor.BLACK);
         transitionScreen.alpha = 1;
         transitionScreen.health = -10;
         add(transitionScreen);
@@ -389,7 +390,6 @@ class PlayState extends FlxState
         FlxG.overlap(playerGroup, collidableSprites, handleCollision);
         FlxG.overlap(preyGroup, collidableSprites, handleCollision);
         FlxG.overlap(hitboxGroup, collidableSprites, handleCollision);
-        FlxG.overlap(hitboxGroup, caveGroup, handleCollision);
 
         // Check cliff overlap
         FlxG.overlap(playerGroup, obstacles);
@@ -401,6 +401,7 @@ class PlayState extends FlxState
         // Check cave overlap
         FlxG.overlap(playerGroup, caveGroup, handleCollision);
         FlxG.overlap(preyGroup, caveGroup, handleCollision);
+        FlxG.overlap(hitboxGroup, caveGroup, handleCollision);
 
         // Collision resolution -- physics
         FlxG.overlap(collidableSprites, collidableSprites, handleSeparationCollision);

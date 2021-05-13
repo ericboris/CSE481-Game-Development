@@ -6,6 +6,7 @@ import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.system.FlxSound;
 import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
 import js.html.Console;
 import flixel.util.FlxSpriteUtil; // For drawing call radius
 
@@ -84,7 +85,7 @@ class Player extends Entity
         addHitbox(interactHitbox);
 
         stickHitbox = new Hitbox(this, STICK_HITBOX_ID);
-        stickHitbox.setSize(20, 20);
+        stickHitbox.setSize(26, 26);
         stickHitbox.setOffset(0,0);
         stickHitbox.setActive(false);
         addHitbox(stickHitbox);
@@ -406,6 +407,14 @@ class Player extends Entity
             if (entity.type == EntityPrey)
             {
                 var prey:Prey = cast entity;
+                if (FlxG.random.bool(2))
+                {
+                    prey.think(":(", 0.3);
+                }
+
+                var diffX = prey.getX() - getX();
+                var diffY = prey.getY() - getY();
+                prey.updatePosition(FlxMath.signOf(diffX), FlxMath.signOf(diffY));
             }
             else if (entity.type == EntityPredator)
             {
