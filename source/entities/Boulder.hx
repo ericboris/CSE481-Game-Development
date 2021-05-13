@@ -12,7 +12,7 @@ import flixel.math.FlxMath;
 
 class Boulder extends Entity
 {
-    final PUSH_SPEED = 1.0;
+    static var PUSH_SPEED = 0.45;
 
     var isInWater:Bool = false;
     // The tile of water that the boulder is being pushed into.
@@ -25,6 +25,11 @@ class Boulder extends Entity
     public function new()
     {
         super();
+
+        if (PlayState.DEBUG)
+        {
+            PUSH_SPEED = 1.0;
+        }
 
         setGraphic(16, 16, AssetPaths.boulder__png, false);
 
@@ -84,10 +89,9 @@ class Boulder extends Entity
             {
                 var secondJump = function (entity:Entity)
                 {
-                    //entity.setPosition(entity.getX() + jumpX * 6, entity.getY() + jumpY * 6);
-                    entity.nextJump = new FlxPoint(entity.getX() + jumpX * 5, entity.getY() + jumpY * 5);
+                    entity.nextJump = new FlxPoint(entity.getTopLeftX() + jumpX * 6, entity.getTopLeftY() + jumpY * 6);
                 }
-                entity.jumpTo(entity.getX() + jumpX, entity.getY() + jumpY, false, secondJump);
+                entity.jumpTo(entity.getTopLeftX() + jumpX, entity.getTopLeftY() + jumpY, false, secondJump);
             }
         }
 
