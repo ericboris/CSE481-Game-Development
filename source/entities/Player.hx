@@ -6,6 +6,7 @@ import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.system.FlxSound;
 import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
 import js.html.Console;
 import flixel.util.FlxSpriteUtil; // For drawing call radius
 
@@ -34,9 +35,11 @@ class Player extends Entity
     var callSound:FlxSound;
     var swipeSound:FlxSound;
 
-    var MIN_CALL_RADIUS:Int = 1;
-    var MAX_CALL_RADIUS:Int = 100;
-    var maxCallRadius:Int = 0;
+    final MIN_CALL_RADIUS:Int = 1;
+    final MAX_CALL_RADIUS:Int = 100;
+    final CALL_GROWTH_RATE:Int = 3;
+    var callRadius:Int = 0;
+    var isCalling:Bool = false;
 
     var inCancellableAnimation:Bool=true;
 
@@ -71,6 +74,9 @@ class Player extends Entity
 
         sprite.setSize(6, 6);
         sprite.offset.set(4, 6);
+        
+        sprite.facing = FlxObject.DOWN;
+        sprite.animation.play("sd");
 
         interactHitbox = new Hitbox(this, INTERACT_HITBOX_ID);
         interactHitbox.setSize(24, 24);
@@ -79,7 +85,7 @@ class Player extends Entity
         addHitbox(interactHitbox);
 
         stickHitbox = new Hitbox(this, STICK_HITBOX_ID);
-        stickHitbox.setSize(20, 20);
+        stickHitbox.setSize(26, 26);
         stickHitbox.setOffset(0,0);
         stickHitbox.setActive(false);
         addHitbox(stickHitbox);
@@ -188,17 +194,28 @@ class Player extends Entity
                 callSound.fadeIn(0.2, 0.0, 1.0);
                 callSound.play();
             }
-            maxCallRadius = FlxMath.maxInt(cast callSound.volume * MAX_CALL_RADIUS, cast maxCallRadius);
-            PlayState.world.callNearbyDinos(maxCallRadius);
+            callRadius += CALL_GROWTH_RATE;
+            if (callRadius > MAX_CALL_RADIUS)
+            {
+                callRadius = MAX_CALL_RADIUS;
+            }
+            isCalling = true;
+            PlayState.world.callNearbyDinos(callRadius);
         }
         else
         {
-            if (maxCallRadius > 1)
+            isCalling = false;
+            if (callRadius > 1)
             {
-                callSound.fadeOut(0.05, 0.0);
-                maxCallRadius = 0;
+                callSound.fadeOut(0.1, 0.0);
+                callRadius = 0;
             }
         }
+    }
+
+    public function getIsCalling():Bool
+    {
+        return isCalling;
     }
 
     function reorganizeHerd()
@@ -360,6 +377,7 @@ class Player extends Entity
             followers.remove(dino);
             PlayState.world.incrementScore(1);
             PlayState.world.removeEntity(dino);
+            depositingToCave = false;
         }
     }
 
@@ -389,6 +407,14 @@ class Player extends Entity
             if (entity.type == EntityPrey)
             {
                 var prey:Prey = cast entity;
+                if (FlxG.random.bool(2))
+                {
+                    prey.think(":(", 0.3);
+                }
+
+                var diffX = prey.getX() - getX();
+                var diffY = prey.getY() - getY();
+                prey.updatePosition(FlxMath.signOf(diffX), FlxMath.signOf(diffY));
             }
             else if (entity.type == EntityPredator)
             {

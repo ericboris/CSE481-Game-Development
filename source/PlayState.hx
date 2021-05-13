@@ -100,8 +100,16 @@ class PlayState extends FlxState
         newEntity = GameWorld.getNewEntity();
         playerReaction = GameWorld.getPlayerReaction(newEntity);
         entityReaction = GameWorld.getEntityReaction(newEntity);
-
-        var tutorialInformation = GameWorld.getTutorialInformation();
+        // Add any tutorial information.
+        for (tutorial in GameWorld.getTutorialInformation())
+        {
+            var tutorialText = new FlxText(tutorial.x, tutorial.y, tutorial.text);
+            tutorialText.x -= tutorialText.width / 2;
+            tutorialText.health = -9;
+            tutorialText.alignment = CENTER;
+            //tutorialText.borderStyle = SHADOW;
+            add(tutorialText);
+        }
 
         // Set up the tilemap.
         map = new FlxOgmo3Loader(AssetPaths.DinoHerder__ogmo, GameWorld.getNextMap());
@@ -114,6 +122,7 @@ class PlayState extends FlxState
 
         obstacles = map.loadTilemap(AssetPaths.Tileset__png, "obstacles");
         obstacles.follow();
+        obstacles.health = -9;
         add(obstacles);
 
         // Make all obstacles collidable.
@@ -145,15 +154,11 @@ class PlayState extends FlxState
         add(scoreText);
 
         // Set up transition screen
-        // Set it so it covers the entire screen, and it's middle y is negative (this is for draw ordering reasons).
-        transitionScreen = new FlxSprite(0, -mapHeight);
-        transitionScreen.makeGraphic(TILE_WIDTH * mapWidth + 200, TILE_HEIGHT * mapHeight * 2, FlxColor.BLACK);
+        transitionScreen = new FlxSprite(-10, -10);
+        transitionScreen.makeGraphic(TILE_WIDTH * mapWidth + 10, TILE_HEIGHT * mapHeight + 10, FlxColor.BLACK);
         transitionScreen.alpha = 1;
         transitionScreen.health = -10;
         add(transitionScreen);
-
-        var tutorialText = new FlxText(player.getX(), player.getY() + 5, tutorialInformation);
-        add(tutorialText);
 
         PlayLogger.startLevel(GameWorld.levelId());
     }
@@ -282,14 +287,6 @@ class PlayState extends FlxState
             addEntity(prey);
         }
 
-        /**
-        if (playerIsCalling())
-        {
-            Console.log("PLAYER CALL RADIUS = " + player.getCallRadius());
-            callNearbyDinos(player.getCallRadius());
-        }
-        */
-
         this.sort(sortSprites);
 
         super.update(elapsed);
@@ -313,6 +310,13 @@ class PlayState extends FlxState
         {
             var sprite1:FlxObject = cast obj1;
             var sprite2:FlxObject = cast obj2;
+
+            if (sprite1.health == -9 && sprite2.health == -9)
+                return 0;
+            else if (sprite1.health == -9)
+                return -1;
+            else if (sprite2.health == -9)
+                return 1;
 
             if (sprite1.health == -10 && sprite2.health == -10)
                 return 0;
@@ -386,7 +390,6 @@ class PlayState extends FlxState
         FlxG.overlap(playerGroup, collidableSprites, handleCollision);
         FlxG.overlap(preyGroup, collidableSprites, handleCollision);
         FlxG.overlap(hitboxGroup, collidableSprites, handleCollision);
-        FlxG.overlap(hitboxGroup, caveGroup, handleCollision);
 
         // Check cliff overlap
         FlxG.overlap(playerGroup, obstacles);
@@ -398,9 +401,10 @@ class PlayState extends FlxState
         // Check cave overlap
         FlxG.overlap(playerGroup, caveGroup, handleCollision);
         FlxG.overlap(preyGroup, caveGroup, handleCollision);
+        FlxG.overlap(hitboxGroup, caveGroup, handleCollision);
 
         // Collision resolution -- physics
-        FlxG.collide(collidableSprites, collidableSprites);
+        FlxG.overlap(collidableSprites, collidableSprites, handleSeparationCollision);
         FlxG.collide(collidableSprites, staticCollidableSprites);
         
         // Collide with tilemap.
@@ -466,7 +470,7 @@ class PlayState extends FlxState
         {
             case "player":
                 player = new Player();
-                player.setPosition(x, y);
+                player.setPosition(x, y, true);
                 addEntity(player);
             case "prey":
                 var prey = new Prey();
@@ -495,6 +499,38 @@ class PlayState extends FlxState
 
         e1.handleCollision(e2);
         e2.handleCollision(e1);
+    }
+
+    function handleSeparationCollision(s1:SpriteWrapper<Entity>, s2:SpriteWrapper<Entity>)
+    {
+        var e1 = s1.entity;
+        var e2 = s2.entity;
+
+        var player:Player = null;
+        if (e1.getType() == EntityPlayer) player = cast e1;
+        if (e2.getType() == EntityPlayer) player = cast e2;
+
+        var prey:Prey = null;
+        if (e1.getType() == EntityPrey) prey = cast e1;
+        if (e2.getType() == EntityPrey) prey = cast e2;
+
+        var pred:Predator = null;
+        if (e1.getType() == EntityPredator) pred = cast e1;
+        if (e2.getType() == EntityPredator) pred = cast e2;
+
+        if (player != null && prey != null && prey.getHerdedPlayer() == player)
+        {
+            return;
+        }
+        else if (pred != null && pred.isDazed())
+        {
+            return;
+        }
+        else
+        {
+            // Only separate them if the other conditions are not met.
+            FlxObject.separate(s1, s2);
+        }
     }
 
     public function getCaves()
@@ -551,11 +587,7 @@ class PlayState extends FlxState
             var withinRange = GameWorld.entityDistance(player, prey) < callRadius;
             if (withinRange)
             {
-                var calledCanSeeCaller = GameWorld.checkVision(prey, player);
-                if (calledCanSeeCaller)
-                {   
-                    prey.addToHerd(player);
-                }
+                prey.addToHerd(player);
             }
         }
     }

@@ -131,13 +131,13 @@ class Icon
         }
     }
 
-    public function fadeIn(rate:Float = 0.05)
+    public function fadeIn(rate:Float = 0.09)
     {
         sprite.alpha = 0;
         alphaRate = rate;
     }
 
-    public function fadeOut(rate:Float = -0.05)
+    public function fadeOut(rate:Float = -0.09)
     {
         sprite.alpha = 1;
         alphaRate = rate;

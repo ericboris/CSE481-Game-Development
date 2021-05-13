@@ -119,9 +119,22 @@ class Entity
     public function handleGroundItemCollision(item:GroundItem) {}
 
     /* Setters & Getters */
-    public function setPosition(x:Float, y:Float)
+    public function setPosition(x:Float, y:Float, centered:Bool = false)
     {
-        sprite.setPosition(x, y);
+        if (centered)
+        {
+            sprite.setPosition(x + sprite.width/2, y + sprite.height/2);
+        }
+        else
+        {
+            sprite.setPosition(x, y);
+        }
+    }
+
+    public function updatePosition(x:Float, y:Float)
+    {
+        sprite.x += x;
+        sprite.y += y;
     }
 
     public function getSprite()
