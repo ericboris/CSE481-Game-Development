@@ -166,7 +166,7 @@ class Dino extends Entity
             leaderPos = new FlxPoint(herdedPlayer.getX(), herdedPlayer.getY());
             dist = leaderPos.distanceTo(dinoPos);
             followingRadius *= 3;
-            speed *= 1.4;
+            speed *= 1.3;
         }
 
         if (!herdedDisableFollowingRadius && dist < followingRadius)

@@ -20,8 +20,8 @@ class Predator extends Dino
     static final PURSUING_SPEED = 70.0;
     static final SEEN_TIMER = 1.0;
 
-    static final SATIATED_TIMER = 3.0;
-    static final DAZED_TIMER = 2.5;
+    static final SATIATED_TIMER = 5.0;
+    static final DAZED_TIMER = 3.5;
 
     var lastSeenEntity:Entity;
     var lastSeenTimer:Float = 0;
@@ -29,7 +29,7 @@ class Predator extends Dino
 
     var satiated:Bool = false;
     var satiatedTimer:Float = 0;
-    static final FLASHING_RATE = 0.065;
+    static final FLASHING_RATE = 0.04;
     var alphaRate:Float = FLASHING_RATE;
 
     var attackRoar:FlxSound;

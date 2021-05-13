@@ -166,7 +166,7 @@ class Entity
             return;
         }
 
-        var jumpDist = 32;
+        var jumpDist = 28;
 
         var end = new FlxPoint(sprite.x, sprite.y);
         switch (direction)
@@ -182,7 +182,7 @@ class Entity
             default:
         }
 
-        jumpTo(end.x, end.y);
+        jumpTo(end.x, end.y, false);
     }
 
     public function jumpTo(x:Float, y:Float, collisionCheck:Bool = true, ?completeCallback: Entity -> Void)

@@ -129,10 +129,12 @@ class PlayState extends FlxState
         // Static Entities.
         // Load tiles from tile maps
         ground = map.loadTilemap(AssetPaths.Tileset__png, "ground");
+        ground.useScaleHack = true;
         ground.follow();
         add(ground);
 
         obstacles = map.loadTilemap(AssetPaths.Tileset__png, "obstacles");
+        obstacles.useScaleHack = true;
 
         mapWidth = obstacles.widthInTiles;
         mapHeight = obstacles.heightInTiles;

@@ -88,8 +88,8 @@ class Player extends Entity
         addHitbox(interactHitbox);
 
         stickHitbox = new Hitbox(this, STICK_HITBOX_ID);
-        stickHitbox.setSize(26, 26);
-        stickHitbox.setOffset(0,0);
+        stickHitbox.setSize(16, 16);
+        stickHitbox.setOffset(0,8);
         stickHitbox.setActive(false);
         addHitbox(stickHitbox);
 
@@ -173,25 +173,6 @@ class Player extends Entity
 
     function call():Void
     {
-        /**
-        var call = FlxG.keys.pressed.C;
-        if (call)
-        {
-            if (!callSound.playing)
-            {
-                callSound.fadeIn(0.2, 0.0, 1.0);
-                callSound.play();
-            }
-            PlayState.world.callNearbyDinos(getCallRadius());
-        }
-        else
-        {
-            if (callSound.playing)
-            {
-                callSound.fadeOut(0.05, 0.0);
-            }
-        }
-        */
         //FlxSpriteUtil.drawCircle(this.sprite, -1, -1, maxCallRadius);
 
         if (FlxG.keys.pressed.C)
@@ -235,6 +216,7 @@ class Player extends Entity
             {
                 followersCopy.push(dino);
             }
+            dino.herdedDisableFollowingRadius = false;
         }
 
         var lastEntity:Entity = this;
@@ -415,7 +397,7 @@ class Player extends Entity
             if (entity.type == EntityPrey)
             {
                 var prey:Prey = cast entity;
-                if (FlxG.random.bool(3))
+                if (FlxG.random.bool(6))
                 {
                     prey.think(":(", 0.4);
                 }

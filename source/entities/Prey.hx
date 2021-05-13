@@ -22,7 +22,7 @@ class Prey extends Dino
         sprite.animation.add("l", [6, 6, 6, 7, 8, 9, 10, 11], 12, false);
         sprite.animation.add("r", [12, 12, 12, 13, 14, 15, 16, 17], 12, false);
         sprite.animation.add("u", [18, 18, 18, 19, 20, 21, 22, 23], 12, false);
-        sprite.setSize(14, 14);
+        sprite.setSize(10, 10);
 
         /*
         setGraphic(32, 32, AssetPaths.BlueDragon__png, true);
