@@ -376,6 +376,7 @@ class Player extends Entity
             followers.remove(dino);
             PlayState.world.incrementScore(1);
             PlayState.world.removeEntity(dino);
+            depositingToCave = false;
         }
     }
 
