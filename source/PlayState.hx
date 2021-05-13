@@ -24,13 +24,13 @@ class PlayState extends FlxState
     static public final SCREEN_HEIGHT = 600;
 
     // Size of tiles/chunks
-    static public final SMALL_TILE_SIZE = 16;
-    static public final TILE_WIDTH = 320;
-    static public final TILE_HEIGHT = 240;
- 
+    static public final TILE_SIZE = 16;
+    static public final CHUNK_WIDTH = 320;
+    static public final CHUNK_HEIGHT = 240;
+
     // Size of map (in # of tiles)
-    var mapWidth = 4;
-    var mapHeight = 4;
+    var mapWidth = 0;
+    var mapHeight = 0;
 
     // In world entities
     var player:Player;
@@ -125,6 +125,9 @@ class PlayState extends FlxState
         obstacles.health = -9;
         add(obstacles);
 
+        mapWidth = obstacles.widthInTiles;
+        mapHeight = obstacles.heightInTiles;
+
         // Make all obstacles collidable.
         for (x in 0...obstacles.widthInTiles)
         {
@@ -155,7 +158,7 @@ class PlayState extends FlxState
 
         // Set up transition screen
         transitionScreen = new FlxSprite(-10, -10);
-        transitionScreen.makeGraphic(TILE_WIDTH * mapWidth + 10, TILE_HEIGHT * mapHeight + 10, FlxColor.BLACK);
+        transitionScreen.makeGraphic(TILE_SIZE * mapWidth + 10, TILE_SIZE * mapHeight + 10, FlxColor.BLACK);
         transitionScreen.alpha = 1;
         transitionScreen.health = -10;
         add(transitionScreen);
@@ -166,17 +169,17 @@ class PlayState extends FlxState
     function setupCamera()
     {
         // Set world size
-        FlxG.worldBounds.set(0, 0, TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight);
+        FlxG.worldBounds.set(0, 0, TILE_SIZE * mapWidth, TILE_SIZE * mapHeight);
 
         // Set camera to follow player
-        FlxG.camera.setScrollBoundsRect(0, 0, TILE_WIDTH * mapWidth, TILE_HEIGHT * mapHeight);
-        FlxG.camera.zoom = SCREEN_WIDTH / TILE_WIDTH;
+        FlxG.camera.setScrollBoundsRect(0, 0, TILE_SIZE * mapWidth, TILE_SIZE * mapHeight);
+        FlxG.camera.zoom = SCREEN_WIDTH / CHUNK_WIDTH;
         FlxG.camera.follow(player.getSprite(), TOPDOWN, 1);
 
         var camera_x = SCREEN_WIDTH/2;
         var camera_y = SCREEN_HEIGHT/2;
-        var camera_w = TILE_WIDTH/4;
-        var camera_h = TILE_HEIGHT/4;
+        var camera_w = CHUNK_WIDTH/4;
+        var camera_h = CHUNK_HEIGHT/4;
         FlxG.camera.deadzone.set(camera_x - camera_w/2, camera_y - camera_h/2, camera_w, camera_h);
     }
 
@@ -195,8 +198,8 @@ class PlayState extends FlxState
         {
             if (!uncollidableTiles.contains(tileNum)) uncollidableTiles.push(tileNum);
 
-            var x = tileX * SMALL_TILE_SIZE + SMALL_TILE_SIZE/2 - width/2;
-            var y = tileY * SMALL_TILE_SIZE + SMALL_TILE_SIZE/2 - height/2;
+            var x = tileX * TILE_SIZE + TILE_SIZE/2 - width/2;
+            var y = tileY * TILE_SIZE + TILE_SIZE/2 - height/2;
 
             var collider = new StaticObject(x, y, width, height, tileNum);
             collider.immovable = true;
@@ -205,8 +208,8 @@ class PlayState extends FlxState
             var sprite = new FlxSprite();
             sprite.loadGraphic(FlxGraphic.fromFrame(obstacles.frames.frames[tileNum]), false, 16, 16);
             sprite.setSize(16, 16);
-            sprite.x = tileX * SMALL_TILE_SIZE;
-            sprite.y = tileY * SMALL_TILE_SIZE;
+            sprite.x = tileX * TILE_SIZE;
+            sprite.y = tileY * TILE_SIZE;
             add(sprite);
 
             staticCollidableSprites.add(collider);
