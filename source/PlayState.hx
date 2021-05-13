@@ -29,8 +29,8 @@ class PlayState extends FlxState
     static public final TILE_HEIGHT = 240;
  
     // Size of map (in # of tiles)
-    var mapWidth = 2;
-    var mapHeight = 2;
+    var mapWidth = 4;
+    var mapHeight = 4;
 
     // In world entities
     var player:Player;
