@@ -265,6 +265,14 @@ class Predator extends Dino
         speedUp(PURSUING_SPEED);
     }
 
+    public override function handleCaveCollision(cave:Cave)
+    {
+        if (state == Fleeing)
+        {
+            PlayState.world.collectDino(this);
+        }
+    }
+
     public function hitWithStick()
     {
         if (!dazed)
