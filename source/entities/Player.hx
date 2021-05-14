@@ -424,6 +424,7 @@ class Player extends Entity
             // Remove entity from world
             followers.remove(dino);
             PlayState.world.collectDino(dino);
+            cave.think("" + PlayState.world.getNumPreyLeft(), 2.5);
             depositingToCave = false;
         }
     }

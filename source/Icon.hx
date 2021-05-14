@@ -79,22 +79,30 @@ class Icon
     public function setText(content:String, size:Int=11)
     {
         var text = new FlxText(0, 0, -1, content, size);
+        setNewFlxSprite(text);
         setContent(content, 0);
         text.setBorderStyle(SHADOW, FlxColor.BLACK, 1, 1);
-
-        setNewFlxSprite(text);
     }
 
     public function setContent(content:String, fadeOutDelay:Float=3.5)
     {
-        if (Std.is(sprite, FlxText))
+        if (!Std.is(sprite, FlxText))
         {
-            var text:FlxText = cast sprite;
-            text.text = content;
-            this.width = text.textField.textWidth;
-            this.height = text.textField.textHeight;
+            setText(content);
+            return;
+        }
+        var text:FlxText = cast sprite;
+        text.text = content;
+        this.width = text.textField.textWidth;
+        this.height = text.textField.textHeight;
 
+        if (!shouldFadeOut)
+        {
             this.appear(fadeOutDelay);
+        }
+        else
+        {
+            this.fadeOutDelay = fadeOutDelay;
         }
     }
 
@@ -112,7 +120,7 @@ class Icon
     {
         sprite.x = center.getX() - width/2 + offsetX;
         sprite.y = center.getY() - height/2 + offsetY - tweenY;
-        
+
         fadeOutDelay -= elapsed;
         if (alphaRate == 0 && shouldFadeOut && fadeOutDelay <= 0)
         {

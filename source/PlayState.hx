@@ -398,6 +398,7 @@ class PlayState extends FlxState
 
     public function removeEntity(entity:Entity)
     {
+        entity.dead = true;
         var type = entity.getType();
 
         // Remove from entity arrays
@@ -412,7 +413,7 @@ class PlayState extends FlxState
 
         if (entity.getThought() != null)
         {
-            remove(entity.getThought().sprite);
+            remove(entity.getThought().sprite, true);
         }
     }
 
@@ -438,9 +439,7 @@ class PlayState extends FlxState
         FlxG.overlap(hitboxGroup, collidableSprites, handleCollision);
 
         // Check cave overlap
-        FlxG.overlap(playerGroup, caveGroup, handleCollision);
-        FlxG.overlap(preyGroup, caveGroup, handleCollision);
-        FlxG.overlap(hitboxGroup, caveGroup, handleCollision);
+        FlxG.overlap(collidableSprites, caveGroup, handleCollision);
 
         // Collision resolution -- physics
         FlxG.overlap(collidableSprites, collidableSprites, handleSeparationCollision);
@@ -586,7 +585,7 @@ class PlayState extends FlxState
     public function incrementScore(amount:Int):Void
     {
         Score.increment(amount);
-        scoreText.alpha = 1;
+        //scoreText.alpha = 1;
     }
 
     public function getObstacles()
@@ -635,23 +634,30 @@ class PlayState extends FlxState
     var scoreSoundMultiplier:Float = 0.0;
     public function collectDino(dino:Dino)
     {
-        incrementScore(1);
-        removeEntity(dino);
-
-        scoreSoundMultiplier += 0.16;
-        if (scoreSoundMultiplier > 0.6) scoreSoundMultiplier = 0.6;
-        if (scoreSoundMultiplier < 0) scoreSoundMultiplier = 0;
-
-        FlxG.sound.play(AssetPaths.scoreSound__mp3, 0.15 + scoreSoundMultiplier);
-        //scoreSound.play(true);
-
-        if (dino.getType() == EntityPrey)
+        if (!dino.dead)
         {
-            numPreyCollected++;
+            incrementScore(1);
+            removeEntity(dino);
+
+            scoreSoundMultiplier += 0.16;
+            if (scoreSoundMultiplier > 0.6) scoreSoundMultiplier = 0.6;
+            if (scoreSoundMultiplier < 0) scoreSoundMultiplier = 0;
+
+            FlxG.sound.play(AssetPaths.scoreSound__mp3, 0.15 + scoreSoundMultiplier);
+
+            if (dino.getType() == EntityPrey)
+            {
+                numPreyCollected++;
+            }
+            else if (dino.getType() == EntityPredator)
+            {
+                numPredatorsCollected++;
+            }
         }
-        else if (dino.getType() == EntityPredator)
-        {
-            numPredatorsCollected++;
-        }
+    }
+
+    public function getNumPreyLeft():Int
+    {
+        return entityGroups[EntityPrey].length;
     }
 }

@@ -21,7 +21,7 @@ class Dino extends Entity
     
     // Constants
     public static final MAX_FOLLOWING_RADIUS = 140.0;
-    static final FOLLOWING_RADIUS = 20.0;
+    static final FOLLOWING_RADIUS = 15.0;
     static final DAMPING_FACTOR = 0.7;
     static final UNHERDED_SPEED = 60.0;
 
@@ -258,6 +258,8 @@ class Dino extends Entity
         herdedLeader = null;
         herdedPlayer = null;
         state = Unherded;
+
+        think("?", 2.0);
 
         herdedDisableFollowingRadius = false;
 

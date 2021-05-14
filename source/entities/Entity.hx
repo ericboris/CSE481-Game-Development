@@ -16,6 +16,9 @@ class Entity
     private var SIGHT_RANGE:Float = 0;
     private var NEARBY_SIGHT_RADIUS:Float = 0.0;
 
+    // When removed from the game world, this is true.
+    public var dead:Bool = false;
+
     var sprite:SpriteWrapper<Entity>;
     var type:EntityType;
 
