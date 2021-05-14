@@ -74,7 +74,6 @@ class PlayState extends FlxState
 
     // Screen transition
     var transitioningToNextLevel:Bool = false;
-    var onEndScreen:Bool = false;
     var transitionScreen:FlxSprite;
 
     // This level's new, previously unseen entity.
@@ -144,8 +143,11 @@ class PlayState extends FlxState
         ground.pixelPerfectRender = true;
         mapWidth = obstacles.widthInTiles;
         mapHeight = obstacles.heightInTiles;
-        obstacles.health = bottomLayerSortIndex();
         add(obstacles);
+        
+
+        ground.health = bottomLayerSortIndex() - 1;
+        obstacles.health = bottomLayerSortIndex() + 1;
 
         // Make all obstacles collidable.
         for (x in 0...obstacles.widthInTiles)
@@ -240,8 +242,8 @@ class PlayState extends FlxState
 
     function nextLevel()
     {
-        onEndScreen = true;
-        
+        PlayLogger.endLevel();
+
         var debugSkip = DEBUG && FlxG.keys.anyPressed([M]);
         if (this.numPrey == 0 || debugSkip)
         {
@@ -249,102 +251,14 @@ class PlayState extends FlxState
             FlxG.switchState(new PlayState());
             return;
         }
-
-        this.clear();
-
-        // DIsplay the score for this level.
-        var collected:Int = numPreyCollected + numPredatorsCollected;
-        var scoreString = "Saved: " + collected + " / " + numPrey;
-        var rate:Int = Std.int(100 * collected / numPrey);
-        var survivalRate = "Survival Rate: " + rate + "%";
-
-        var levelScoreText = new FlxText(0, 0, 0, scoreString, 36);
-        levelScoreText.health = transitionScreen.health + 1;
-        levelScoreText.alpha = 0;
-
-        var rateText = new FlxText(0, 0, 0, survivalRate, 36);
-        rateText.health = transitionScreen.health + 1;
-        rateText.alpha = 0;
-
-        var nextText = new FlxText(0, 0, 0, "Space to move on", 20);
-        nextText.health = transitionScreen.health + 1;
-        nextText.alpha = 0;
-
-        var restartText = new FlxText(0, 0, 0, "R to restart", 20); 
-        restartText.health = transitionScreen.health + 1;
-        restartText.alpha = 0;
-
-        this.add(transitionScreen);
-        this.add(levelScoreText);
-        this.add(rateText);
-        this.add(nextText);
-        this.add(restartText);
-
-        var camera = FlxG.camera;
-        camera.zoom = 1;
-        camera.setPosition(0,0);
-        camera.updateScroll();
-
-        var midx = camera.scroll.x + SCREEN_WIDTH/2;
-        var midy = camera.scroll.y + SCREEN_HEIGHT/2;
-        levelScoreText.setPosition(midx - levelScoreText.width/2, midy - levelScoreText.height/2 - 30);
-        rateText.setPosition(midx - rateText.width/2, midy - rateText.height/2 + 30);
-
-        var bottomy = camera.scroll.y + SCREEN_HEIGHT;
-        nextText.setPosition(camera.scroll.x + 20, bottomy - 50);
-        restartText.setPosition(camera.scroll.x + 20, bottomy - 80);
-
-        var setAlpha = function (texts:Array<FlxText>, f:Float) {
-            for (text in texts)
-            {
-                text.alpha = f;
-            }
-        };
-
-        var fadeOutDuration = 2.5;
-
-        var fadeScoreOptions = {ease: FlxEase.quadInOut, onComplete: function (tween:FlxTween) {
-            var fadeRateOptions = {ease:FlxEase.quadInOut, onComplete: function (tween:FlxTween) {
-                var fadeOutOptions = {ease:FlxEase.quadOut, onComplete: function (tween:FlxTween) {
-                    PlayLogger.endLevel();
-                    FlxG.switchState(new PlayState());
-                }};
-
-                var setAlpha3 = setAlpha.bind([levelScoreText, rateText, nextText, restartText]);
-                FlxTween.num(1.0, 0, fadeOutDuration, fadeOutOptions, setAlpha3);
-            }};
-
-            var duration:Float;
-            var soundEffect:String;
-            if (rate <= 50)
-            {
-                duration = 2.0;
-                fadeOutDuration = 4.0;
-                soundEffect = AssetPaths.BadJob__mp3;
-            }
-            else
-            {
-                duration = 1.0;
-                fadeOutDuration = 2.5;
-                soundEffect = AssetPaths.GoodJob__mp3;
-            }
-
-            new FlxTimer().start(0.5, function (timer) {
-                FlxG.sound.play(soundEffect, 1.0);
-            }, 1);
-
-            var setAlpha2 = setAlpha.bind([rateText]);
-            FlxTween.num(0, 1.0, duration, fadeRateOptions, setAlpha2);
-        }};
-
-        var setAlpha1 = setAlpha.bind([levelScoreText, nextText, restartText]);
-        FlxTween.num(0, 1.0, 0.5, fadeScoreOptions, setAlpha1);
+        else
+        {
+            FlxG.switchState(new TransitionState());
+        }
     }
 
     function updateTransitionScreen()
     {
-        if (onEndScreen) return;
-
         // Check to load next level.
         transitioningToNextLevel = player.isInRangeOfCave() && levelIsComplete();
         if (DEBUG)
@@ -389,22 +303,6 @@ class PlayState extends FlxState
         if (!PlayLogger.loggerInitialized())
         {
             // Don't execute update method until logger session has been created.
-            return;
-        }
-
-        if (onEndScreen)
-        {
-            if (FlxG.keys.anyPressed([SPACE]))
-            {
-                FlxG.switchState(new PlayState());
-            }
-            else if (FlxG.keys.anyPressed([R]))
-            {
-                GameWorld.restartLevel();
-                FlxG.switchState(new PlayState());
-            }
-
-            // Don't run any additional updates because we are currently on the ending screen.
             return;
         }
 
@@ -463,29 +361,18 @@ class PlayState extends FlxState
             return 1;
         }
 
-        var check1 = Std.is(obj1, FlxTilemap);
-        var check2 = Std.is(obj2, FlxTilemap);
-        if (check1 && check2)
-            return 0;
-        else if (check1)
-            return -1;
-        else if (check2)
-            return 1;
-        else
-        {
-            var sprite1:FlxObject = cast obj1;
-            var sprite2:FlxObject = cast obj2;
+        var sprite1:FlxObject = cast obj1;
+        var sprite2:FlxObject = cast obj2;
 
-            var y1 = sprite1.y + sprite1.height/2;
-            if (sprite1.health != 1)
-                y1 = sprite1.health;
+        var y1 = sprite1.y + sprite1.height/2;
+        if (sprite1.health != 1)
+            y1 = sprite1.health;
 
-            var y2 = sprite2.y + sprite2.height/2;
-            if (sprite2.health != 1)
-                y2 = sprite2.health;
+        var y2 = sprite2.y + sprite2.height/2;
+        if (sprite2.health != 1)
+            y2 = sprite2.health;
 
-            return cast(y1 - y2);
-        }
+        return cast(y1 - y2);
     }
 
     // Adds entity to the world and respective sprite group.
