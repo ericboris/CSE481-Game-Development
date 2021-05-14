@@ -173,7 +173,6 @@ class Dino extends Entity
         {
             // Slow dino down
             sprite.velocity.scale(DAMPING_FACTOR);
-            framesStuck = 0;
             return;
         }
 
@@ -201,7 +200,7 @@ class Dino extends Entity
             herdedPath.resize(0);
         }
 
-        if ((isLeaderPathfinding || framesStuck > 6) && herdedPath.length == 0)
+        if ((isLeaderPathfinding || framesStuck > 10) && herdedPath.length == 0)
         {
             // Attempt to pathfind towards herded leader
             var newPath = PlayState.world.getObstacles().findPath(leaderPos, dinoPos, true, false, NONE);

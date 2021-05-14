@@ -26,7 +26,7 @@ class Boulder extends Entity
     {
         super();
 
-        if (PlayState.DEBUG)
+        if (PlayState.DEBUG_FAST_SPEED)
         {
             PUSH_SPEED = 1.0;
         }

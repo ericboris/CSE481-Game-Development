@@ -7,6 +7,7 @@ import flixel.util.FlxColor;
 import flixel.system.FlxSound;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
+import flixel.system.FlxSound;
 import js.html.Console;
 import flixel.util.FlxSpriteUtil; // For drawing call radius
 
@@ -95,7 +96,7 @@ class Player extends Entity
 
         followers = new Array<Dino>();
 
-        if (PlayState.DEBUG)
+        if (PlayState.DEBUG_FAST_SPEED)
         {
             this.speed = DEBUG_SPEED;
         }
@@ -225,7 +226,9 @@ class Player extends Entity
 
         while (followersCopy.length > 0)
         {
-            var dino:Dino = cast GameWorld.getNearestEntity(lastEntity, cast followersCopy);
+            var doPathfindingCheck = first;
+
+            var dino:Dino = cast GameWorld.getNearestEntity(lastEntity, cast followersCopy, doPathfindingCheck);
             // TODO: This is inefficient
             followersCopy.remove(dino);
 
@@ -365,9 +368,7 @@ class Player extends Entity
         { 
             // Remove entity from world
             followers.remove(dino);
-            PlayState.world.incrementScore(1);
-            PlayState.world.removeEntity(dino);
-            PlayState.world.numPreyCollected++;
+            PlayState.world.collectDino(dino);
             depositingToCave = false;
         }
     }

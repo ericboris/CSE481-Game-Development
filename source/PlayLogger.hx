@@ -74,7 +74,9 @@ class PlayLogger
 
     public static function endLevel()
     {
-        var details = {deathCount: playerDeaths, score: Score.get(), time: logTimer};
+        var details = {deathCount: playerDeaths, score: Score.get(), time: logTimer,
+                       preyCollected: PlayState.world.numPreyCollected, predCollected: PlayState.world.numPredatorsCollected,
+                       preyDeaths: PlayState.world.numPreyDeaths};
         logger.logLevelEnd(details);
     }
 

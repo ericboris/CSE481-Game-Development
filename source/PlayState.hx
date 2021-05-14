@@ -13,6 +13,7 @@ import flixel.text.FlxText;
 import flixel.FlxG;
 import flixel.FlxBasic;
 import flixel.tile.FlxTile;
+import flixel.system.FlxSound;
 import flixel.graphics.FlxGraphic;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
@@ -31,7 +32,11 @@ class PlayState extends FlxState
     static public final CHUNK_WIDTH = 320;
     static public final CHUNK_HEIGHT = 240;
 
+    // Enables debug commands (spawn prey, next level)
     static public final DEBUG = true;
+
+    // Makes player move faster
+    static public final DEBUG_FAST_SPEED = false;
 
     // Size of map (in # of tiles)
     var mapWidth = 0;
@@ -64,7 +69,7 @@ class PlayState extends FlxState
     var caves:Array<Cave>;
     var respawnCave:Cave;
 
-    // The level's score;
+    // The level's score
     var scoreText:FlxText;
 
     // Screen transition
@@ -82,6 +87,7 @@ class PlayState extends FlxState
     public var numPlayerDeaths:Int = 0;
     public var numPreyDeaths:Int = 0;
     public var numPreyCollected:Int = 0;
+    public var numPredatorsCollected:Int = 0;
     public var numPrey:Int = 0;
 
     override public function create()
@@ -236,7 +242,7 @@ class PlayState extends FlxState
     {
         onEndScreen = true;
         
-        var debugSkip = DEBUG && FlxG.keys.anyPressed([N]);
+        var debugSkip = DEBUG && FlxG.keys.anyPressed([M]);
         if (this.numPrey == 0 || debugSkip)
         {
             // There are no prey on this level, so skip displaying the score.
@@ -247,34 +253,87 @@ class PlayState extends FlxState
         this.clear();
 
         // DIsplay the score for this level.
-        var scoreString = "Saved: " + numPreyCollected + " / " + numPrey;
-        
-        var levelScoreText = new FlxText(0, 0, 0, scoreString, 18);
+        var collected:Int = numPreyCollected + numPredatorsCollected;
+        var scoreString = "Saved: " + collected + " / " + numPrey;
+        var rate:Int = Std.int(100 * collected / numPrey);
+        var survivalRate = "Survival Rate: " + rate + "%";
+
+        var levelScoreText = new FlxText(0, 0, 0, scoreString, 36);
         levelScoreText.health = transitionScreen.health + 1;
         levelScoreText.alpha = 0;
+
+        var rateText = new FlxText(0, 0, 0, survivalRate, 36);
+        rateText.health = transitionScreen.health + 1;
+        rateText.alpha = 0;
+
+        var nextText = new FlxText(0, 0, 0, "N to move on", 20);
+        nextText.health = transitionScreen.health + 1;
+        nextText.alpha = 0;
+
+        var restartText = new FlxText(0, 0, 0, "R to restart", 20); 
+        restartText.health = transitionScreen.health + 1;
+        restartText.alpha = 0;
+
         this.add(transitionScreen);
         this.add(levelScoreText);
+        this.add(rateText);
+        this.add(nextText);
+        this.add(restartText);
 
         var camera = FlxG.camera;
-        var x = camera.scroll.x + camera.width/2 - levelScoreText.width/2;
-        var y = camera.scroll.y + camera.height/2 - levelScoreText.height/2;
-        levelScoreText.setPosition(x, y);
-        
-        var setAlpha = function (f:Float) {
-            levelScoreText.alpha = f;
+        camera.zoom = 1;
+        camera.setPosition(0,0);
+        camera.updateScroll();
+
+        var midx = camera.scroll.x + SCREEN_WIDTH/2;
+        var midy = camera.scroll.y + SCREEN_HEIGHT/2;
+        levelScoreText.setPosition(midx - levelScoreText.width/2, midy - levelScoreText.height/2 - 30);
+        rateText.setPosition(midx - rateText.width/2, midy - rateText.height/2 + 30);
+
+        var bottomy = camera.scroll.y + SCREEN_HEIGHT;
+        nextText.setPosition(camera.scroll.x + 20, bottomy - 50);
+        restartText.setPosition(camera.scroll.x + 20, bottomy - 80);
+
+        var setAlpha = function (texts:Array<FlxText>, f:Float) {
+            for (text in texts)
+            {
+                text.alpha = f;
+            }
         };
 
-        Console.log(getFirstNull());
-        Console.log(scoreString);
+        var fadeOutDuration = 2.5;
 
-        var fadeOptions = {ease: FlxEase.quadInOut, onComplete: function (tween:FlxTween) {
-            var fadeOutOptions = {ease:FlxEase.quadInOut, onComplete: function (tween:FlxTween) {
-                PlayLogger.endLevel();
-                FlxG.switchState(new PlayState());
+        var fadeScoreOptions = {ease: FlxEase.quadInOut, onComplete: function (tween:FlxTween) {
+            var fadeRateOptions = {ease:FlxEase.quadInOut, onComplete: function (tween:FlxTween) {
+                var fadeOutOptions = {ease:FlxEase.quadInOut, onComplete: function (tween:FlxTween) {
+                    PlayLogger.endLevel();
+                    FlxG.switchState(new PlayState());
+                }};
+
+                var setAlpha3 = setAlpha.bind([levelScoreText, rateText, nextText, restartText]);
+                FlxTween.num(1.0, 0, fadeOutDuration, fadeOutOptions, setAlpha3);
             }};
-            FlxTween.num(1.0, 0, 1.0, fadeOutOptions, setAlpha);
+
+            var duration:Float;
+            if (rate <= 50)
+            {
+                duration = 2.0;
+                fadeOutDuration = 4.0;
+                FlxG.sound.play(AssetPaths.BadJob__mp3, 1.0);
+            }
+            else
+            {
+                duration = 1.0;
+                fadeOutDuration = 2.5;
+                FlxG.sound.play(AssetPaths.GoodJob__mp3, 1.0);
+            }
+
+            var setAlpha2 = setAlpha.bind([rateText]);
+            FlxTween.num(0, 1.0, duration, fadeRateOptions, setAlpha2);
         }};
-        FlxTween.num(0, 1.0, 1.0, fadeOptions, setAlpha);
+
+        var setAlpha1 = setAlpha.bind([levelScoreText, nextText, restartText]);
+        FlxTween.num(0, 1.0, 0.5, fadeScoreOptions, setAlpha1);
     }
 
     function updateTransitionScreen()
@@ -330,6 +389,16 @@ class PlayState extends FlxState
 
         if (onEndScreen)
         {
+            if (FlxG.keys.anyPressed([N]))
+            {
+                FlxG.switchState(new PlayState());
+            }
+            else if (FlxG.keys.anyPressed([R]))
+            {
+                GameWorld.restartLevel();
+                FlxG.switchState(new PlayState());
+            }
+
             // Don't run any additional updates because we are currently on the ending screen.
             return;
         }
@@ -357,6 +426,8 @@ class PlayState extends FlxState
                 addEntity(prey);
             }
         }
+
+        scoreSoundMultiplier -= 0.005;
 
         this.sort(sortSprites);
         super.update(elapsed);
@@ -666,6 +737,29 @@ class PlayState extends FlxState
             {
                 prey.addToHerd(player);
             }
+        }
+    }
+
+    var scoreSoundMultiplier:Float = 0.0;
+    public function collectDino(dino:Dino)
+    {
+        incrementScore(1);
+        removeEntity(dino);
+
+        scoreSoundMultiplier += 0.16;
+        if (scoreSoundMultiplier > 0.6) scoreSoundMultiplier = 0.6;
+        if (scoreSoundMultiplier < 0) scoreSoundMultiplier = 0;
+
+        FlxG.sound.play(AssetPaths.scoreSound__mp3, 0.15 + scoreSoundMultiplier);
+        //scoreSound.play(true);
+
+        if (dino.getType() == EntityPrey)
+        {
+            numPreyCollected++;
+        }
+        else if (dino.getType() == EntityPredator)
+        {
+            numPredatorsCollected++;
         }
     }
 }
