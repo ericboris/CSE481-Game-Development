@@ -40,7 +40,7 @@ class Prey extends Dino
 
         herdedSound = FlxG.sound.load(AssetPaths.addedToHerd__mp3, 0.5);
 
-        thought.setOffset(0, -8);
+        thought.setOffset(0, -11);
 
         this.SIGHT_ANGLE = GameWorld.toRadians(360);
         this.SIGHT_RANGE = 100;

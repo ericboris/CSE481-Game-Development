@@ -41,6 +41,11 @@ class GameWorld
         return levelIndex;
     }
 
+    static public function restartLevel()
+    {
+        levelIndex--;
+    }
+
     // New entities to display reactions above.
     static var newEntities = [EntityCave,
                             EntityPrey,
@@ -76,20 +81,42 @@ class GameWorld
                                                    3 => [new TutorialText("Press space to swipe", 180, 350),
                                                          new TutorialText("Hitting predators briefly\nstuns them!", 480, 120)]];
 
-    static public function getNearestEntity(src:Entity, entities:Array<Entity>)
+    static public function getNearestEntity(src:Entity, entities:Array<Entity>, pathfind:Bool = false):Entity
     {
         var nearestEntity = null;
         var minDistance = FlxMath.MAX_VALUE_FLOAT;
 
+        var tile = PlayState.world.getObstacles();
+
         for (entity in entities)
         {
-            var distance = entityDistance(src, entity);
+            var distance:Float;
+            if (pathfind)
+            {
+                var start = new FlxPoint(src.getX(), src.getY());
+                var end = new FlxPoint(entity.getX(), entity.getY());
+                var path = tile.findPath(start, end, false);
+                if (path != null)
+                {
+                    distance = path.length;
+                }
+                else
+                {
+                    distance = minDistance;
+                }
+            }
+            else
+            {
+                distance = entityDistance(src, entity);
+            }
+            
             if (distance < minDistance)
             {
                 minDistance = distance;
                 nearestEntity = entity;
             }
         }
+        
         return nearestEntity;
     }
 

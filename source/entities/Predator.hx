@@ -241,7 +241,7 @@ class Predator extends Dino
 
             if (angleDiff > Math.PI / 2.0)
             {
-                var startSpeed = UNHERDED_SPEED / 2;
+                var startSpeed = Dino.UNHERDED_SPEED / 2;
                 sprite.velocity.set(Math.cos(angleBetween) * startSpeed, Math.sin(angleBetween) * startSpeed);
             }
 
@@ -263,6 +263,14 @@ class Predator extends Dino
             hasRoared = true;
         }
         speedUp(PURSUING_SPEED);
+    }
+
+    public override function handleCaveCollision(cave:Cave)
+    {
+        if (state == Fleeing)
+        {
+            PlayState.world.collectDino(this);
+        }
     }
 
     public function hitWithStick()

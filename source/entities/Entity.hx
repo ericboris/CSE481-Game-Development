@@ -16,6 +16,9 @@ class Entity
     private var SIGHT_RANGE:Float = 0;
     private var NEARBY_SIGHT_RADIUS:Float = 0.0;
 
+    // When removed from the game world, this is true.
+    public var dead:Bool = false;
+
     var sprite:SpriteWrapper<Entity>;
     var type:EntityType;
 
@@ -78,6 +81,7 @@ class Entity
             // sprite health is used as a hacky workaround for draw ordering.
             sprite.health = 1;
 
+            // Attempt to jump to the next spot.
             if (nextJump != null)
             {
                 var angle = Math.atan2(nextJump.y - sprite.y, nextJump.x - sprite.x);
@@ -91,6 +95,7 @@ class Entity
                     var canJump = jumpTo(sprite.x + jumpX, sprite.y + jumpY, true);
                     if (canJump)
                     {
+                        sprite.health = PlayState.world.topLayerSortIndex();
                         break;
                     }
                 }
@@ -201,7 +206,6 @@ class Entity
     {
         if (isJumping)
         {
-            Console.log("Already jumping.");
             return false;
         }
 
@@ -228,7 +232,6 @@ class Entity
         if (end.y - start.y != 0)
             control.x += 10;
         
-        var duration = 0.4;
         var options = {ease: FlxEase.sineInOut, type: ONESHOT, onComplete: function(tween:FlxTween)
         {
             sprite.allowCollisions = FlxObject.ANY;
@@ -239,7 +242,8 @@ class Entity
                 completeCallback(this);
             }
         }};
-        FlxTween.quadPath(this.sprite, [start, control, end], duration, true, options);
+        var jumpSpeed = 80.0;
+        FlxTween.quadPath(this.sprite, [start, control, end], jumpSpeed, false, options);
         
         sprite.velocity.x = 0;
         sprite.velocity.y = 0;
@@ -303,7 +307,7 @@ class Entity
     {
         if (content == "V")
         {
-            thought.appear(fadeOutDelay + 1.0);
+            thought.appear(fadeOutDelay * 10);
         }
         else
         {

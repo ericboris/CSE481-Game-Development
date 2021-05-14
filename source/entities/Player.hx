@@ -7,6 +7,7 @@ import flixel.util.FlxColor;
 import flixel.system.FlxSound;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
+import flixel.addons.display.shapes.FlxShapeCircle;
 import js.html.Console;
 import flixel.util.FlxSpriteUtil; // For drawing call radius
 
@@ -29,6 +30,7 @@ class Player extends Entity
     var depositingToCave:Bool = false;
     var cave:Cave;
     var inRangeOfCave:Bool = false;
+    var usingItem:Bool = false;
 
     var frameCounter:Int = 0;
 
@@ -43,6 +45,8 @@ class Player extends Entity
     final CALL_GROWTH_RATE:Int = 3;
     var callRadius:Int = 0;
     var isCalling:Bool = false;
+
+    var callCircle:FlxShapeCircle;
 
     var inCancellableAnimation:Bool=true;
 
@@ -95,7 +99,7 @@ class Player extends Entity
 
         followers = new Array<Dino>();
 
-        if (PlayState.DEBUG)
+        if (PlayState.DEBUG_FAST_SPEED)
         {
             this.speed = DEBUG_SPEED;
         }
@@ -103,18 +107,43 @@ class Player extends Entity
         this.SIGHT_RANGE = 120.0;
         this.NEARBY_SIGHT_RADIUS = 120.0;
 
-        this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__mp3, 0.4);
+        this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__mp3, 0.5);
         this.killedSound = FlxG.sound.load(AssetPaths.lose__mp3, 1.0);
-        this.cliffJumpSound = FlxG.sound.load(AssetPaths.cliffjump__mp3, 0.85);
-        this.callSound = FlxG.sound.load(AssetPaths.call__mp3, 0.8);
+        this.cliffJumpSound = FlxG.sound.load(AssetPaths.cliffjump__mp3, 1.0);
+        this.callSound = FlxG.sound.load(AssetPaths.call__mp3, 0.65);
         this.swipeSound = FlxG.sound.load(AssetPaths.PlayerSwipe__mp3, 0.8);
+    
+        var lineStyle = {thickness: 3.0, color: FlxColor.BLACK};
+        callCircle = new FlxShapeCircle(0, 0, 0, lineStyle, FlxColor.TRANSPARENT);
+        callCircle.health = PlayState.world.bottomLayerSortIndex() + 2;
+        PlayState.world.add(callCircle);
     }
 
     public override function update(elapsed:Float)
     {
         call();
-        move();
         updateItem();
+        move();
+
+        if (isCalling)
+        {
+            if (callCircle.alpha < 0.8)
+            {
+                callCircle.alpha += 0.05;
+            }
+
+            if (callRadius != callCircle.radius)
+            {
+                callCircle.radius = callRadius;
+                callCircle.redrawShape();
+            }
+        }
+        else
+        {
+            callCircle.alpha -= 0.1;
+        }
+
+        callCircle.setPosition(getX() - callCircle.width/2, getY() - callCircle.height/2);
  
         frameCounter++;
         if (frameCounter % 10 == 0)
@@ -177,7 +206,6 @@ class Player extends Entity
 
         if (FlxG.keys.pressed.C)
         {
-            Console.log(sprite.x + " " + sprite.y + " " + GameWorld.collidingWithObstacles(this));
             if (!callSound.playing)
             {
                 callSound.fadeIn(0.2, 0.0, 1.0);
@@ -189,7 +217,12 @@ class Player extends Entity
                 callRadius = MAX_CALL_RADIUS;
             }
             isCalling = true;
-            PlayState.world.callNearbyDinos(callRadius);
+
+            if (frameCounter % 5 == 0)
+            {
+                // Only call dinos once every 5 frames.
+                PlayState.world.callNearbyDinos(callRadius);
+            }
         }
         else
         {
@@ -225,7 +258,16 @@ class Player extends Entity
 
         while (followersCopy.length > 0)
         {
-            var dino:Dino = cast GameWorld.getNearestEntity(lastEntity, cast followersCopy);
+            var doPathfindingCheck = first;
+            
+            var dino:Dino = cast GameWorld.getNearestEntity(lastEntity, cast followersCopy, doPathfindingCheck);
+            if (doPathfindingCheck && (dino == null || GameWorld.entityDistance(dino, this) > Dino.MAX_FOLLOWING_RADIUS))
+            {
+                // We tried to find our primary leader via pathfinding, but we chose one that's far away!
+                // Instead choose the closest one (no pathfinding).
+                dino = cast GameWorld.getNearestEntity(lastEntity, cast followersCopy, false);
+            }
+
             // TODO: This is inefficient
             followersCopy.remove(dino);
 
@@ -242,6 +284,12 @@ class Player extends Entity
 
     function move()
     {
+        var movementSpeed = speed;
+        if (usingItem)
+        {
+            movementSpeed /= 2;
+        }
+
         var up = FlxG.keys.anyPressed([UP, W]);
         var down = FlxG.keys.anyPressed([DOWN, S]);
         var left = FlxG.keys.anyPressed([LEFT, A]);
@@ -304,7 +352,7 @@ class Player extends Entity
         }
 
         angle *= Math.PI / 180;
-        sprite.velocity.set(Math.cos(angle) * speed, Math.sin(angle) * speed);
+        sprite.velocity.set(Math.cos(angle) * movementSpeed, Math.sin(angle) * movementSpeed);
 
         var canCancelAnimation = inCancellableAnimation || sprite.animation.finished;
         var isMoving = sprite.velocity.x != 0 || sprite.velocity.y != 0;
@@ -329,7 +377,15 @@ class Player extends Entity
         if (heldItem != null)
         {
             var useKeyPressed = FlxG.keys.anyPressed([SPACE]);
-            if (useKeyPressed && inCancellableAnimation)
+            
+            if (usingItem)
+            {
+                if (sprite.animation.finished)
+                {
+                    usingItem = false;
+                }
+            }
+            else if (useKeyPressed && inCancellableAnimation)
             {
                 switch (sprite.facing)
                 {
@@ -341,6 +397,8 @@ class Player extends Entity
                         sprite.animation.play("itemd");
                 }
                 inCancellableAnimation = false;
+
+                usingItem = true;
 
                 stickHitbox.setActive(true, 8);
                 swipeSound.stop();
@@ -365,9 +423,8 @@ class Player extends Entity
         { 
             // Remove entity from world
             followers.remove(dino);
-            PlayState.world.incrementScore(1);
-            PlayState.world.removeEntity(dino);
-            PlayState.world.numPreyCollected++;
+            PlayState.world.collectDino(dino);
+            cave.think("" + PlayState.world.getNumPreyLeft(), 2.5);
             depositingToCave = false;
         }
     }
@@ -398,7 +455,9 @@ class Player extends Entity
             if (entity.type == EntityPrey)
             {
                 var prey:Prey = cast entity;
-                if (FlxG.random.bool(6))
+
+                var chance = prey.getState() == Herded ? 10 : 100;
+                if (FlxG.random.bool(chance))
                 {
                     prey.think(":(", 0.4);
                 }

@@ -13,6 +13,7 @@ import flixel.text.FlxText;
 import flixel.FlxG;
 import flixel.FlxBasic;
 import flixel.tile.FlxTile;
+import flixel.system.FlxSound;
 import flixel.graphics.FlxGraphic;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
@@ -31,7 +32,11 @@ class PlayState extends FlxState
     static public final CHUNK_WIDTH = 320;
     static public final CHUNK_HEIGHT = 240;
 
+    // Enables debug commands (spawn prey, next level)
     static public final DEBUG = true;
+
+    // Makes player move faster
+    static public final DEBUG_FAST_SPEED = false;
 
     // Size of map (in # of tiles)
     var mapWidth = 0;
@@ -64,12 +69,11 @@ class PlayState extends FlxState
     var caves:Array<Cave>;
     var respawnCave:Cave;
 
-    // The level's score;
+    // The level's score
     var scoreText:FlxText;
 
     // Screen transition
     var transitioningToNextLevel:Bool = false;
-    var onEndScreen:Bool = false;
     var transitionScreen:FlxSprite;
 
     // This level's new, previously unseen entity.
@@ -82,6 +86,7 @@ class PlayState extends FlxState
     public var numPlayerDeaths:Int = 0;
     public var numPreyDeaths:Int = 0;
     public var numPreyCollected:Int = 0;
+    public var numPredatorsCollected:Int = 0;
     public var numPrey:Int = 0;
 
     override public function create()
@@ -138,8 +143,11 @@ class PlayState extends FlxState
         ground.pixelPerfectRender = true;
         mapWidth = obstacles.widthInTiles;
         mapHeight = obstacles.heightInTiles;
-        obstacles.health = bottomLayerSortIndex();
         add(obstacles);
+        
+
+        ground.health = bottomLayerSortIndex() - 1;
+        obstacles.health = bottomLayerSortIndex() + 1;
 
         // Make all obstacles collidable.
         for (x in 0...obstacles.widthInTiles)
@@ -234,53 +242,23 @@ class PlayState extends FlxState
 
     function nextLevel()
     {
-        onEndScreen = true;
-        
-        var debugSkip = DEBUG && FlxG.keys.anyPressed([N]);
+        PlayLogger.endLevel();
+
+        var debugSkip = DEBUG && FlxG.keys.anyPressed([M]);
         if (this.numPrey == 0 || debugSkip)
         {
             // There are no prey on this level, so skip displaying the score.
             FlxG.switchState(new PlayState());
             return;
         }
-
-        this.clear();
-
-        // DIsplay the score for this level.
-        var scoreString = "Saved: " + numPreyCollected + " / " + numPrey;
-        
-        var levelScoreText = new FlxText(0, 0, 0, scoreString, 18);
-        levelScoreText.health = transitionScreen.health + 1;
-        levelScoreText.alpha = 0;
-        this.add(transitionScreen);
-        this.add(levelScoreText);
-
-        var camera = FlxG.camera;
-        var x = camera.scroll.x + camera.width/2 - levelScoreText.width/2;
-        var y = camera.scroll.y + camera.height/2 - levelScoreText.height/2;
-        levelScoreText.setPosition(x, y);
-        
-        var setAlpha = function (f:Float) {
-            levelScoreText.alpha = f;
-        };
-
-        Console.log(getFirstNull());
-        Console.log(scoreString);
-
-        var fadeOptions = {ease: FlxEase.quadInOut, onComplete: function (tween:FlxTween) {
-            var fadeOutOptions = {ease:FlxEase.quadInOut, onComplete: function (tween:FlxTween) {
-                PlayLogger.endLevel();
-                FlxG.switchState(new PlayState());
-            }};
-            FlxTween.num(1.0, 0, 1.0, fadeOutOptions, setAlpha);
-        }};
-        FlxTween.num(0, 1.0, 1.0, fadeOptions, setAlpha);
+        else
+        {
+            FlxG.switchState(new TransitionState());
+        }
     }
 
     function updateTransitionScreen()
     {
-        if (onEndScreen) return;
-
         // Check to load next level.
         transitioningToNextLevel = player.isInRangeOfCave() && levelIsComplete();
         if (DEBUG)
@@ -328,12 +306,6 @@ class PlayState extends FlxState
             return;
         }
 
-        if (onEndScreen)
-        {
-            // Don't run any additional updates because we are currently on the ending screen.
-            return;
-        }
-
         PlayLogger.incrementTime(elapsed);
  
         // Do collision checks
@@ -357,6 +329,8 @@ class PlayState extends FlxState
                 addEntity(prey);
             }
         }
+
+        scoreSoundMultiplier -= 0.005;
 
         this.sort(sortSprites);
         super.update(elapsed);
@@ -387,29 +361,18 @@ class PlayState extends FlxState
             return 1;
         }
 
-        var check1 = Std.is(obj1, FlxTilemap);
-        var check2 = Std.is(obj2, FlxTilemap);
-        if (check1 && check2)
-            return 0;
-        else if (check1)
-            return -1;
-        else if (check2)
-            return 1;
-        else
-        {
-            var sprite1:FlxObject = cast obj1;
-            var sprite2:FlxObject = cast obj2;
+        var sprite1:FlxObject = cast obj1;
+        var sprite2:FlxObject = cast obj2;
 
-            var y1 = sprite1.y + sprite1.height/2;
-            if (sprite1.health != 1)
-                y1 = sprite1.health;
+        var y1 = sprite1.y + sprite1.height/2;
+        if (sprite1.health != 1)
+            y1 = sprite1.health;
 
-            var y2 = sprite2.y + sprite2.height/2;
-            if (sprite2.health != 1)
-                y2 = sprite2.health;
+        var y2 = sprite2.y + sprite2.height/2;
+        if (sprite2.health != 1)
+            y2 = sprite2.health;
 
-            return cast(y1 - y2);
-        }
+        return cast(y1 - y2);
     }
 
     // Adds entity to the world and respective sprite group.
@@ -435,6 +398,7 @@ class PlayState extends FlxState
 
     public function removeEntity(entity:Entity)
     {
+        entity.dead = true;
         var type = entity.getType();
 
         // Remove from entity arrays
@@ -449,7 +413,7 @@ class PlayState extends FlxState
 
         if (entity.getThought() != null)
         {
-            remove(entity.getThought().sprite);
+            remove(entity.getThought().sprite, true);
         }
     }
 
@@ -475,9 +439,7 @@ class PlayState extends FlxState
         FlxG.overlap(hitboxGroup, collidableSprites, handleCollision);
 
         // Check cave overlap
-        FlxG.overlap(playerGroup, caveGroup, handleCollision);
-        FlxG.overlap(preyGroup, caveGroup, handleCollision);
-        FlxG.overlap(hitboxGroup, caveGroup, handleCollision);
+        FlxG.overlap(collidableSprites, caveGroup, handleCollision);
 
         // Collision resolution -- physics
         FlxG.overlap(collidableSprites, collidableSprites, handleSeparationCollision);
@@ -623,7 +585,7 @@ class PlayState extends FlxState
     public function incrementScore(amount:Int):Void
     {
         Score.increment(amount);
-        scoreText.alpha = 1;
+        //scoreText.alpha = 1;
     }
 
     public function getObstacles()
@@ -667,5 +629,35 @@ class PlayState extends FlxState
                 prey.addToHerd(player);
             }
         }
+    }
+
+    var scoreSoundMultiplier:Float = 0.0;
+    public function collectDino(dino:Dino)
+    {
+        if (!dino.dead)
+        {
+            incrementScore(1);
+            removeEntity(dino);
+
+            scoreSoundMultiplier += 0.16;
+            if (scoreSoundMultiplier > 0.6) scoreSoundMultiplier = 0.6;
+            if (scoreSoundMultiplier < 0) scoreSoundMultiplier = 0;
+
+            FlxG.sound.play(AssetPaths.scoreSound__mp3, 0.15 + scoreSoundMultiplier);
+
+            if (dino.getType() == EntityPrey)
+            {
+                numPreyCollected++;
+            }
+            else if (dino.getType() == EntityPredator)
+            {
+                numPredatorsCollected++;
+            }
+        }
+    }
+
+    public function getNumPreyLeft():Int
+    {
+        return entityGroups[EntityPrey].length;
     }
 }
