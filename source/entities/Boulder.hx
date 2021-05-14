@@ -62,6 +62,8 @@ class Boulder extends Entity
 
         if (facingCliff != 0)
         {
+            // The player is trying to jump on this boulder onto the cliff!
+
             var shouldJump = false;
             var diffY = entity.getY() - getY();
             var diffX = entity.getX() - getX();
@@ -69,10 +71,12 @@ class Boulder extends Entity
             var jumpDist = 6;
             var jumpX = 0;
             var jumpY = 0;
+            var secondJumpMultiplier = 6;
             switch (facingCliff)
             {
                 case FlxObject.UP:
-                    jumpY = -jumpDist;
+                    jumpY = -jumpDist * 2;
+                    secondJumpMultiplier = 3;
                     shouldJump = diffY > 0 && Math.abs(diffY) > Math.abs(diffX);
                 case FlxObject.DOWN:
                     jumpY = jumpDist;
@@ -89,7 +93,8 @@ class Boulder extends Entity
             {
                 var secondJump = function (entity:Entity)
                 {
-                    entity.nextJump = new FlxPoint(entity.getTopLeftX() + jumpX * 6, entity.getTopLeftY() + jumpY * 6);
+                    entity.nextJump = new FlxPoint(entity.getTopLeftX() + jumpX * secondJumpMultiplier,
+                                                   entity.getTopLeftY() + jumpY * secondJumpMultiplier);
                 }
                 entity.jumpTo(entity.getTopLeftX() + jumpX, entity.getTopLeftY() + jumpY, false, secondJump);
             }

@@ -7,7 +7,6 @@ import flixel.util.FlxColor;
 import flixel.system.FlxSound;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
-import flixel.system.FlxSound;
 import js.html.Console;
 import flixel.util.FlxSpriteUtil; // For drawing call radius
 
@@ -30,6 +29,7 @@ class Player extends Entity
     var depositingToCave:Bool = false;
     var cave:Cave;
     var inRangeOfCave:Bool = false;
+    var usingItem:Bool = false;
 
     var frameCounter:Int = 0;
 
@@ -114,8 +114,8 @@ class Player extends Entity
     public override function update(elapsed:Float)
     {
         call();
-        move();
         updateItem();
+        move();
  
         frameCounter++;
         if (frameCounter % 10 == 0)
@@ -227,8 +227,15 @@ class Player extends Entity
         while (followersCopy.length > 0)
         {
             var doPathfindingCheck = first;
-
+            
             var dino:Dino = cast GameWorld.getNearestEntity(lastEntity, cast followersCopy, doPathfindingCheck);
+            if (doPathfindingCheck && (dino == null || GameWorld.entityDistance(dino, this) > Dino.MAX_FOLLOWING_RADIUS))
+            {
+                // We tried to find our primary leader via pathfinding, but we chose one that's far away!
+                // Instead choose the closest one (no pathfinding).
+                dino = cast GameWorld.getNearestEntity(lastEntity, cast followersCopy, false);
+            }
+
             // TODO: This is inefficient
             followersCopy.remove(dino);
 
@@ -245,6 +252,12 @@ class Player extends Entity
 
     function move()
     {
+        var movementSpeed = speed;
+        if (usingItem)
+        {
+            movementSpeed /= 2;
+        }
+
         var up = FlxG.keys.anyPressed([UP, W]);
         var down = FlxG.keys.anyPressed([DOWN, S]);
         var left = FlxG.keys.anyPressed([LEFT, A]);
@@ -307,7 +320,7 @@ class Player extends Entity
         }
 
         angle *= Math.PI / 180;
-        sprite.velocity.set(Math.cos(angle) * speed, Math.sin(angle) * speed);
+        sprite.velocity.set(Math.cos(angle) * movementSpeed, Math.sin(angle) * movementSpeed);
 
         var canCancelAnimation = inCancellableAnimation || sprite.animation.finished;
         var isMoving = sprite.velocity.x != 0 || sprite.velocity.y != 0;
@@ -332,7 +345,15 @@ class Player extends Entity
         if (heldItem != null)
         {
             var useKeyPressed = FlxG.keys.anyPressed([SPACE]);
-            if (useKeyPressed && inCancellableAnimation)
+            
+            if (usingItem)
+            {
+                if (sprite.animation.finished)
+                {
+                    usingItem = false;
+                }
+            }
+            else if (useKeyPressed && inCancellableAnimation)
             {
                 switch (sprite.facing)
                 {
@@ -344,6 +365,8 @@ class Player extends Entity
                         sprite.animation.play("itemd");
                 }
                 inCancellableAnimation = false;
+
+                usingItem = true;
 
                 stickHitbox.setActive(true, 8);
                 swipeSound.stop();

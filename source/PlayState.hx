@@ -266,7 +266,7 @@ class PlayState extends FlxState
         rateText.health = transitionScreen.health + 1;
         rateText.alpha = 0;
 
-        var nextText = new FlxText(0, 0, 0, "N to move on", 20);
+        var nextText = new FlxText(0, 0, 0, "Space to move on", 20);
         nextText.health = transitionScreen.health + 1;
         nextText.alpha = 0;
 
@@ -305,7 +305,7 @@ class PlayState extends FlxState
 
         var fadeScoreOptions = {ease: FlxEase.quadInOut, onComplete: function (tween:FlxTween) {
             var fadeRateOptions = {ease:FlxEase.quadInOut, onComplete: function (tween:FlxTween) {
-                var fadeOutOptions = {ease:FlxEase.quadInOut, onComplete: function (tween:FlxTween) {
+                var fadeOutOptions = {ease:FlxEase.quadOut, onComplete: function (tween:FlxTween) {
                     PlayLogger.endLevel();
                     FlxG.switchState(new PlayState());
                 }};
@@ -315,18 +315,23 @@ class PlayState extends FlxState
             }};
 
             var duration:Float;
+            var soundEffect:String;
             if (rate <= 50)
             {
                 duration = 2.0;
                 fadeOutDuration = 4.0;
-                FlxG.sound.play(AssetPaths.BadJob__mp3, 1.0);
+                soundEffect = AssetPaths.BadJob__mp3;
             }
             else
             {
                 duration = 1.0;
                 fadeOutDuration = 2.5;
-                FlxG.sound.play(AssetPaths.GoodJob__mp3, 1.0);
+                soundEffect = AssetPaths.GoodJob__mp3;
             }
+
+            new FlxTimer().start(0.5, function (timer) {
+                FlxG.sound.play(soundEffect, 1.0);
+            }, 1);
 
             var setAlpha2 = setAlpha.bind([rateText]);
             FlxTween.num(0, 1.0, duration, fadeRateOptions, setAlpha2);
@@ -389,7 +394,7 @@ class PlayState extends FlxState
 
         if (onEndScreen)
         {
-            if (FlxG.keys.anyPressed([N]))
+            if (FlxG.keys.anyPressed([SPACE]))
             {
                 FlxG.switchState(new PlayState());
             }

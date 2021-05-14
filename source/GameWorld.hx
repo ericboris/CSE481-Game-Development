@@ -79,9 +79,9 @@ class GameWorld
                                                    3 => [new TutorialText("Press space to swipe", 180, 350),
                                                          new TutorialText("Hitting predators briefly\nstuns them!", 480, 120)]];
 
-    static public function getNearestEntity(src:Entity, entities:Array<Entity>, pathfind:Bool = false)
+    static public function getNearestEntity(src:Entity, entities:Array<Entity>, pathfind:Bool = false):Entity
     {
-        var nearestEntity = entities[0];
+        var nearestEntity = null;
         var minDistance = FlxMath.MAX_VALUE_FLOAT;
 
         var tile = PlayState.world.getObstacles();
@@ -114,6 +114,7 @@ class GameWorld
                 nearestEntity = entity;
             }
         }
+        
         return nearestEntity;
     }
 

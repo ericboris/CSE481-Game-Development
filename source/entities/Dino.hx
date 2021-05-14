@@ -20,10 +20,10 @@ class Dino extends Entity
     var state:DinoState;
     
     // Constants
-    final MAX_FOLLOWING_RADIUS = 140.0;
-    final FOLLOWING_RADIUS = 20.0;
-    final DAMPING_FACTOR = 0.7;
-    final UNHERDED_SPEED = 60.0;
+    public static final MAX_FOLLOWING_RADIUS = 140.0;
+    static final FOLLOWING_RADIUS = 20.0;
+    static final DAMPING_FACTOR = 0.7;
+    static final UNHERDED_SPEED = 60.0;
 
     /* State for herded behavior */
     var herdedPlayer:Player;
@@ -165,8 +165,10 @@ class Dino extends Entity
         {
             leaderPos = new FlxPoint(herdedPlayer.getX(), herdedPlayer.getY());
             dist = leaderPos.distanceTo(dinoPos);
-            followingRadius *= 3;
-            speed *= 1.3;
+            followingRadius *= 2;
+            speed *= 1.2;
+
+            framesStuck = 20;
         }
 
         if (!herdedDisableFollowingRadius && dist < followingRadius)
