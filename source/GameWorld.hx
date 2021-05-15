@@ -34,7 +34,8 @@ class GameWorld
                             AssetPaths.canyon__json,
                             AssetPaths.canyon2__json,
                             AssetPaths.testxl__json,
-                            AssetPaths.testxl2__json];
+                            AssetPaths.testxl2__json,
+                            AssetPaths.sample__json];
 
     static public function levelId()
     {
@@ -52,6 +53,7 @@ class GameWorld
                             EntityBoulder,
                             EntityNull,
                             EntityPredator,
+                            EntityNull,
                             EntityNull,
                             EntityNull,
                             EntityNull,
