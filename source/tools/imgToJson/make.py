@@ -104,25 +104,79 @@ OBSTACLE_TILEMAP = {(0, 0, 0, 0, 0, 0, 0, 0, 0): CENTER,
                     (1, 0, 0, 1, 1, 0, 1, 1, 1): TOP_RIGHT_OUT,
                     (0, 0, 1, 0, 1, 1, 1, 1, 1): TOP_LEFT_OUT,
                     (0, 0, 0, 0, 1, 1, 0, 1, 0): RIGHT,
+                    (0, 1, 0, 1, 1, 1, 1, 1, 1): TOP_CENTER,
+                    (0, 1, 1, 1, 1, 1, 1, 1, 0): BOTTOM_LEFT_OUT,
+                    (0, 0, 1, 1, 1, 1, 1, 1, 0): TOP_RIGHT_OUT,
+                    (1, 1, 0, 1, 1, 1, 1, 1, 0): RIGHT,
+                    (0, 0, 1, 0, 1, 1, 1, 1, 0): EMPTY,
+                    (0, 1, 1, 1, 1, 1, 1, 0, 0): BOTTOM_LEFT_OUT,
+                    (0, 0, 0, 1, 1, 1, 0, 1, 1): TOP_LEFT_OUT,
+                    (1, 1, 1, 1, 1, 1, 0, 1, 0): BOTTOM_CENTER,
+                    (0, 1, 1, 1, 1, 1, 0, 1, 1): LEFT,
+                    (0, 0, 0, 1, 1, 1, 1, 1, 0): TOP_RIGHT_OUT,
+                    (1, 0, 1, 1, 1, 1, 0, 1, 1): TOP_LEFT_OUT,
+                    (0, 1, 1, 0, 1, 1, 1, 0, 1): BOTTOM_LEFT_OUT,
+                    (1, 1, 0, 1, 1, 1, 0, 0, 1): BOTTOM_RIGHT_OUT,
+                    (1, 1, 0, 0, 1, 1, 1, 1, 1): TOP_LEFT_OUT,
+                    (0, 1, 1, 0, 1, 1, 0, 1, 0): BOTTOM_LEFT_OUT,
+                    (0, 1, 0, 1, 1, 0, 1, 1, 1): TOP_RIGHT_OUT,
+                    (1, 0, 0, 0, 1, 1, 0, 1, 1): TOP_LEFT_OUT,
+                    (0, 0, 1, 1, 1, 1, 0, 1, 1): TOP_LEFT_OUT,
+                    (0, 1, 1, 1, 1, 1, 0, 1, 0): BOTTOM_LEFT_OUT,
+                    (1, 1, 1, 1, 1, 0, 0, 0, 1): BOTTOM_RIGHT_OUT,
+                    (0, 1, 0, 0, 1, 1, 0, 1, 1): TOP_LEFT_OUT,
+                    (1, 0, 1, 0, 1, 1, 1, 1, 1): TOP_LEFT_OUT,
+                    (0, 1, 1, 1, 1, 1, 0, 0, 1): BOTTOM_LEFT_OUT,
+                    (0, 0, 0, 0, 1, 1, 0, 1, 0): EMPTY,
+                    (0, 1, 1, 1, 1, 1, 0, 0, 0): BOTTOM_LEFT_OUT,
+                    (1, 1, 1, 1, 1, 0, 0, 1, 1): BOTTOM_RIGHT_OUT,
+                    (0, 1, 0, 1, 1, 0, 1, 1, 0): TOP_RIGHT_OUT,
+                    (1, 0, 0, 1, 1, 1, 0, 1, 1): TOP_LEFT_OUT,
+                    (1, 1, 0, 1, 1, 0, 0, 1, 1): BOTTOM_RIGHT_OUT,
+                    (0, 0, 1, 1, 1, 0, 1, 1, 0): TOP_RIGHT_OUT,
+                    (1, 1, 1, 0, 1, 1, 1, 0, 0): BOTTOM_LEFT_OUT,
+                    (1, 1, 0, 1, 1, 1, 0, 0, 0): BOTTOM_RIGHT_OUT,
+                    (0, 0, 1, 1, 1, 0, 1, 1, 1): TOP_RIGHT_OUT,
+                    (1, 0, 1, 1, 1, 1, 1, 1, 0): TOP_RIGHT_OUT,
+                    (1, 1, 1, 0, 1, 1, 1, 0, 1): BOTTOM_LEFT_OUT,
+                    (0, 1, 1, 0, 1, 1, 1, 1, 0): BOTTOM_LEFT_OUT,
+                    (1, 1, 1, 1, 1, 0, 1, 0, 1): BOTTOM_RIGHT_OUT,
+                    (1, 0, 0, 0, 1, 1, 1, 1, 1): TOP_LEFT_OUT,
+                    (1, 0, 1, 1, 1, 0, 1, 1, 0): TOP_RIGHT_OUT,
+                    (1, 0, 1, 1, 1, 0, 1, 1, 1): TOP_RIGHT_OUT,
+                    (1, 1, 0, 1, 1, 1, 1, 0, 0): BOTTOM_RIGHT_OUT,
+                    (0, 1, 0, 0, 1, 1, 1, 1, 1): TOP_LEFT_OUT,
+                    (1, 1, 0, 0, 1, 1, 0, 1, 1): TOP_LEFT_OUT,
+                    (1, 1, 0, 0, 1, 1, 0, 1, 1): TOP_LEFT_OUT,
+                    (1, 1, 0, 1, 1, 0, 0, 1, 0): BOTTOM_RIGHT_OUT,
+                    (1, 0, 1, 0, 1, 1, 0, 1, 1): TOP_LEFT_OUT,
+                    (0, 1, 1, 0, 1, 1, 1, 0, 0): BOTTOM_LEFT_OUT,
+                    (1, 1, 0, 1, 1, 1, 1, 0, 1): BOTTOM_RIGHT_OUT,
+                    (1, 1, 1, 0, 1, 1, 1, 1, 0): BOTTOM_LEFT_OUT,
+                    (1, 1, 1, 0, 1, 1, 0, 1, 0): BOTTOM_LEFT_OUT,
+                    (0, 1, 1, 1, 1, 1, 1, 0, 1): BOTTOM_LEFT_OUT,
+                    (1, 1, 1, 1, 1, 0, 0, 1, 0): BOTTOM_RIGHT_OUT,
+                    (1, 1, 0, 1, 1, 0, 0, 0, 1): BOTTOM_RIGHT_OUT,
+                    (1, 1, 1, 1, 1, 0, 0, 1, 0): BOTTOM_RIGHT_OUT,
+                    (0, 1, 1, 1, 1, 0, 1, 1, 0): TOP_RIGHT_OUT,
+                    (1, 0, 0, 1, 1, 1, 1, 1, 0): TOP_RIGHT_OUT,
                     }
 
 def main():
     # Load the image.
-    img = np.array(Image.open('sample.jpg').convert('L'))
+    img = np.array(Image.open('west.png').convert('L'))
 
     # Assign the number of rows and columns.
     ROWS, COLS = img.shape
+    #print(img.shape)
 
     # Preprocess the image.
-    img = threshold(img, 3, ROWS, COLS)
+    img = threshold(img, 20, ROWS, COLS)
      
     # Build the layer dictionaries.
     entities = getEntities(name=ENTITIES_NAME, _eid=ENTITIES_EID)
     obstacles = getTileset(name=OBSTACLES_NAME, _eid=OBSTACLES_EID, tileset=TILESET, data=getObstacleData(img, ROWS, COLS))
     ground = getTileset(name=GROUND_NAME, _eid=GROUND_EID, tileset=TILESET, data=getGroundData(img, ROWS, COLS))
-
-    # TODO REMOVE FOR TESTING
-    #print(getObstacleData(img, ROWS, COLS))
 
     # Compose the layers parameter.
     layers = [entities, obstacles, ground]
@@ -134,7 +188,7 @@ def main():
     rootJson = json.dumps(root, indent=2)
 
     # Write the json to file.
-    with open('sample.json', 'w') as f:
+    with open('west1.json', 'w') as f:
         f.write(rootJson)
                
 
@@ -217,6 +271,11 @@ def getObstacleData(img, ROWS, COLS):
 
             # Flatten the region into 1s and 0s.
             flatRegion = flatten(region)   
+    
+            # Used with clean.py
+            #diffs = []
+            #if (y, x) in diffs:
+            #    print(tuple(flatRegion))
 
             try:
                 # Get the raw obstacle shape.

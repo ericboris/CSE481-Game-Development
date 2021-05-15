@@ -35,7 +35,7 @@ class GameWorld
                             AssetPaths.canyon2__json,
                             AssetPaths.testxl__json,
                             AssetPaths.testxl2__json,
-                            AssetPaths.sample__json];
+                            AssetPaths.west1__json];
 
     static public function levelId()
     {

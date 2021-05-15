@@ -17,7 +17,7 @@ class Player extends Entity
     static final INTERACT_HITBOX_ID = 0;
     static final STICK_HITBOX_ID    = 1;
 
-    static final SPEED = 85.0;
+    static final SPEED = 120.0;
     static final DEBUG_SPEED = 120.0;
 
     var speed:Float = SPEED;
