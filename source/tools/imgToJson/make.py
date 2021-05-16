@@ -1,12 +1,15 @@
-from PIL import Image
 import numpy as np
 import json
+import random
+import perlin
+from PIL import Image
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
+
+TILESET = 'tiles'
 
 ENTITIES_NAME = 'entities'
 ENTITIES_EID = '72465116'
-
-TILESET = 'tiles'
 
 OBSTACLES_NAME = 'obstacles'
 OBSTACLES_EID = '72467368'
@@ -14,8 +17,11 @@ OBSTACLES_EID = '72467368'
 GROUND_NAME = 'ground'
 GROUND_EID = '84372284'
 
-BLACK = 0
-WHITE = 255
+PREY_NAME = 'prey'
+PREY_EID = '72472484'
+
+PREDATOR_NAME = 'predator'
+PREDATOR_EID = '72474834'
 
 GRASS_TILE = 36
 WATER_TILE = 16
@@ -34,6 +40,12 @@ TOP_LEFT_IN = 9
 TOP_RIGHT_IN = 10
 BOTTOM_LEFT_IN = 11
 BOTTOM_RIGHT_IN = 12
+
+TREE_TILEMAP = {0: 14,
+                1: 15,
+                2: 21,
+                3: 22,
+                4: 53}
 
 GRASS_TILEMAP = {-1: -1,
                 0: 28,
@@ -65,9 +77,7 @@ WATER_TILEMAP = {-1: 16,
                 11: 60,
                 12: 59}
 
-OBSTACLE_TILEMAP = {(0, 0, 0, 0, 0, 0, 0, 0, 0): CENTER,
-                    (1, 1, 1, 1, 1, 1, 1, 1, 1): EMPTY,
-                    (0, 0, 0, 0, 1, 1, 0, 1, 1): TOP_LEFT_OUT,
+OBSTACLE_TILEMAP = {(0, 0, 0, 0, 1, 1, 0, 1, 1): TOP_LEFT_OUT,
                     (0, 0, 0, 1, 1, 1, 1, 1, 1): TOP_CENTER,
                     (0, 0, 0, 1, 1, 0, 1, 1, 0): TOP_RIGHT_OUT,
                     (0, 1, 1, 0, 1, 1, 0, 1, 1): LEFT,
@@ -108,7 +118,6 @@ OBSTACLE_TILEMAP = {(0, 0, 0, 0, 0, 0, 0, 0, 0): CENTER,
                     (0, 1, 1, 1, 1, 1, 1, 1, 0): BOTTOM_LEFT_OUT,
                     (0, 0, 1, 1, 1, 1, 1, 1, 0): TOP_RIGHT_OUT,
                     (1, 1, 0, 1, 1, 1, 1, 1, 0): RIGHT,
-                    (0, 0, 1, 0, 1, 1, 1, 1, 0): EMPTY,
                     (0, 1, 1, 1, 1, 1, 1, 0, 0): BOTTOM_LEFT_OUT,
                     (0, 0, 0, 1, 1, 1, 0, 1, 1): TOP_LEFT_OUT,
                     (1, 1, 1, 1, 1, 1, 0, 1, 0): BOTTOM_CENTER,
@@ -127,7 +136,6 @@ OBSTACLE_TILEMAP = {(0, 0, 0, 0, 0, 0, 0, 0, 0): CENTER,
                     (0, 1, 0, 0, 1, 1, 0, 1, 1): TOP_LEFT_OUT,
                     (1, 0, 1, 0, 1, 1, 1, 1, 1): TOP_LEFT_OUT,
                     (0, 1, 1, 1, 1, 1, 0, 0, 1): BOTTOM_LEFT_OUT,
-                    (0, 0, 0, 0, 1, 1, 0, 1, 0): EMPTY,
                     (0, 1, 1, 1, 1, 1, 0, 0, 0): BOTTOM_LEFT_OUT,
                     (1, 1, 1, 1, 1, 0, 0, 1, 1): BOTTOM_RIGHT_OUT,
                     (0, 1, 0, 1, 1, 0, 1, 1, 0): TOP_RIGHT_OUT,
@@ -162,24 +170,59 @@ OBSTACLE_TILEMAP = {(0, 0, 0, 0, 0, 0, 0, 0, 0): CENTER,
                     (1, 0, 0, 1, 1, 1, 1, 1, 0): TOP_RIGHT_OUT,
                     }
 
-def main():
+entityId = 0
+
+def main(args):
+    global ROWS, COLS, TREE_NOISE, PREY_NOISE, PREDATOR_NOISE, TREE_THRESHOLD, PREY_THRESHOLD, PREDATOR_THRESHOLD
+
+    infile = args.infile
+    outfile = args.outfile
+    color_threshold = args.color_threshold
+    TREE_THRESHOLD = args.tree_threshold
+    PREY_THRESHOLD = args.prey_threshold
+    PREDATOR_THRESHOLD = args.pred_threshold
+
     # Load the image.
-    img = np.array(Image.open('west.png').convert('L'))
+    img = np.array(Image.open(infile).convert('L'))
 
     # Assign the number of rows and columns.
     ROWS, COLS = img.shape
-    #print(img.shape)
+
+    # Instantiate the perlin noise class.
+    # Arbitrary choice of simplex parameter.
+    TREE_NOISE = perlin.SimplexNoise(18)
+    PREY_NOISE = perlin.SimplexNoise(42)
+    PREDATOR_NOISE = perlin.SimplexNoise(33)
 
     # Preprocess the image.
-    img = threshold(img, 20, ROWS, COLS)
-     
+    img = threshold(img, color_threshold)
+    
+    # Get the entities and obstacles tile data.
+    entityData, obstacleData = getObstacleData(img) 
+
     # Build the layer dictionaries.
-    entities = getEntities(name=ENTITIES_NAME, _eid=ENTITIES_EID)
-    obstacles = getTileset(name=OBSTACLES_NAME, _eid=OBSTACLES_EID, tileset=TILESET, data=getObstacleData(img, ROWS, COLS))
-    ground = getTileset(name=GROUND_NAME, _eid=GROUND_EID, tileset=TILESET, data=getGroundData(img, ROWS, COLS))
+    entityLayer = getEntityLayer(name=ENTITIES_NAME, 
+                                _eid=ENTITIES_EID, 
+                                gridCellsX=COLS,
+                                gridCellsY=ROWS,
+                                entities=entityData)
+
+    obstacleLayer = getTileLayer(name=OBSTACLES_NAME,
+                                _eid=OBSTACLES_EID, 
+                                gridCellsX=COLS,
+                                gridCellsY=ROWS,
+                                tileset=TILESET, 
+                                data=obstacleData)
+
+    groundLayer = getTileLayer(name=GROUND_NAME, 
+                                _eid=GROUND_EID, 
+                                gridCellsX=COLS,
+                                gridCellsY=ROWS,
+                                tileset=TILESET, 
+                                data=getGroundData(img))
 
     # Compose the layers parameter.
-    layers = [entities, obstacles, ground]
+    layers = [entityLayer, obstacleLayer, groundLayer]
 
     # Build the root dictionary.
     root = getRoot(layers=layers, width=COLS*16, height=ROWS*16)
@@ -188,7 +231,7 @@ def main():
     rootJson = json.dumps(root, indent=2)
 
     # Write the json to file.
-    with open('west1.json', 'w') as f:
+    with open(outfile, 'w') as f:
         f.write(rootJson)
                
 
@@ -206,7 +249,7 @@ def getRoot(version='3.4.0',
             "layers": layers}
 
 
-def getEntities(name='',
+def getEntityLayer(name='',
                 _eid='',
                 offsetX=0,
                 offsetY=0,
@@ -226,7 +269,7 @@ def getEntities(name='',
             "entities": entities}
 
 
-def getTileset(name='',
+def getTileLayer(name='',
                 _eid='',
                 offsetX=0,
                 offsetY=0,
@@ -252,19 +295,20 @@ def getTileset(name='',
             "arrayMode": arrayMode}
 
 
-def getGroundData(img, ROWS, COLS):
+def getGroundData(img):
     return [GRASS_TILE] * (ROWS * COLS)
 
 
-def getObstacleData(img, ROWS, COLS):
+def getObstacleData(img):
     # The list of tile indices.
-    d = []
+    obstacles = []
+    entities = []
 
     # Visit every pixel in img.
     for y in range(ROWS):
         for x in range(COLS):
             # Get the pixel region.
-            region = getRegion(img, x, y, ROWS, COLS)
+            region = getRegion(img, x, y)
 
             # True if descending into water and false otherwise.
             intoWater = True if min(region) == 0 else False
@@ -285,14 +329,30 @@ def getObstacleData(img, ROWS, COLS):
 
             # Convert the obstacle shape into the typed obstacle.
             if intoWater:
+                # Add cliffs into water.
                 typed = WATER_TILEMAP[obstacle]
             else:
-                typed = GRASS_TILEMAP[obstacle]
+                # Add trees.
+                if obstacle == EMPTY and TREE_NOISE.noise2(x, y) > TREE_THRESHOLD:
+                    choice = getTreeType()
+                    typed = TREE_TILEMAP[choice]
+                # Add cliffs.
+                else:
+                    typed = GRASS_TILEMAP[obstacle]
+
+                # Add prey.
+                if obstacle == EMPTY and PREY_NOISE.noise2(x, y) > PREY_THRESHOLD:
+                    entities.append(getPreyEntity(x*16, y*16))
+
+                # Add predators.
+                if obstacle == EMPTY and PREDATOR_NOISE.noise2(x, y) > PREDATOR_THRESHOLD:
+                    entities.append(getPredatorEntity(x*16, y*16))
+
 
             # Insert that value into the data list.
-            d.append(typed)
+            obstacles.append(typed)
 
-    return d
+    return entities, obstacles
 
 
 def flatten(region):
@@ -300,7 +360,7 @@ def flatten(region):
     return [0 if i == min(region) else 1 for i in region]
 
 
-def threshold(img, n, ROWS, COLS):
+def threshold(img, n):
     # Reduce the image to n colors. 
     newImg = np.zeros((ROWS, COLS), dtype=np.int8)
     for y in range(ROWS):
@@ -309,7 +369,7 @@ def threshold(img, n, ROWS, COLS):
     return newImg
 
 
-def getRegion(img, x, y, ROWS, COLS):
+def getRegion(img, x, y):
     # Build an array of values of the pixel region.
     # Where the region is the current pixel and
     # it's surrounding 8 pixels.
@@ -347,17 +407,58 @@ def getRegion(img, x, y, ROWS, COLS):
         if x < COLS - 1:
             region[8] = img[y+1, x+1]
 
-    # Return an empty tile if this tile
-    # doesn't descend into the nearby region.
-    regionMin = min(region)
-    if img[y, x] == regionMin:
-        if regionMin == 0:
-            region = [0] * 9
-        else:
-            region = [1] * 9
-
     return region
 
+
+def getTreeType():
+    # Return an int in the range [0, 4].
+    r = random.randint(0, 100)
+    if r < 5:
+        return 0
+    elif r < 25:
+        return 1
+    elif r < 75:
+        return 2
+    elif r < 95:
+        return 3
+    else:
+        return 4
+
+
+def getPreyEntity(x, y):
+    global entityId
+    e = _getEntity(PREY_NAME, entityId, PREY_EID, x, y)
+    entityId += 1
+    return e
+
+
+def getPredatorEntity(x, y):
+    global entityId
+    e = _getEntity(PREDATOR_NAME, entityId, PREDATOR_EID, x, y)
+    entityId += 1
+    return e
+
+
+def _getEntity(name, ID, _eid, x, y, originX=0, originY=0):
+    # Called by getPreyEntity and getPredatorEntity.
+    return {'name': name,
+            'id': ID,
+            '_eid': _eid,
+            'x': x,
+            'y': y,
+            'originX': originX,
+            'originY': originY}
+        
  
 if __name__ == '__main__':
-    main()
+    parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--infile', help='File to convert to json', default='west.png')
+    parser.add_argument('--outfile', help='Output file name', default='output.json')
+    parser.add_argument('--color_threshold', help='Number of colors to use, default=10', default=10)
+    parser.add_argument('--tree_threshold', help='Number of trees to add, lower=more, default=0.65', default=0.65)
+    parser.add_argument('--prey_threshold', help='Number of prey to add, lower=more, default=0.92', default=0.92)
+    parser.add_argument('--pred_threshold', help='Number of predators to add, lower=more, default=0.995', default=0.995)
+    args = parser.parse_args()
+    
+    main(args)
+
