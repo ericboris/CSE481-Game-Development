@@ -8,6 +8,7 @@ import flixel.system.FlxSound;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.addons.display.shapes.FlxShapeCircle;
+import flixel.addons.display.shapes.FlxShapeArrow;
 import js.html.Console;
 import flixel.util.FlxSpriteUtil; // For drawing call radius
 
@@ -57,6 +58,8 @@ class Player extends Entity
     var isCalling:Bool = false;
 
     var callCircle:FlxShapeCircle;
+    // An arrow that appears on calling and points towards nearest cave
+    //var cavePointer:FlxShapeArrow;
 
     var inCancellableAnimation:Bool=true;
 
@@ -130,6 +133,13 @@ class Player extends Entity
         callCircle.alpha = 0.7;
         callCircle.health = PlayState.world.bottomLayerSortIndex() + 2;
         PlayState.world.add(callCircle);
+
+        /**
+        cavePointer = new FlxShapeArrow(0, 0, new FlxPoint(0, 0), new FlxPoint(0, 0), 0, lineStyle);
+        cavePointer.alpha = 0.7;
+        cavePointer.health = PlayState.world.bottomLayerSortIndex() + 2;
+        PlayState.world.add(cavePointer);
+        */
     }
 
     public override function update(elapsed:Float)
@@ -150,13 +160,28 @@ class Player extends Entity
                 callCircle.radius = callRadius;
                 callCircle.redrawShape();
             }
+    
+            /**
+            if (cavePointer.alpha < 0.8)
+            {
+                cavePointer.alpha += 0.05;
+            }
+            */
         }
         else
         {
             callCircle.alpha -= 0.1;
+            //cavePointer.alpha -= 0.1;
         }
 
         callCircle.setPosition(getX() - callCircle.width/2, getY() - callCircle.height/2);
+
+        /** TODO Complete an arrow on the callcircle pointing towards nearest cave.
+        var startPoint = new FlxPoint(getX(), getY());
+        var endPoint = new FlxPoint(getX(), getY() - 10);
+        cavePointer.setPosition(getX(), getY());
+        Console.log(cavePointer.point + ", " + cavePointer.point2);
+        */
  
         frameCounter++;
         if (frameCounter % 10 == 0)
