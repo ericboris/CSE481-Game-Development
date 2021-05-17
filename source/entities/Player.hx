@@ -18,9 +18,15 @@ class Player extends Entity
     static final STICK_HITBOX_ID    = 1;
 
     static final SPEED = 120.0;
+    static final SWIPE_SPEED = 45.0;
+    static final CALL_SPEED = 80.0;
+    
     static final DEBUG_SPEED = 120.0;
 
     static final CALL_VOLUME = 0.55;
+
+    static final FRAMERATE = 10;
+    static final MIN_FRAMERATE = 1;
 
     var speed:Float = SPEED;
 
@@ -75,9 +81,9 @@ class Player extends Entity
         sprite.animation.add("su", [6], 15, false);
         sprite.animation.add("sd", [2], 15, false);
 
-        sprite.animation.add("lr", [19, 20, 21, 22], 10, false);
-        sprite.animation.add("u", [7, 8, 9, 10], 10, false);
-        sprite.animation.add("d", [1, 2, 3, 4], 10, false);
+        sprite.animation.add("lr", [19, 20, 21, 22], FRAMERATE, false);
+        sprite.animation.add("u", [7, 8, 9, 10], FRAMERATE, false);
+        sprite.animation.add("d", [1, 2, 3, 4], FRAMERATE, false);
 
         sprite.animation.add("itemu", [30, 31, 32, 33, 34, 35], 20, false);
         sprite.animation.add("itemlr", [42, 43, 44, 45, 46, 47], 20, false);
@@ -320,7 +326,11 @@ class Player extends Entity
         var movementSpeed = speed;
         if (usingItem)
         {
-            movementSpeed /= 2;
+            movementSpeed = SWIPE_SPEED;
+        }
+        else if (isCalling)
+        {
+            movementSpeed = CALL_SPEED;
         }
 
         var up = FlxG.keys.anyPressed([UP, W]);
@@ -380,6 +390,8 @@ class Player extends Entity
                         sprite.animation.play("sd");
                 }
                 inCancellableAnimation = true;
+                var frameRate = Std.int(movementSpeed / speed * (FRAMERATE - MIN_FRAMERATE) + MIN_FRAMERATE);
+                sprite.animation.curAnim.frameRate = frameRate;
             }
             return;
         }
@@ -402,6 +414,8 @@ class Player extends Entity
                     sprite.animation.play("d");
             }
             inCancellableAnimation = true;
+            var frameRate = Std.int(movementSpeed / speed * (FRAMERATE - MIN_FRAMERATE) + MIN_FRAMERATE);
+            sprite.animation.curAnim.frameRate = frameRate;
         }
     }
 
