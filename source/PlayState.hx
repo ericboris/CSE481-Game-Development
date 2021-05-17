@@ -38,6 +38,9 @@ class PlayState extends FlxState
     // Makes player move faster
     static public final DEBUG_FAST_SPEED = false;
 
+    // Update every time update() is called.
+    var frameCounter:Int = 0;
+
     // Size of map (in # of tiles)
     var mapWidth = 0;
     var mapHeight = 0;
@@ -242,10 +245,10 @@ class PlayState extends FlxState
 
     function nextLevel()
     {
+        Console.log("Next level");
         PlayLogger.endLevel();
 
-        var debugSkip = DEBUG && FlxG.keys.anyPressed([M]);
-        if (this.numPrey == 0 || debugSkip)
+        if (this.numPrey == 0)
         {
             // There are no prey on this level, so skip displaying the score.
             FlxG.switchState(new PlayState());
@@ -331,6 +334,7 @@ class PlayState extends FlxState
         }
 
         scoreSoundMultiplier -= 0.005;
+        frameCounter++;
 
         this.sort(sortSprites);
         super.update(elapsed);
@@ -454,6 +458,15 @@ class PlayState extends FlxState
         toggleAdditionalTilemapCollisions(true);
 
         // Vision checks
+        // Only check vision every other frame (to save performance)
+        if (frameCounter % 2 != 0)
+        {
+            visionChecks();
+        }
+    }
+
+    function visionChecks()
+    {
         for (predator in entityGroups[EntityPredator])
         {
             if (GameWorld.checkVision(predator, player))
@@ -487,6 +500,7 @@ class PlayState extends FlxState
                 }
             }
         }
+
     }
 
     public function toggleAdditionalTilemapCollisions(toggle:Bool)
@@ -639,8 +653,8 @@ class PlayState extends FlxState
             incrementScore(1);
             removeEntity(dino);
 
-            scoreSoundMultiplier += 0.16;
-            if (scoreSoundMultiplier > 0.6) scoreSoundMultiplier = 0.6;
+            scoreSoundMultiplier += 0.1;
+            if (scoreSoundMultiplier > 0.4) scoreSoundMultiplier = 0.4;
             if (scoreSoundMultiplier < 0) scoreSoundMultiplier = 0;
 
             FlxG.sound.play(AssetPaths.scoreSound__mp3, 0.15 + scoreSoundMultiplier);

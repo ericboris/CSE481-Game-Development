@@ -10,14 +10,14 @@ import flixel.system.FlxSound;
 class Predator extends Dino
 {
     /* Unherded state */
-    static final SPEED = 35.0;
+    static final SPEED = 60.0;
     static final ACCELERATION = 30.0;
-    static final ELASTICITY = 0.9;
-    static final PURSUING_ELASTICITY = 0.3;
+    static final ELASTICITY = 1.0;
+    static final PURSUING_ELASTICITY = 0.1;
 
     /* Pursuing state */
-    static final ANGULAR_ACCELERATION = GameWorld.toRadians(5);
-    static final PURSUING_SPEED = 85.0;
+    static final ANGULAR_ACCELERATION = GameWorld.toRadians(8);
+    static final PURSUING_SPEED = 95.0;
     static final SEEN_TIMER = 1.0;
 
     static final SATIATED_TIMER = 5.0;
@@ -191,13 +191,13 @@ class Predator extends Dino
         if (horizontalCollision > 0)
         {
             //sprite.velocity.x *= -1;
-            sprite.velocity.y *= 0.1;
+            //sprite.velocity.y *= 0.1;
         }
 
         if (verticalCollision > 0)
         {
             //sprite.velocity.x *= 0.1;
-            sprite.velocity.y *= -1;
+            //sprite.velocity.y *= -1;
         }
 
         speedUp(SPEED);
@@ -267,7 +267,7 @@ class Predator extends Dino
 
     public override function handleCaveCollision(cave:Cave)
     {
-        if (state == Fleeing)
+        if (dazed)
         {
             PlayState.world.collectDino(this);
         }

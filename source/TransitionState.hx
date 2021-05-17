@@ -70,13 +70,13 @@ class TransitionState extends FlxState
             {
                 duration = 2.0;
                 fadeOutDuration = 3.5;
-                soundEffect = FlxG.sound.load(AssetPaths.BadJob__mp3, 1.0);
+                soundEffect = FlxG.sound.load(AssetPaths.BadJob__mp3, 0.85);
             }
             else
             {
                 duration = 1.0;
                 fadeOutDuration = 2.0;
-                soundEffect = FlxG.sound.load(AssetPaths.GoodJob__mp3, 1.0);
+                soundEffect = FlxG.sound.load(AssetPaths.GoodJob__mp3, 0.8);
             }
 
             new FlxTimer().start(0.5, function (timer) {

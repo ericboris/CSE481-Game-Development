@@ -307,7 +307,7 @@ class Entity
     {
         if (content == "V")
         {
-            thought.appear(fadeOutDelay * 10);
+            thought.appear(fadeOutDelay * 1.5);
         }
         else
         {

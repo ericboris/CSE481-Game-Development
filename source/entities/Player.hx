@@ -37,7 +37,9 @@ class Player extends Entity
     var stepSound:FlxSound;
     var killedSound:FlxSound;
     var cliffJumpSound:FlxSound;
-    var callSound:FlxSound;
+    var callStartSound:FlxSound;
+    var callLoopSound:FlxSound;
+    var callEndSound:FlxSound;
     var swipeSound:FlxSound;
 
     final MIN_CALL_RADIUS:Int = 1;
@@ -110,11 +112,14 @@ class Player extends Entity
         this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__mp3, 0.5);
         this.killedSound = FlxG.sound.load(AssetPaths.lose__mp3, 1.0);
         this.cliffJumpSound = FlxG.sound.load(AssetPaths.cliffjump__mp3, 1.0);
-        this.callSound = FlxG.sound.load(AssetPaths.call__mp3, 0.65);
+        this.callStartSound = FlxG.sound.load(AssetPaths.call_start__mp3, 0.5);
+        this.callLoopSound = FlxG.sound.load(AssetPaths.call_loop__mp3, 0.5);
+        this.callEndSound = FlxG.sound.load(AssetPaths.call_end__mp3, 0.5);
         this.swipeSound = FlxG.sound.load(AssetPaths.PlayerSwipe__mp3, 0.8);
     
-        var lineStyle = {thickness: 3.0, color: FlxColor.BLACK};
+        var lineStyle = {thickness: 1.0, color: FlxColor.WHITE};
         callCircle = new FlxShapeCircle(0, 0, 0, lineStyle, FlxColor.TRANSPARENT);
+        callCircle.alpha = 0.7;
         callCircle.health = PlayState.world.bottomLayerSortIndex() + 2;
         PlayState.world.add(callCircle);
     }
@@ -206,11 +211,21 @@ class Player extends Entity
 
         if (FlxG.keys.pressed.C)
         {
-            if (!callSound.playing)
+            // Sound playing logic
+            if (!isCalling)
             {
-                callSound.fadeIn(0.2, 0.0, 1.0);
-                callSound.play();
+                var duration = callStartSound.length / 1000;
+                callStartSound.fadeIn(duration, 0.5, 0.7);
+                callStartSound.play(true);
+                callStartSound.onComplete = function () {
+                    var duration = callLoopSound.length / 1000;
+                    callLoopSound.fadeIn(duration, 0.7, 1.0);
+                    callLoopSound.play(true);
+                    callLoopSound.looped = true;
+                };
             }
+
+            // Grow the calling radius
             callRadius += CALL_GROWTH_RATE;
             if (callRadius > MAX_CALL_RADIUS)
             {
@@ -220,18 +235,36 @@ class Player extends Entity
 
             if (frameCounter % 5 == 0)
             {
-                // Only call dinos once every 5 frames.
+                // Only call dinos once every 5 frames for performance.
                 PlayState.world.callNearbyDinos(callRadius);
             }
         }
         else
         {
-            isCalling = false;
-            if (callRadius > 1)
+            // Call sound playing logic
+            if (isCalling)
             {
-                callSound.fadeOut(0.1, 0.0);
-                callRadius = 0;
+                var volume:Float = 1.0;
+
+                if (callStartSound.playing)
+                {
+                    callStartSound.fadeOut(0.1, 0.0);
+                    callStartSound.onComplete = function () {}
+                    volume = callStartSound.volume;
+                }
+                else if (callLoopSound.playing)
+                {
+                    callLoopSound.fadeOut(0.1, 0.0);
+                    callLoopSound.onComplete = function () {}
+                    volume = callLoopSound.volume;
+                }
+
+                callEndSound.volume = volume * 0.75;
+                callEndSound.play(true);
             }
+
+            isCalling = false;
+            callRadius = 0;
         }
     }
 
@@ -558,11 +591,11 @@ class Player extends Entity
     // Return whether the player is calling.
     public function isPlayerCalling():Bool
     {
-        return callSound.playing && (getCallRadius() > MIN_CALL_RADIUS);
+        return isCalling && (getCallRadius() > MIN_CALL_RADIUS);
     }
 
     public function getCallRadius():Float
     {
-        return callSound.volume * MAX_CALL_RADIUS;
+        return callRadius;
     }
 }
