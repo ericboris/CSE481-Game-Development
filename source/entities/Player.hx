@@ -20,6 +20,8 @@ class Player extends Entity
     static final SPEED = 120.0;
     static final DEBUG_SPEED = 120.0;
 
+    static final CALL_VOLUME = 0.55;
+
     var speed:Float = SPEED;
 
     // Array of followers. TODO: Should be linked list.
@@ -112,9 +114,9 @@ class Player extends Entity
         this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__mp3, 0.5);
         this.killedSound = FlxG.sound.load(AssetPaths.lose__mp3, 1.0);
         this.cliffJumpSound = FlxG.sound.load(AssetPaths.cliffjump__mp3, 1.0);
-        this.callStartSound = FlxG.sound.load(AssetPaths.call_start__mp3, 0.5);
-        this.callLoopSound = FlxG.sound.load(AssetPaths.call_loop__mp3, 0.5);
-        this.callEndSound = FlxG.sound.load(AssetPaths.call_end__mp3, 0.5);
+        this.callStartSound = FlxG.sound.load(AssetPaths.call_start__mp3, CALL_VOLUME);
+        this.callLoopSound = FlxG.sound.load(AssetPaths.call_loop__mp3, CALL_VOLUME);
+        this.callEndSound = FlxG.sound.load(AssetPaths.call_end__mp3, CALL_VOLUME);
         this.swipeSound = FlxG.sound.load(AssetPaths.PlayerSwipe__mp3, 0.8);
     
         var lineStyle = {thickness: 1.0, color: FlxColor.WHITE};
@@ -207,19 +209,17 @@ class Player extends Entity
 
     function call():Void
     {
-        //FlxSpriteUtil.drawCircle(this.sprite, -1, -1, maxCallRadius);
-
         if (FlxG.keys.pressed.C)
         {
             // Sound playing logic
             if (!isCalling)
             {
                 var duration = callStartSound.length / 1000;
-                callStartSound.fadeIn(duration, 0.5, 0.7);
+                callStartSound.fadeIn(duration, 0.0, CALL_VOLUME/2);
                 callStartSound.play(true);
                 callStartSound.onComplete = function () {
                     var duration = callLoopSound.length / 1000;
-                    callLoopSound.fadeIn(duration, 0.7, 1.0);
+                    callLoopSound.fadeIn(duration, CALL_VOLUME/2, CALL_VOLUME);
                     callLoopSound.play(true);
                     callLoopSound.looped = true;
                 };
@@ -591,7 +591,7 @@ class Player extends Entity
     // Return whether the player is calling.
     public function isPlayerCalling():Bool
     {
-        return isCalling && (getCallRadius() > MIN_CALL_RADIUS);
+        return isCalling;
     }
 
     public function getCallRadius():Float

@@ -92,6 +92,9 @@ class PlayState extends FlxState
     public var numPredatorsCollected:Int = 0;
     public var numPrey:Int = 0;
 
+    var cameraZoomDirection:Int = -1;
+    var cameraZoomTween:FlxTween;
+
     override public function create()
     {
         super.create();
@@ -190,6 +193,16 @@ class PlayState extends FlxState
         PlayLogger.startLevel(GameWorld.levelId());
     }
 
+    function baseZoom():Float
+    {
+        return SCREEN_WIDTH / CHUNK_WIDTH;
+    }
+
+    function minZoom():Float
+    {
+        return baseZoom() * 0.8;
+    }
+
     function setupCamera()
     {
         // Set world size
@@ -197,7 +210,7 @@ class PlayState extends FlxState
 
         // Set camera to follow player
         FlxG.camera.setScrollBoundsRect(0, 0, TILE_SIZE * mapWidth, TILE_SIZE * mapHeight);
-        FlxG.camera.zoom = SCREEN_WIDTH / CHUNK_WIDTH;
+        FlxG.camera.zoom = baseZoom();
         FlxG.camera.follow(player.getSprite(), TOPDOWN, 1);
 
         var camera_x = SCREEN_WIDTH/2;
@@ -301,6 +314,41 @@ class PlayState extends FlxState
         }
     }
 
+    function updateCamera()
+    {
+        var zoom = FlxG.camera.zoom;
+        if (player.isPlayerCalling())
+        {
+            if (zoom > minZoom() && cameraZoomDirection == -1)
+            {
+                var options = {ease: FlxEase.expoOut, onComplete: function (tween) {
+                    cameraZoomTween = null;
+                }};
+                
+                if (cameraZoomTween != null) cameraZoomTween.cancel();
+                cameraZoomTween = FlxTween.num(zoom, minZoom(), 1.0, options, function (f: Float) {
+                    FlxG.camera.zoom = f;
+                });
+                cameraZoomDirection = 1;
+            }
+        }
+        else
+        {
+            if (zoom < baseZoom() && cameraZoomDirection == 1)
+            {
+                var options = {ease: FlxEase.expoOut, onComplete: function (tween) {
+                    cameraZoomTween = null;
+                }};
+                
+                if (cameraZoomTween != null) cameraZoomTween.cancel();
+                cameraZoomTween = FlxTween.num(zoom, baseZoom(), 1.0, options, function (f: Float) {
+                    FlxG.camera.zoom = f;
+                });
+                cameraZoomDirection = -1;
+            }
+        }
+    }
+
     override public function update(elapsed:Float)
     {
         if (!PlayLogger.loggerInitialized())
@@ -316,6 +364,7 @@ class PlayState extends FlxState
  
         updateTransitionScreen();
         updateScore();
+        updateCamera();
 
         // Update all entities
         for (entity in entities)
