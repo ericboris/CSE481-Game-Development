@@ -9,7 +9,7 @@ def main(args):
     with open(args.outfile, 'w', newline='') as f:
         writer = csv.writer(f)
         for line in lines:
-            if not line.startswith('+'):
+            if line.startswith('|'):
                 line = re.sub(r'\s*\|+\s*', ' ', line, flags=re.UNICODE).split()
                 writer.writerow(line)
 
