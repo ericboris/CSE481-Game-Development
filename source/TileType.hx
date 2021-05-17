@@ -11,6 +11,11 @@ class TileType
     public static final CLIFF_DOWN_RIGHT = 28;
     public static final CLIFF_UP_LEFT = 44;
     public static final CLIFF_UP_RIGHT = 42;
+    
+    public static final CLIFF_DOWN_LEFT_2 = 32;
+    public static final CLIFF_DOWN_RIGHT_2 = 31;
+    public static final CLIFF_UP_LEFT_2 = 38;
+    public static final CLIFF_UP_RIGHT_2 = 37;
 
     public static final WATER = 16;
 

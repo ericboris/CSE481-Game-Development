@@ -18,6 +18,16 @@ class CollisionHandler
         obstacles.setTileProperties(TileType.CLIFF_RIGHT, FlxObject.ANY, CollisionHandler.handleRightCliffCollision);
         obstacles.setTileProperties(TileType.CLIFF_LEFT, FlxObject.ANY, CollisionHandler.handleLeftCliffCollision);
         obstacles.setTileProperties(TileType.CLIFF_UP, FlxObject.ANY, CollisionHandler.handleUpCliffCollision);
+        
+        obstacles.setTileProperties(TileType.CLIFF_DOWN_RIGHT, FlxObject.ANY, CollisionHandler.handleDownRightCliffCollision);
+        obstacles.setTileProperties(TileType.CLIFF_DOWN_LEFT, FlxObject.ANY, CollisionHandler.handleDownLeftCliffCollision);
+        obstacles.setTileProperties(TileType.CLIFF_UP_RIGHT, FlxObject.ANY, CollisionHandler.handleUpRightCliffCollision);
+        obstacles.setTileProperties(TileType.CLIFF_UP_LEFT, FlxObject.ANY, CollisionHandler.handleUpLeftCliffCollision);
+        
+        obstacles.setTileProperties(TileType.CLIFF_DOWN_RIGHT_2, FlxObject.ANY, CollisionHandler.handleDownRightCliffCollision);
+        obstacles.setTileProperties(TileType.CLIFF_DOWN_LEFT_2, FlxObject.ANY, CollisionHandler.handleDownLeftCliffCollision);
+        obstacles.setTileProperties(TileType.CLIFF_UP_RIGHT_2, FlxObject.ANY, CollisionHandler.handleUpRightCliffCollision);
+        obstacles.setTileProperties(TileType.CLIFF_UP_LEFT_2, FlxObject.ANY, CollisionHandler.handleUpLeftCliffCollision);
 
         obstacles.setTileProperties(TileType.WATER, FlxObject.ANY, CollisionHandler.handleWaterCollision);
         
@@ -60,7 +70,27 @@ class CollisionHandler
         handleCliff(tile, entity, FlxObject.RIGHT);
     }
 
-    static function handleCliff(tile: FlxObject, entity:FlxObject, direction:Int)
+    static public function handleUpLeftCliffCollision(tile:FlxObject, entity:FlxObject)
+    {
+        handleCliff(tile, entity, FlxObject.DOWN, FlxObject.RIGHT);
+    }
+
+    static public function handleUpRightCliffCollision(tile:FlxObject, entity:FlxObject)
+    {
+        handleCliff(tile, entity, FlxObject.DOWN, FlxObject.LEFT);
+    }
+
+    static public function handleDownLeftCliffCollision(tile:FlxObject, entity:FlxObject)
+    {
+        handleCliff(tile, entity, FlxObject.UP, FlxObject.RIGHT);
+    }
+
+    static public function handleDownRightCliffCollision(tile:FlxObject, entity:FlxObject)
+    {
+        handleCliff(tile, entity, FlxObject.UP, FlxObject.LEFT);
+    }
+
+    static function handleCliff(tile: FlxObject, entity:FlxObject, direction1:Int, direction2:Int = 0)
     {
         if (Std.is(entity, SpriteWrapper))
         {
@@ -70,7 +100,7 @@ class CollisionHandler
             var diffX = (tile.x + tile.width/2) - entity.getX();
             var diffY = (tile.y + tile.height/2) - entity.getY();
             var isFacing = false;
-            switch (direction)
+            switch (direction1)
             {
                 case FlxObject.UP:
                     isFacing = diffY < 0 && Math.abs(diffY) > Math.abs(diffX);
@@ -81,27 +111,41 @@ class CollisionHandler
                 case FlxObject.RIGHT:
                     isFacing = diffX > 0 && Math.abs(diffY) < Math.abs(diffX);
             }
+            
+            switch (direction2)
+            {
+                case FlxObject.UP:
+                    isFacing = isFacing || diffY < 0 && Math.abs(diffY) > Math.abs(diffX);
+                case FlxObject.DOWN:
+                    isFacing = isFacing || diffY > 0 && Math.abs(diffY) > Math.abs(diffX);
+                case FlxObject.LEFT:
+                    isFacing = isFacing || diffX < 0 && Math.abs(diffY) < Math.abs(diffX);
+                case FlxObject.RIGHT:
+                    isFacing = isFacing || diffX > 0 && Math.abs(diffY) < Math.abs(diffX);
+            }
 
             if (entity.getType() == EntityBoulder)
             {
                 var boulder:Boulder = cast entity;
-                boulder.setFacingCliff(direction);
-                switch (direction)
+                if (direction2 == 0)
                 {
-                    case FlxObject.UP:
-                        boulder.setFacingCliff(FlxObject.DOWN);
-                    case FlxObject.DOWN:
-                        boulder.setFacingCliff(FlxObject.UP);
-                    case FlxObject.LEFT:
-                        boulder.setFacingCliff(FlxObject.RIGHT);
-                    case FlxObject.RIGHT:
-                        boulder.setFacingCliff(FlxObject.LEFT);
+                    switch (direction1)
+                    {
+                        case FlxObject.UP:
+                            boulder.setFacingCliff(FlxObject.DOWN);
+                        case FlxObject.DOWN:
+                            boulder.setFacingCliff(FlxObject.UP);
+                        case FlxObject.LEFT:
+                            boulder.setFacingCliff(FlxObject.RIGHT);
+                        case FlxObject.RIGHT:
+                            boulder.setFacingCliff(FlxObject.LEFT);
+                    }
                 }
             }
 
             if (isFacing)
             {
-                entity.handleCliffCollision(direction);
+                entity.handleCliffCollision(direction1, direction2);
             }
         }
     }
