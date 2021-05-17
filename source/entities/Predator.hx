@@ -308,4 +308,9 @@ class Predator extends Dino
             return false;
         }
     }
+
+    public function track(entity:Entity)
+    {
+
+    }
 }

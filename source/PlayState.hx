@@ -643,6 +643,16 @@ class PlayState extends FlxState
                 prey.addToHerd(player);
             }
         }
+
+        for (entity in entityGroups[EntityPredator])
+        {
+            var predator:Predator = cast entity;
+            var withinRange = GameWorld.entityDistance(player, predator) < callRadius;
+            if (withinRange)
+            {
+                predator.track(player);
+            }
+        }
     }
 
     var scoreSoundMultiplier:Float = 0.0;
