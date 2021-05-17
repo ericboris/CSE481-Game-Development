@@ -12,14 +12,16 @@ class PlayLogger
  
     static final DEBUG_VERSION = 1;
     static final MAY_11_VERSION = 2;
+    static final MAY_16_VERSION = 3;
 
-    static final GAME_VERSION = MAY_11_VERSION;    
+    static final GAME_VERSION = DEBUG_VERSION;
 
     static var logger = new CapstoneLogger(GAME_ID, GAME_NAME, GAME_KEY, GAME_VERSION);
     static var createdLoggerSession = false;
 
     // Constant IDs for logged actions
     static final PLAYER_DEATH_ACTION = 1;
+    static final PLAYER_CALL_ACTION  = 2;
 
     // Reset each level
     static var logTimer: Float = 0.0;
@@ -83,9 +85,16 @@ class PlayLogger
     public static function recordPlayerDeath(player: Player)
     {
         playerDeaths++;
-        var details = {playerX: player.getX(), playerY: player.getY()}
+        var details = {playerX: player.getX(), playerY: player.getY()};
         logger.logLevelAction(PLAYER_DEATH_ACTION, details);
     }
+
+    public static function recordPlayerCallStart(player: Player)
+    {
+        var details = {playerX: player.getX(), playerY: player.getY()};
+        logger.logLevelAction(PLAYER_CALL_ACTION, details);
+    }
+
 
     public static function incrementTime(elapsed:Float)
     {

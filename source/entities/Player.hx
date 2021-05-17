@@ -18,7 +18,15 @@ class Player extends Entity
     static final STICK_HITBOX_ID    = 1;
 
     static final SPEED = 120.0;
+    static final SWIPE_SPEED = 45.0;
+    static final CALL_SPEED = 80.0;
+    
     static final DEBUG_SPEED = 120.0;
+
+    static final CALL_VOLUME = 0.55;
+
+    static final FRAMERATE = 10;
+    static final MIN_FRAMERATE = 1;
 
     var speed:Float = SPEED;
 
@@ -37,7 +45,9 @@ class Player extends Entity
     var stepSound:FlxSound;
     var killedSound:FlxSound;
     var cliffJumpSound:FlxSound;
-    var callSound:FlxSound;
+    var callStartSound:FlxSound;
+    var callLoopSound:FlxSound;
+    var callEndSound:FlxSound;
     var swipeSound:FlxSound;
 
     final MIN_CALL_RADIUS:Int = 1;
@@ -71,9 +81,9 @@ class Player extends Entity
         sprite.animation.add("su", [6], 15, false);
         sprite.animation.add("sd", [2], 15, false);
 
-        sprite.animation.add("lr", [19, 20, 21, 22], 10, false);
-        sprite.animation.add("u", [7, 8, 9, 10], 10, false);
-        sprite.animation.add("d", [1, 2, 3, 4], 10, false);
+        sprite.animation.add("lr", [19, 20, 21, 22], FRAMERATE, false);
+        sprite.animation.add("u", [7, 8, 9, 10], FRAMERATE, false);
+        sprite.animation.add("d", [1, 2, 3, 4], FRAMERATE, false);
 
         sprite.animation.add("itemu", [30, 31, 32, 33, 34, 35], 20, false);
         sprite.animation.add("itemlr", [42, 43, 44, 45, 46, 47], 20, false);
@@ -92,7 +102,7 @@ class Player extends Entity
         addHitbox(interactHitbox);
 
         stickHitbox = new Hitbox(this, STICK_HITBOX_ID);
-        stickHitbox.setSize(16, 16);
+        stickHitbox.setSize(16, 25);
         stickHitbox.setOffset(0,8);
         stickHitbox.setActive(false);
         addHitbox(stickHitbox);
@@ -110,11 +120,14 @@ class Player extends Entity
         this.stepSound = FlxG.sound.load(AssetPaths.GrassFootstep__mp3, 0.5);
         this.killedSound = FlxG.sound.load(AssetPaths.lose__mp3, 1.0);
         this.cliffJumpSound = FlxG.sound.load(AssetPaths.cliffjump__mp3, 1.0);
-        this.callSound = FlxG.sound.load(AssetPaths.call__mp3, 0.65);
+        this.callStartSound = FlxG.sound.load(AssetPaths.call_start__mp3, CALL_VOLUME);
+        this.callLoopSound = FlxG.sound.load(AssetPaths.call_loop__mp3, CALL_VOLUME);
+        this.callEndSound = FlxG.sound.load(AssetPaths.call_end__mp3, CALL_VOLUME);
         this.swipeSound = FlxG.sound.load(AssetPaths.PlayerSwipe__mp3, 0.8);
     
-        var lineStyle = {thickness: 3.0, color: FlxColor.BLACK};
+        var lineStyle = {thickness: 1.0, color: FlxColor.WHITE};
         callCircle = new FlxShapeCircle(0, 0, 0, lineStyle, FlxColor.TRANSPARENT);
+        callCircle.alpha = 0.7;
         callCircle.health = PlayState.world.bottomLayerSortIndex() + 2;
         PlayState.world.add(callCircle);
     }
@@ -202,15 +215,23 @@ class Player extends Entity
 
     function call():Void
     {
-        //FlxSpriteUtil.drawCircle(this.sprite, -1, -1, maxCallRadius);
-
         if (FlxG.keys.pressed.C)
         {
-            if (!callSound.playing)
+            // Sound playing logic
+            if (!isCalling)
             {
-                callSound.fadeIn(0.2, 0.0, 1.0);
-                callSound.play();
+                var duration = callStartSound.length / 1000;
+                callStartSound.fadeIn(duration, 0.0, CALL_VOLUME/2);
+                callStartSound.play(true);
+                callStartSound.onComplete = function () {
+                    var duration = callLoopSound.length / 1000;
+                    callLoopSound.fadeIn(duration, CALL_VOLUME/2, CALL_VOLUME);
+                    callLoopSound.play(true);
+                    callLoopSound.looped = true;
+                };
             }
+
+            // Grow the calling radius
             callRadius += CALL_GROWTH_RATE;
             if (callRadius > MAX_CALL_RADIUS)
             {
@@ -220,18 +241,36 @@ class Player extends Entity
 
             if (frameCounter % 5 == 0)
             {
-                // Only call dinos once every 5 frames.
+                // Only call dinos once every 5 frames for performance.
                 PlayState.world.callNearbyDinos(callRadius);
             }
         }
         else
         {
-            isCalling = false;
-            if (callRadius > 1)
+            // Call sound playing logic
+            if (isCalling)
             {
-                callSound.fadeOut(0.1, 0.0);
-                callRadius = 0;
+                var volume:Float = 1.0;
+
+                if (callStartSound.playing)
+                {
+                    callStartSound.fadeOut(0.1, 0.0);
+                    callStartSound.onComplete = function () {}
+                    volume = callStartSound.volume;
+                }
+                else if (callLoopSound.playing)
+                {
+                    callLoopSound.fadeOut(0.1, 0.0);
+                    callLoopSound.onComplete = function () {}
+                    volume = callLoopSound.volume;
+                }
+
+                callEndSound.volume = volume * 0.75;
+                callEndSound.play(true);
             }
+
+            isCalling = false;
+            callRadius = 0;
         }
     }
 
@@ -287,7 +326,11 @@ class Player extends Entity
         var movementSpeed = speed;
         if (usingItem)
         {
-            movementSpeed /= 2;
+            movementSpeed = SWIPE_SPEED;
+        }
+        else if (isCalling)
+        {
+            movementSpeed = CALL_SPEED;
         }
 
         var up = FlxG.keys.anyPressed([UP, W]);
@@ -347,6 +390,8 @@ class Player extends Entity
                         sprite.animation.play("sd");
                 }
                 inCancellableAnimation = true;
+                var frameRate = Std.int(movementSpeed / speed * (FRAMERATE - MIN_FRAMERATE) + MIN_FRAMERATE);
+                sprite.animation.curAnim.frameRate = frameRate;
             }
             return;
         }
@@ -369,6 +414,8 @@ class Player extends Entity
                     sprite.animation.play("d");
             }
             inCancellableAnimation = true;
+            var frameRate = Std.int(movementSpeed / speed * (FRAMERATE - MIN_FRAMERATE) + MIN_FRAMERATE);
+            sprite.animation.curAnim.frameRate = frameRate;
         }
     }
 
@@ -558,11 +605,11 @@ class Player extends Entity
     // Return whether the player is calling.
     public function isPlayerCalling():Bool
     {
-        return callSound.playing && (getCallRadius() > MIN_CALL_RADIUS);
+        return isCalling;
     }
 
     public function getCallRadius():Float
     {
-        return callSound.volume * MAX_CALL_RADIUS;
+        return callRadius;
     }
 }

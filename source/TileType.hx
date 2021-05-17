@@ -36,7 +36,7 @@ class TileType
         {
             case TREE_1, TREE_2, TREE_3, TREE_4:
                 // Trees!
-                return 8;
+                return 4;
             default:
                 return 16;
         }
@@ -48,7 +48,7 @@ class TileType
         {
             case TREE_1, TREE_2, TREE_3, TREE_4:
                 // Trees!
-                return 8;
+                return 4;
             default:
                 return 16;
         }

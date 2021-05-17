@@ -37,6 +37,8 @@ class Dino extends Entity
     var isPathfinding:Bool = false;
     var newLeaderFlag:Bool = false;
 
+    var pathLeader:Entity;
+
     public var herdedDisableFollowingRadius = false;
 
     /* State for unherded behavior */
@@ -133,6 +135,7 @@ class Dino extends Entity
     function herded(elapsed:Float)
     {
         herdedSpeed = herdedPlayer.getSpeed();
+
         var leaderPos = new FlxPoint(herdedLeader.getX(), herdedLeader.getY());
         var dinoPos = new FlxPoint(getX(), getY());
         var dist = leaderPos.distanceTo(dinoPos);
@@ -142,14 +145,14 @@ class Dino extends Entity
             // We are far away from our leader! Try following the player instead.
             herdedLeader = herdedPlayer;
             leaderPos = new FlxPoint(herdedPlayer.getX(), herdedPlayer.getY());
+            
             dist = leaderPos.distanceTo(dinoPos);
-        }
-        
-        if (dist > MAX_FOLLOWING_RADIUS)
-        {
-            // We are still too far away from the herd. 
-            setUnherded(true);
-            return;
+            if (dist > MAX_FOLLOWING_RADIUS)
+            {
+                // We are still too far away from the herd.
+                setUnherded(true);
+                return;
+            }
         }
 
         if (newLeaderFlag)
@@ -159,8 +162,10 @@ class Dino extends Entity
             framesStuck = 0;
         }
 
+        // Following radius and speed. These may be adjusted by the following logic.
         var followingRadius = FOLLOWING_RADIUS;
         var speed = herdedSpeed;
+        
         if (herdedPlayer.getIsCalling())
         {
             leaderPos = new FlxPoint(herdedPlayer.getX(), herdedPlayer.getY());
@@ -168,6 +173,7 @@ class Dino extends Entity
             followingRadius *= 2;
             speed *= 1.2;
 
+            // Setting this will instigate the prey to begin pathfinding towards the player.
             framesStuck = 20;
         }
 
@@ -188,7 +194,9 @@ class Dino extends Entity
         else
         {
             framesStuck = 0;
+            herdedPath.resize(0);
         }
+
         
         // Check if the leader is pathfinding. If they are, also begin pathfinding to get around obstacle.
         var isLeaderPathfinding = false;
@@ -197,39 +205,16 @@ class Dino extends Entity
             isLeaderPathfinding = true;
         }
 
-        if (framesSincePathGenerated > 6)
+        // If our leader is pathfinding or we're stuck, then generate a path to follow
+        if ((isLeaderPathfinding || framesStuck > 8) && herdedPath.length == 0)
         {
-            herdedPath.resize(0);
-        }
-
-        if ((isLeaderPathfinding || framesStuck > 10) && herdedPath.length == 0)
-        {
-            // Attempt to pathfind towards herded leader
-            var newPath = PlayState.world.getObstacles().findPath(leaderPos, dinoPos, true, false, NONE);
-            if (newPath != null)                     
-            {                                        
-                herdedPath = newPath;                
-            }
-            framesSincePathGenerated = 0;
+            pathTowards(herdedLeader);
         }
 
         if (herdedPath.length > 0)
         {
-            // Follow the path towards the leader
-            isPathfinding = true;
-            var pathPoint = herdedPath[herdedPath.length-1];
-            var dir = new FlxPoint(pathPoint.x - dinoPos.x, pathPoint.y - dinoPos.y);
-            if (GameWorld.magnitude(dir) < 8.0)
-            {
-                herdedPath.pop();
-                if (herdedPath.length == 0) return;
-                pathPoint = herdedPath[herdedPath.length-1];
-                dir = new FlxPoint(pathPoint.x - dinoPos.x, pathPoint.y - dinoPos.y);
-            }
-
-            var angle = Math.atan2(dir.y, dir.x);
-            sprite.velocity.set(Math.cos(angle) * speed, Math.sin(angle) * speed);
-            framesSincePathGenerated++;
+            // We are currently following a path!
+            followPath(speed);
         }
         else
         {
@@ -242,6 +227,51 @@ class Dino extends Entity
                 sprite.velocity.set(Math.cos(angle) * speed, Math.sin(angle) * speed);
             }
         }
+    }
+
+    function pathTowards(entity:Entity)
+    {
+        pathLeader = entity;
+        var position = new FlxPoint(getX(), getY());
+        var leaderPosition = new FlxPoint(pathLeader.getX(), pathLeader.getY());
+
+        // Attempt to pathfind towards herded leader
+        var newPath = PlayState.world.getObstacles().findPath(leaderPosition, position, true, false, NONE);
+        if (newPath != null)                     
+        {                                        
+            herdedPath = newPath;                
+        }
+        framesSincePathGenerated = 0;
+    }
+
+    function followPath(speed:Float)
+    {
+        if (herdedPath.length == 0) return;
+        
+        if (framesSincePathGenerated > 6)
+        {
+            pathTowards(pathLeader);
+        }
+
+        // Follow the path towards the leader
+        isPathfinding = true;
+        var pathPoint = herdedPath[herdedPath.length-1];
+        var position = new FlxPoint(getX(), getY());
+        var dir = new FlxPoint(pathPoint.x - position.x, pathPoint.y - position.y);
+        if (GameWorld.magnitude(dir) < 8.0)
+        {
+            herdedPath.pop();
+            if (herdedPath.length == 0) return;
+            pathPoint = herdedPath[herdedPath.length-1];
+            dir = new FlxPoint(pathPoint.x - position.x, pathPoint.y - position.y);
+            if (speed > GameWorld.magnitude(dir) + 7.0) {
+                speed = GameWorld.magnitude(dir) + 7.0;
+            }
+        }
+
+        var angle = Math.atan2(dir.y, dir.x);
+        sprite.velocity.set(Math.cos(angle) * speed, Math.sin(angle) * speed);
+        framesSincePathGenerated++;
     }
 
     function moveTowards(position:FlxPoint, speed:Float)

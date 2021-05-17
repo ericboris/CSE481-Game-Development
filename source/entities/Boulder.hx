@@ -35,7 +35,7 @@ class Boulder extends Entity
 
         this.sprite.immovable = true;
         this.type = EntityBoulder;
-        this.canJumpCliffs = false;
+        this.canJumpCliffs = true;
 
         this.thought.setSprite(16, 16, AssetPaths.down_arrow__png);
 

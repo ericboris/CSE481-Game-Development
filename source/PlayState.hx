@@ -38,6 +38,9 @@ class PlayState extends FlxState
     // Makes player move faster
     static public final DEBUG_FAST_SPEED = false;
 
+    // Update every time update() is called.
+    var frameCounter:Int = 0;
+
     // Size of map (in # of tiles)
     var mapWidth = 0;
     var mapHeight = 0;
@@ -88,6 +91,9 @@ class PlayState extends FlxState
     public var numPreyCollected:Int = 0;
     public var numPredatorsCollected:Int = 0;
     public var numPrey:Int = 0;
+
+    var cameraZoomDirection:Int = -1;
+    var cameraZoomTween:FlxTween;
 
     override public function create()
     {
@@ -187,6 +193,16 @@ class PlayState extends FlxState
         PlayLogger.startLevel(GameWorld.levelId());
     }
 
+    function baseZoom():Float
+    {
+        return SCREEN_WIDTH / CHUNK_WIDTH;
+    }
+
+    function minZoom():Float
+    {
+        return baseZoom() * 0.8;
+    }
+
     function setupCamera()
     {
         // Set world size
@@ -194,7 +210,7 @@ class PlayState extends FlxState
 
         // Set camera to follow player
         FlxG.camera.setScrollBoundsRect(0, 0, TILE_SIZE * mapWidth, TILE_SIZE * mapHeight);
-        FlxG.camera.zoom = SCREEN_WIDTH / CHUNK_WIDTH;
+        FlxG.camera.zoom = baseZoom();
         FlxG.camera.follow(player.getSprite(), TOPDOWN, 1);
 
         var camera_x = SCREEN_WIDTH/2;
@@ -242,10 +258,10 @@ class PlayState extends FlxState
 
     function nextLevel()
     {
+        Console.log("Next level");
         PlayLogger.endLevel();
 
-        var debugSkip = DEBUG && FlxG.keys.anyPressed([M]);
-        if (this.numPrey == 0 || debugSkip)
+        if (this.numPrey == 0)
         {
             // There are no prey on this level, so skip displaying the score.
             FlxG.switchState(new PlayState());
@@ -298,6 +314,41 @@ class PlayState extends FlxState
         }
     }
 
+    function updateCamera()
+    {
+        var zoom = FlxG.camera.zoom;
+        if (player.isPlayerCalling())
+        {
+            if (zoom > minZoom() && cameraZoomDirection == -1)
+            {
+                var options = {ease: FlxEase.expoOut, onComplete: function (tween) {
+                    cameraZoomTween = null;
+                }};
+                
+                if (cameraZoomTween != null) cameraZoomTween.cancel();
+                cameraZoomTween = FlxTween.num(zoom, minZoom(), 1.0, options, function (f: Float) {
+                    FlxG.camera.zoom = f;
+                });
+                cameraZoomDirection = 1;
+            }
+        }
+        else
+        {
+            if (zoom < baseZoom() && cameraZoomDirection == 1)
+            {
+                var options = {ease: FlxEase.expoOut, onComplete: function (tween) {
+                    cameraZoomTween = null;
+                }};
+                
+                if (cameraZoomTween != null) cameraZoomTween.cancel();
+                cameraZoomTween = FlxTween.num(zoom, baseZoom(), 1.0, options, function (f: Float) {
+                    FlxG.camera.zoom = f;
+                });
+                cameraZoomDirection = -1;
+            }
+        }
+    }
+
     override public function update(elapsed:Float)
     {
         if (!PlayLogger.loggerInitialized())
@@ -313,6 +364,7 @@ class PlayState extends FlxState
  
         updateTransitionScreen();
         updateScore();
+        updateCamera();
 
         // Update all entities
         for (entity in entities)
@@ -331,6 +383,7 @@ class PlayState extends FlxState
         }
 
         scoreSoundMultiplier -= 0.005;
+        frameCounter++;
 
         this.sort(sortSprites);
         super.update(elapsed);
@@ -454,6 +507,15 @@ class PlayState extends FlxState
         toggleAdditionalTilemapCollisions(true);
 
         // Vision checks
+        // Only check vision every other frame (to save performance)
+        if (frameCounter % 2 != 0)
+        {
+            visionChecks();
+        }
+    }
+
+    function visionChecks()
+    {
         for (predator in entityGroups[EntityPredator])
         {
             if (GameWorld.checkVision(predator, player))
@@ -487,6 +549,7 @@ class PlayState extends FlxState
                 }
             }
         }
+
     }
 
     public function toggleAdditionalTilemapCollisions(toggle:Bool)
@@ -629,6 +692,16 @@ class PlayState extends FlxState
                 prey.addToHerd(player);
             }
         }
+
+        for (entity in entityGroups[EntityPredator])
+        {
+            var predator:Predator = cast entity;
+            var withinRange = GameWorld.entityDistance(player, predator) < callRadius;
+            if (withinRange)
+            {
+                predator.track(player);
+            }
+        }
     }
 
     var scoreSoundMultiplier:Float = 0.0;
@@ -639,8 +712,8 @@ class PlayState extends FlxState
             incrementScore(1);
             removeEntity(dino);
 
-            scoreSoundMultiplier += 0.16;
-            if (scoreSoundMultiplier > 0.6) scoreSoundMultiplier = 0.6;
+            scoreSoundMultiplier += 0.1;
+            if (scoreSoundMultiplier > 0.4) scoreSoundMultiplier = 0.4;
             if (scoreSoundMultiplier < 0) scoreSoundMultiplier = 0;
 
             FlxG.sound.play(AssetPaths.scoreSound__mp3, 0.15 + scoreSoundMultiplier);
