@@ -13,15 +13,17 @@ class Predator extends Dino
     static final SPEED = 60.0;
     static final ACCELERATION = 30.0;
     static final ELASTICITY = 1.0;
-    static final PURSUING_ELASTICITY = 0.1;
+    static final PURSUING_ELASTICITY = 1.0;
 
     /* Pursuing state */
-    static final ANGULAR_ACCELERATION = GameWorld.toRadians(8);
-    static final PURSUING_SPEED = 95.0;
-    static final SEEN_TIMER = 1.0;
+    static final ANGULAR_ACCELERATION = GameWorld.toRadians(20);
+    static final PURSUING_SPEED = 92.0;
+    static final SEEN_TIMER = 1.5;
 
-    static final SATIATED_TIMER = 5.0;
-    static final DAZED_TIMER = 3.5;
+    static final SATIATED_TIMER = 6.0;
+    static final DAZED_TIMER = 4.0;
+    
+    static final FLASHING_RATE = 0.04;
 
     var lastSeenEntity:Entity;
     var lastSeenTimer:Float = 0;
@@ -29,7 +31,6 @@ class Predator extends Dino
 
     var satiated:Bool = false;
     var satiatedTimer:Float = 0;
-    static final FLASHING_RATE = 0.04;
     var alphaRate:Float = FLASHING_RATE;
 
     var attackRoar:FlxSound;
@@ -64,7 +65,7 @@ class Predator extends Dino
         this.SIGHT_RANGE = 200;
         this.NEARBY_SIGHT_RADIUS = 80;
 
-        sprite.setSize(20, 20);
+        sprite.setSize(16, 16);
 
         this.attackRoar = FlxG.sound.load(AssetPaths.PredatorRoar1__mp3, 0.7);
         attackRoar.proximity(sprite.x, sprite.y, FlxG.camera.target, FlxG.width * 0.6);
@@ -131,9 +132,8 @@ class Predator extends Dino
         if (state == Pursuing)
             pursuing(elapsed);
 
-        move();
-
         super.update(elapsed);
+        move();
     }
 
     function move()
@@ -190,14 +190,12 @@ class Predator extends Dino
         var verticalCollision = sprite.touching & (FlxObject.UP | FlxObject.DOWN);
         if (horizontalCollision > 0)
         {
-            //sprite.velocity.x *= -1;
-            //sprite.velocity.y *= 0.1;
+            sprite.velocity.x *= 0.95;
         }
 
         if (verticalCollision > 0)
         {
-            //sprite.velocity.x *= 0.1;
-            //sprite.velocity.y *= -1;
+            sprite.velocity.y *= 0.95;
         }
 
         speedUp(SPEED);
@@ -218,43 +216,40 @@ class Predator extends Dino
                 this.sprite.elasticity = ELASTICITY;
                 this.state = Unherded;
                 hasRoared = false;
+                return;
             }
+        }
+        // Rotate towards nearest entity
+        lastSeenTimer = SEEN_TIMER;
+            
+        var entity:Entity;
+        if (seenEntities.length > 0)
+        {
+            entity = GameWorld.getNearestEntity(this, seenEntities);
         }
         else
         {
-            // Rotate towards nearest entity
-            lastSeenTimer = SEEN_TIMER;
-            
-            var entity:Entity;
-            if (seenEntities.length > 0)
-            {
-                entity = GameWorld.getNearestEntity(this, seenEntities);
-            }
-            else
-            {
-                entity = lastSeenEntity;
-            }
-
-            var moveAngle = GameWorld.pointAngle(1, 0, sprite.velocity.x, sprite.velocity.y);
-            var angleBetween = GameWorld.entityAngle(this, entity);
-            var angleDiff = angleBetween - moveAngle;
-
-            if (angleDiff > Math.PI / 2.0)
-            {
-                var startSpeed = Dino.UNHERDED_SPEED / 2;
-                sprite.velocity.set(Math.cos(angleBetween) * startSpeed, Math.sin(angleBetween) * startSpeed);
-            }
-
-            // Angular acceleration
-            var sign = angleDiff < 0 ? -1 : 1;
-            var acceleration = Math.min(Math.abs(angleDiff), ANGULAR_ACCELERATION);
-            acceleration *= sign;
-
-            sprite.velocity.rotate(FlxPoint.weak(), GameWorld.toDegrees(acceleration));
-  
-            //sprite.velocity.rotate(FlxPoint.weak(), angleDiff);
-            this.lastSeenEntity = entity;
+            entity = lastSeenEntity;
         }
+
+        var moveAngle = GameWorld.pointAngle(1, 0, sprite.velocity.x, sprite.velocity.y);
+        var angleBetween = GameWorld.entityAngle(this, entity);
+        var angleDiff = angleBetween - moveAngle;
+
+        if (angleDiff > Math.PI / 2.0)
+        {
+            var startSpeed = Dino.UNHERDED_SPEED / 2;
+        }
+
+        // Angular acceleration
+        var sign = angleDiff < 0 ? -1 : 1;
+        var acceleration = Math.min(Math.abs(angleDiff), ANGULAR_ACCELERATION);
+        acceleration *= sign;
+
+        sprite.velocity.rotate(FlxPoint.weak(), GameWorld.toDegrees(acceleration));
+
+        //sprite.velocity.rotate(FlxPoint.weak(), angleDiff);
+        this.lastSeenEntity = entity;
 
         if (hasRoared == false) 
         {
@@ -311,6 +306,6 @@ class Predator extends Dino
 
     public function track(entity:Entity)
     {
-
+        seenEntities.push(entity);
     }
 }

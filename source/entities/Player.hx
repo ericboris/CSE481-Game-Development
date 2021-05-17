@@ -94,7 +94,7 @@ class Player extends Entity
         addHitbox(interactHitbox);
 
         stickHitbox = new Hitbox(this, STICK_HITBOX_ID);
-        stickHitbox.setSize(16, 16);
+        stickHitbox.setSize(16, 25);
         stickHitbox.setOffset(0,8);
         stickHitbox.setActive(false);
         addHitbox(stickHitbox);

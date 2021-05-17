@@ -194,6 +194,7 @@ class Dino extends Entity
         else
         {
             framesStuck = 0;
+            herdedPath.resize(0);
         }
 
         
