@@ -253,6 +253,17 @@ class Predator extends Dino
         {
             attackRoar.setPosition(sprite.x, sprite.y);
             attackRoar.play();
+            
+            var distance = GameWorld.entityDistance(this, PlayState.world.getPlayer());
+            if (distance < 160)
+            {
+                attackRoar.volume = 0.7;
+            }
+            else
+            {
+                attackRoar.volume = 0.3;
+            }
+
             hasRoared = true;
         }
         speedUp(PURSUING_SPEED);
@@ -294,6 +305,7 @@ class Predator extends Dino
             sprite.velocity.y *= -1;
             satiated = true;
             satiatedTimer = SATIATED_TIMER;
+            hasRoared = false;
             return true;
         }
         else

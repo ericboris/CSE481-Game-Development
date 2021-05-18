@@ -737,4 +737,9 @@ class PlayState extends FlxState
     {
         return entityGroups[EntityPrey].length;
     }
+
+    public function getPlayer():Player
+    {
+        return this.player;
+    }
 }

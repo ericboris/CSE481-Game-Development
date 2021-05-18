@@ -23,7 +23,7 @@ PREY_EID = '72472484'
 PREDATOR_NAME = 'predator'
 PREDATOR_EID = '72474834'
 
-GRASS_TILE = 36
+GRASS_TILES = {0: 36, 1: 1, 2: 2}
 WATER_TILE = 16
 
 EMPTY = -1
@@ -177,10 +177,13 @@ def main(args):
 
     infile = args.infile
     outfile = args.outfile
-    color_threshold = args.color_threshold
-    TREE_THRESHOLD = args.tree_threshold
-    PREY_THRESHOLD = args.prey_threshold
-    PREDATOR_THRESHOLD = args.pred_threshold
+    colorThreshold = int(args.color_threshold)
+    treeSimplex = int(args.tree_simplex)
+    preySimplex = int(args.prey_simplex)
+    predatorSimplex = int(args.predator_simplex)
+    TREE_THRESHOLD = float(args.tree_threshold)
+    PREY_THRESHOLD = float(args.prey_threshold)
+    PREDATOR_THRESHOLD = float(args.predator_threshold)
 
     # Load the image.
     img = np.array(Image.open(infile).convert('L'))
@@ -190,12 +193,12 @@ def main(args):
 
     # Instantiate the perlin noise class.
     # Arbitrary choice of simplex parameter.
-    TREE_NOISE = perlin.SimplexNoise(18)
-    PREY_NOISE = perlin.SimplexNoise(42)
-    PREDATOR_NOISE = perlin.SimplexNoise(33)
+    TREE_NOISE = perlin.SimplexNoise(treeSimplex)
+    PREY_NOISE = perlin.SimplexNoise(preySimplex)
+    PREDATOR_NOISE = perlin.SimplexNoise(predatorSimplex)
 
     # Preprocess the image.
-    img = threshold(img, color_threshold)
+    img = threshold(img, colorThreshold)
     
     # Get the entities and obstacles tile data.
     entityData, obstacleData = getObstacleData(img) 
@@ -296,7 +299,10 @@ def getTileLayer(name='',
 
 
 def getGroundData(img):
-    return [GRASS_TILE] * (ROWS * COLS)
+    d = []
+    for i in range(ROWS * COLS):
+        d.append(GRASS_TILES[getGroundType()])
+    return d
 
 
 def getObstacleData(img):
@@ -425,6 +431,17 @@ def getTreeType():
         return 4
 
 
+def getGroundType():
+    # Return an int in the range [0, 2].
+    r = random.randint(0, 100)
+    if r < 50:
+        return 0
+    elif r < 75:
+        return 1
+    else:  
+        return 2
+
+
 def getPreyEntity(x, y):
     global entityId
     e = _getEntity(PREY_NAME, entityId, PREY_EID, x, y)
@@ -455,9 +472,12 @@ if __name__ == '__main__':
     parser.add_argument('--infile', help='File to convert to json', default='west.png')
     parser.add_argument('--outfile', help='Output file name', default='output.json')
     parser.add_argument('--color_threshold', help='Number of colors to use, default=10', default=10)
+    parser.add_argument('--tree_simplex', help='default=18', default=18)
+    parser.add_argument('--prey_simplex', help='default=19', default=19)
+    parser.add_argument('--predator_simplex', help='default=20', default=20)
     parser.add_argument('--tree_threshold', help='Number of trees to add, lower=more, default=0.65', default=0.65)
     parser.add_argument('--prey_threshold', help='Number of prey to add, lower=more, default=0.92', default=0.92)
-    parser.add_argument('--pred_threshold', help='Number of predators to add, lower=more, default=0.995', default=0.995)
+    parser.add_argument('--predator_threshold', help='Number of predators to add, lower=more, default=0.995', default=0.995)
     args = parser.parse_args()
     
     main(args)
