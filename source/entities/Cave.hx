@@ -8,8 +8,9 @@ class Cave extends Obstacle
 {
     public function new()
     {
-        super(16, 16, FlxColor.BLACK);
+        super();
         sprite.visible = false;
+        this.setHitboxSize(16, 16);
 
         this.type = EntityCave;
         this.thought.setOffset(0, -32);

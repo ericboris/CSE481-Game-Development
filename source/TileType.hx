@@ -1,5 +1,8 @@
 package;
 
+import entities.*;
+import flixel.graphics.FlxGraphic;
+
 class TileType
 {
     public static final CLIFF_DOWN = 29;
@@ -25,32 +28,41 @@ class TileType
 
     public static final WATER_NC = 103;
 
-    public static final TREE_1 = 14;
+    public static final BERRY_BUSH = 14;
     public static final TREE_2 = 15;
     public static final TREE_3 = 21;
     public static final TREE_4 = 22;
     
-    public static function getWidthOfTile(tile: Int)
+    public static function getTileObstacle(tile:Int):Null<Obstacle>
     {
+        var tilemap = PlayState.world.getObstacles();
         switch (tile)
         {
-            case TREE_1, TREE_2, TREE_3, TREE_4:
-                // Trees!
-                return 4;
+            case BERRY_BUSH:
+                var object = new BerryBush();
+                return object;
+            case TREE_2, TREE_3, TREE_4:
+                var object = new Obstacle();
+                var sprite = object.getSprite();
+                sprite.loadGraphic(FlxGraphic.fromFrame(tilemap.frames.frames[tile]), false, 16, 16);
+                sprite.immovable = true;
+                object.setHitboxSize(4, 4);
+                return object;
             default:
-                return 16;
+                return null;
         }
     }
 
-    public static function getHeightOfTile(tile: Int)
+    public static function isStatic(tile: Int)
     {
         switch (tile)
         {
-            case TREE_1, TREE_2, TREE_3, TREE_4:
-                // Trees!
-                return 4;
+            case BERRY_BUSH:
+                return false;
+            case TREE_2, TREE_3, TREE_4:
+                return true;
             default:
-                return 16;
+                return true;
         }
     }
 }

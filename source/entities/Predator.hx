@@ -59,13 +59,11 @@ class Predator extends Dino
         this.sprite.elasticity = ELASTICITY;
         this.sprite.mass = 2.0;
 
-        sprite.screenCenter();
-
         this.SIGHT_ANGLE = GameWorld.toRadians(120);
         this.SIGHT_RANGE = 200;
         this.NEARBY_SIGHT_RADIUS = 80;
 
-        sprite.setSize(16, 16);
+        setHitboxSize(14, 14);
 
         this.attackRoar = FlxG.sound.load(AssetPaths.PredatorRoar1__mp3, 0.7);
         attackRoar.proximity(sprite.x, sprite.y, FlxG.camera.target, FlxG.width * 0.6);

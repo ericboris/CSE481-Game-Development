@@ -11,5 +11,7 @@ enum EntityType
     EntityHitbox;
     EntityBoulder;
     EntityItem;
+    EntityBerryBush;
+    EntityPickup;
     EntityNull;
 }

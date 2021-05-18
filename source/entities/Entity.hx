@@ -140,6 +140,7 @@ class Entity
     }
 
     public function notifyHitboxCollision(hitbox:Hitbox, entity:Entity) {}
+
     public function handlePlayerCollision(player:Player) {}
     public function handlePreyCollision(prey:Prey) {}
     public function handleCaveCollision(cave:Cave) {}
@@ -152,7 +153,7 @@ class Entity
     {
         if (centered)
         {
-            sprite.setPosition(x + sprite.width/2, y + sprite.height/2);
+            sprite.setPosition(x + sprite.frameWidth/2, y + sprite.frameHeight/2);
         }
         else
         {
@@ -202,7 +203,7 @@ class Entity
         nextJump = new FlxPoint(sprite.x + jumpX, sprite.y + jumpY);
     }
 
-    public function jumpTo(x:Float, y:Float, collisionCheck:Bool = true, ?completeCallback: Entity -> Void):Bool
+    public function jumpTo(x:Float, y:Float, collisionCheck:Bool = true, ?completeCallback: Entity -> Void, jumpSpeed:Float = 80.0):Bool
     {
         if (isJumping)
         {
@@ -242,7 +243,6 @@ class Entity
                 completeCallback(this);
             }
         }};
-        var jumpSpeed = 80.0;
         FlxTween.quadPath(this.sprite, [start, control, end], jumpSpeed, false, options);
         
         sprite.velocity.x = 0;
@@ -323,5 +323,11 @@ class Entity
     public function fadeOutAndRemove()
     {
         isFadingOut = true;
+    }
+
+    public function setHitboxSize(width:Int, height:Int)
+    {
+        sprite.setSize(width, height);
+        sprite.centerOffsets();
     }
 }

@@ -189,7 +189,7 @@ class PlayState extends FlxState
         transitionScreen.alpha = 1;
         transitionScreen.health = topLayerSortIndex() + 1;
         add(transitionScreen);
-
+     
         PlayLogger.startLevel(GameWorld.levelId());
     }
 
@@ -227,9 +227,8 @@ class PlayState extends FlxState
         var tileNum = obstacles.getTile(tileX, tileY);
         if (tileNum == 0) return;
 
-        var width = TileType.getWidthOfTile(tileNum);
-        var height = TileType.getHeightOfTile(tileNum);
-        if (width == 16 && height == 16)
+        var obstacle = TileType.getTileObstacle(tileNum);
+        if (obstacle == null)
         {
             // This tile doesn't need a custom hitbox. Keep it in the tilemap.
         }
@@ -237,22 +236,20 @@ class PlayState extends FlxState
         {
             if (!uncollidableTiles.contains(tileNum)) uncollidableTiles.push(tileNum);
 
-            var x = tileX * TILE_SIZE + TILE_SIZE/2 - width/2;
-            var y = tileY * TILE_SIZE + TILE_SIZE/2 - height/2;
+            var sprite = obstacle.getSprite();
+            sprite.x = tileX * TILE_SIZE + TILE_SIZE/2 - sprite.width/2;
+            sprite.y = tileY * TILE_SIZE + TILE_SIZE/2 - sprite.height/2;
 
-            var collider = new StaticObject(x, y, width, height, tileNum);
-            collider.immovable = true;
-            collider.visible = false;
-
-            var sprite = new FlxSprite();
-            sprite.loadGraphic(FlxGraphic.fromFrame(obstacles.frames.frames[tileNum]), false, 16, 16);
-            sprite.setSize(16, 16);
-            sprite.x = tileX * TILE_SIZE;
-            sprite.y = tileY * TILE_SIZE;
+            collidableSprites.add(sprite);
+            if (TileType.isStatic(tileNum))
+            {
+                staticCollidableSprites.add(sprite);
+            }
+            else
+            {
+                collidableSprites.add(sprite);
+            }
             add(sprite);
-
-            staticCollidableSprites.add(collider);
-            add(collider);
         }
     }
 
@@ -571,7 +568,7 @@ class PlayState extends FlxState
         {
             case "player":
                 player = new Player();
-                player.setPosition(x, y, true);
+                player.setPosition(x, y);
                 addEntity(player);
             case "prey":
                 numPrey++;
@@ -596,11 +593,18 @@ class PlayState extends FlxState
 
     function handleCollision(s1:SpriteWrapper<Entity>, s2:SpriteWrapper<Entity>)
     {
-        var e1 = s1.entity;
-        var e2 = s2.entity;
+        if (Std.is(s2, SpriteWrapper) && Std.is(s2, SpriteWrapper))
+        {
+            var e1 = s1.entity;
+            var e2 = s2.entity;
 
-        e1.handleCollision(e2);
-        e2.handleCollision(e1);
+            e1.handleCollision(e2);
+            e2.handleCollision(e1);
+        }
+        else
+        {
+            Console.log("handleCollision() : UNEXPECTED TYPE");
+        }
     }
 
     function handleSeparationCollision(s1:SpriteWrapper<Entity>, s2:SpriteWrapper<Entity>)

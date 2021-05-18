@@ -12,7 +12,7 @@ import flixel.math.FlxMath;
 
 class Boulder extends Entity
 {
-    static var PUSH_SPEED = 0.45;
+    static var PUSH_SPEED = 0.55;
 
     var isInWater:Bool = false;
     // The tile of water that the boulder is being pushed into.

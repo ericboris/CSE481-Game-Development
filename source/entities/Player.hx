@@ -17,7 +17,8 @@ class Player extends Entity
     static final INTERACT_HITBOX_ID = 0;
     static final STICK_HITBOX_ID    = 1;
 
-    static final SPEED = 120.0;
+    static final SPEED = 100.0;
+    static final SPEED_BOOST_MULTIPLIER = 1.25;
     static final SWIPE_SPEED = 45.0;
     static final CALL_SPEED = 80.0;
     
@@ -49,6 +50,7 @@ class Player extends Entity
     var callLoopSound:FlxSound;
     var callEndSound:FlxSound;
     var swipeSound:FlxSound;
+    var berrySound:FlxSound;
 
     final MIN_CALL_RADIUS:Int = 1;
     final MAX_CALL_RADIUS:Int = 100;
@@ -65,6 +67,13 @@ class Player extends Entity
 
     var interactHitbox:Hitbox;
     var stickHitbox:Hitbox;
+
+    // Speed boost for player
+    static final SPEED_BOOST_DURATION = 10.0;
+
+    var speedBoost:Bool = false;
+    var speedBoostTimer:Float = 0;
+    var alphaRate = 0.04;
 
     public function new()
     {
@@ -124,7 +133,8 @@ class Player extends Entity
         this.callLoopSound = FlxG.sound.load(AssetPaths.call_loop__mp3, CALL_VOLUME);
         this.callEndSound = FlxG.sound.load(AssetPaths.call_end__mp3, CALL_VOLUME);
         this.swipeSound = FlxG.sound.load(AssetPaths.PlayerSwipe__mp3, 0.8);
-    
+        this.berrySound = FlxG.sound.load(AssetPaths.berryEat__mp3, 0.8);
+
         var lineStyle = {thickness: 1.0, color: FlxColor.WHITE};
         callCircle = new FlxShapeCircle(0, 0, 0, lineStyle, FlxColor.TRANSPARENT);
         callCircle.alpha = 0.7;
@@ -134,29 +144,11 @@ class Player extends Entity
 
     public override function update(elapsed:Float)
     {
+        updateCallCircle();
+        updateSpeedBoost(elapsed);
         call();
         updateItem();
         move();
-
-        if (isCalling)
-        {
-            if (callCircle.alpha < 0.8)
-            {
-                callCircle.alpha += 0.05;
-            }
-
-            if (callRadius != callCircle.radius)
-            {
-                callCircle.radius = callRadius;
-                callCircle.redrawShape();
-            }
-        }
-        else
-        {
-            callCircle.alpha -= 0.1;
-        }
-
-        callCircle.setPosition(getX() - callCircle.width/2, getY() - callCircle.height/2);
  
         frameCounter++;
         if (frameCounter % 10 == 0)
@@ -211,6 +203,60 @@ class Player extends Entity
         }
 
         super.update(elapsed);
+    }
+
+    function updateCallCircle()
+    {
+        if (isCalling)
+        {
+            if (callCircle.alpha < 0.8)
+            {
+                callCircle.alpha += 0.05;
+            }
+
+            if (callRadius != callCircle.radius)
+            {
+                callCircle.radius = callRadius;
+                callCircle.redrawShape();
+            }
+        }
+        else
+        {
+            callCircle.alpha -= 0.1;
+        }
+
+        callCircle.setPosition(getX() - callCircle.width/2, getY() - callCircle.height/2);
+    }
+
+    function updateSpeedBoost(elapsed:Float)
+    {
+        if (speedBoost)
+        {
+            speedBoostTimer -= elapsed;
+            if (speedBoostTimer < 0)
+            {
+                speedBoost = false;
+            }
+
+            sprite.alpha += alphaRate;
+            if (sprite.alpha <= 0.5)
+            {
+                alphaRate *= -1;
+            }
+            else if (sprite.alpha >= 1.0)
+            {
+                alphaRate *= -1;
+            }
+        }
+        else
+        {
+            if (sprite.alpha < 1.0)
+            {
+                sprite.alpha += 0.04;
+            }
+        }
+
+
     }
 
     function call():Void
@@ -331,6 +377,11 @@ class Player extends Entity
         else if (isCalling)
         {
             movementSpeed = CALL_SPEED;
+        }
+        
+        if (speedBoost)
+        {
+            movementSpeed *= SPEED_BOOST_MULTIPLIER;    
         }
 
         var up = FlxG.keys.anyPressed([UP, W]);
@@ -518,6 +569,11 @@ class Player extends Entity
                 var predator:Predator = cast entity;
                 predator.hitWithStick();
             }
+            else if (entity.type == EntityBerryBush)
+            {
+                var bush:BerryBush = cast entity;
+                bush.swipe();
+            }
         }
     }
 
@@ -599,6 +655,10 @@ class Player extends Entity
     // Return the Player's speed.
     public function getSpeed()
     {
+        if (speedBoost)
+        {
+            return this.speed * SPEED_BOOST_MULTIPLIER;
+        }
         return this.speed;
     }
 
@@ -611,5 +671,12 @@ class Player extends Entity
     public function getCallRadius():Float
     {
         return callRadius;
+    }
+
+    public function triggerSpeedBoost()
+    {
+        speedBoost = true;
+        speedBoostTimer += SPEED_BOOST_DURATION;
+        berrySound.play();
     }
 }
