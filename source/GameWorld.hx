@@ -29,11 +29,11 @@ class GameWorld
                             AssetPaths.tutorial1__json,
                             AssetPaths.tutorial2__json,
                             AssetPaths.tutorial3__json,
-                            AssetPaths.tutorial5__json,
-                            AssetPaths.tutorial4__json,
-                            AssetPaths.west__json,
-                            AssetPaths.map1__json,
-                            AssetPaths.map2__json];
+                            AssetPaths.map3w50h50__json,
+                            AssetPaths.map5w100h54__json,
+                            AssetPaths.map6w150h158__json,
+                            AssetPaths.map1w200h165__json,
+                            AssetPaths.map2w200h200__json];
 
     static public function levelId()
     {
@@ -49,7 +49,6 @@ class GameWorld
     static var newEntities = [EntityCave,
                             EntityPrey,
                             EntityBoulder,
-                            EntityNull,
                             EntityPredator,
                             EntityNull,
                             EntityNull,
