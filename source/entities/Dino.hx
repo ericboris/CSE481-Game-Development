@@ -289,6 +289,8 @@ class Dino extends Entity
         herdedPlayer = null;
         state = Unherded;
 
+        canJumpCliffs = false;
+
         think("?", 2.0);
 
         herdedDisableFollowingRadius = false;

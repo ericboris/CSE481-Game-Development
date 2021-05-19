@@ -30,6 +30,8 @@ class Prey extends Dino
 
         thought.setOffset(0, -11);
 
+        canJumpCliffs = false;
+
         this.SIGHT_ANGLE = GameWorld.toRadians(360);
         this.SIGHT_RANGE = 100;
     }
@@ -72,6 +74,13 @@ class Prey extends Dino
         }
     }
 
+    public override function setUnherded(notify:Bool = false)
+    {
+        super.setUnherded(notify);
+
+        canJumpCliffs = false;
+    }
+
     public override function handlePlayerCollision(player:Player)
     {
         if (state == Unherded || state == Fleeing)
@@ -79,6 +88,7 @@ class Prey extends Dino
             // We only care about this collision if we are unherded.
             // Add to player's herd.
             addToHerd(player);
+            canJumpCliffs = true;
         }
     }
 
