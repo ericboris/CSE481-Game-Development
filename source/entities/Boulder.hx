@@ -93,8 +93,8 @@ class Boulder extends Entity
             {
                 var secondJump = function (entity:Entity)
                 {
-                    entity.nextJump = new FlxPoint(entity.getTopLeftX() + jumpX * secondJumpMultiplier,
-                                                   entity.getTopLeftY() + jumpY * secondJumpMultiplier);
+                    entity.nextJumps.push(new FlxPoint(entity.getTopLeftX() + jumpX * secondJumpMultiplier,
+                                                       entity.getTopLeftY() + jumpY * secondJumpMultiplier));
                 }
                 entity.jumpTo(entity.getTopLeftX() + jumpX, entity.getTopLeftY() + jumpY, false, secondJump);
             }

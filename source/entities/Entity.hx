@@ -35,7 +35,7 @@ class Entity
 
     var isFadingOut:Bool = false;
 
-    public var nextJump: FlxPoint = null;
+    public var nextJumps: Array<FlxPoint> = new Array<FlxPoint>();
 
     public function new()
     {
@@ -82,12 +82,13 @@ class Entity
             sprite.health = 1;
 
             // Attempt to jump to the next spot.
-            if (nextJump != null)
+            while (nextJumps.length > 0)
             {
+                var nextJump = nextJumps.pop();
                 var angle = Math.atan2(nextJump.y - sprite.y, nextJump.x - sprite.x);
                 var magn = GameWorld.pointDistance(sprite.x, sprite.y, nextJump.x, nextJump.y);
 
-                var multipliers = [0.8, 0.9, 1.0, 1.4, 1.5];
+                var multipliers = [0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.7];
                 for (m in multipliers)
                 {
                     var jumpX = Math.cos(angle) * magn * m;
@@ -96,6 +97,7 @@ class Entity
                     if (canJump)
                     {
                         sprite.health = PlayState.world.topLayerSortIndex();
+                        nextJumps.resize(0);
                         break;
                     }
                 }
@@ -177,7 +179,7 @@ class Entity
         return type;
     }
 
-    public function handleCliffCollision(direction:Int)
+    public function handleCliffCollision(direction1:Int, direction2:Int)
     {
         if (!canJumpCliffs || isJumping)
         {
@@ -188,7 +190,9 @@ class Entity
 
         var jumpX:Float = 0;
         var jumpY:Float = 0;
-        switch (direction)
+        
+        var isTouchingSide:Int = 0;
+        switch (direction1)
         {
             case FlxObject.UP:
                 jumpY = -jumpDist;
@@ -200,7 +204,44 @@ class Entity
                 jumpX = jumpDist;
         }
 
-        nextJump = new FlxPoint(sprite.x + jumpX, sprite.y + jumpY);
+        var jump2X = 0;
+        var jump2Y = 0;
+        switch (direction2)
+        {
+            case FlxObject.UP:
+                jump2Y = -jumpDist;
+            case FlxObject.DOWN:
+                jump2Y = jumpDist;
+            case FlxObject.LEFT:
+                jump2X = -jumpDist;
+            case FlxObject.RIGHT:
+                jump2X = jumpDist;
+        }
+
+        nextJumps.push(new FlxPoint(sprite.x + jumpX + jump2X, sprite.y + jumpY + jump2Y));
+        
+        if (sprite.touching & direction1 != 0)
+        {
+            nextJumps.push(new FlxPoint(sprite.x + jumpX, sprite.y + jumpY));
+        }
+
+        if (sprite.touching & direction2 != 0)
+        {
+            nextJumps.push(new FlxPoint(sprite.x + jump2X, sprite.y + jump2Y));
+        }
+    }
+
+    function checkCollision(point:FlxPoint):Bool
+    {
+        // Check if sprite will land on a tile if they jump
+        var startX = sprite.x;
+        var startY = sprite.y;
+
+        sprite.setPosition(point.x, point.y);
+        var colliding = GameWorld.collidingWithObstacles(this);
+        sprite.setPosition(startX, startY);
+
+        return colliding;
     }
 
     public function jumpTo(x:Float, y:Float, collisionCheck:Bool = true, ?completeCallback: Entity -> Void, jumpSpeed:Float = 80.0):Bool
@@ -213,18 +254,9 @@ class Entity
         var start = new FlxPoint(sprite.x, sprite.y);
         var end = new FlxPoint(x, y);
 
-        if (collisionCheck)
+        if (collisionCheck && checkCollision(end))
         {
-            // Check if sprite will land on a tile if they jump
-            sprite.setPosition(end.x, end.y);
-            var colliding = GameWorld.collidingWithObstacles(this);
-            sprite.setPosition(start.x, start.y);
-
-            if (colliding)
-            {
-                // Don't jump off cliff if we're jumping into an obstacle.
-                return false;
-            }
+            return false;
         }
 
         var control = new FlxPoint((end.x + start.x) / 2, (end.y + start.y) / 2);
