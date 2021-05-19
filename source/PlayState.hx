@@ -255,7 +255,6 @@ class PlayState extends FlxState
 
     function nextLevel()
     {
-        Console.log("Next level");
         PlayLogger.endLevel();
 
         if (this.numPrey == 0)

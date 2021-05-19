@@ -236,7 +236,7 @@ class Predator extends Dino
 
         if (angleDiff > Math.PI / 2.0)
         {
-            var startSpeed = Dino.UNHERDED_SPEED / 2;
+            sprite.velocity.scale(0.5);
         }
 
         // Angular acceleration
