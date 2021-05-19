@@ -231,9 +231,9 @@ class Player extends Entity
                 callCircle.alpha += 0.05;
             }
 
-            if (callRadius > MAX_CALL_RADIUS / 2 && caveArrow.alpha < 1.0)
+            if (callRadius > MAX_CALL_RADIUS / 3 && caveArrow.alpha < 1.0)
             {
-                caveArrow.alpha += 0.05;
+                caveArrow.alpha += 0.03;
             }
 
             if (callRadius != callCircle.radius)
@@ -251,8 +251,11 @@ class Player extends Entity
         // Center call circle on player
         callCircle.setPosition(getX() - callCircle.width/2, getY() - callCircle.height/2);
 
-        // Set position of cave pointer arrow
-        var cave = PlayState.world.getRespawnCave();
+        
+        // Update cave arrow pointer
+
+        // Get nearest cave
+        var cave = GameWorld.getNearestEntity(this, cast PlayState.world.getCaves());
         var distance = GameWorld.entityDistance(this, cave);
  
         // Position along circle
@@ -265,10 +268,14 @@ class Player extends Entity
         var interpolation:Float = GameWorld.map(callRadius * 7/8, callRadius * 9/8, 0.0, 1.0, distance);
         var bounded:Float = Math.min(Math.max(interpolation, 0.0), 1.0);
         
+        // Interpolate between circle position and indicator over cave
         var arrowX = bounded * circleX + (1.0 - bounded) * cave.getX();
         var arrowY = bounded * circleY + (1.0 - bounded) * (cave.getY() - 32);
+
+        // Interpolate between angle towards cave and pointing straight down at cave
         var angle = bounded * (GameWorld.toDegrees(angle) - 90);
 
+        // Update position and angle
         caveArrow.setPosition(arrowX - caveArrow.width/2, arrowY - caveArrow.height/2);
         caveArrow.angle = angle;
     }
