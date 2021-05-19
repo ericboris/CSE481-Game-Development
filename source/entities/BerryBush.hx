@@ -32,18 +32,12 @@ class BerryBush extends Obstacle
             var berry = new Berry();
             var sprite = berry.getSprite();
             PlayState.world.addEntity(berry);
-            berry.setPosition(getX() - sprite.frameWidth / 2, getY() - sprite.frameHeight / 2);
+            berry.setPosition(getX(), getY());
 
             // Choose random destination coordiantes
-            for (i in 0...20)
-            {
-                var x = berry.getX() + FlxG.random.float(-20, 20);
-                var y = berry.getY() + FlxG.random.float(-20, 20);
-                if (berry.jumpTo(x, y, true, null, 80.0))
-                {
-                    break;
-                }
-            }
+            var x = berry.sprite.x + FlxG.random.float(-12, 12);
+            var y = berry.sprite.y + FlxG.random.float(-12, 12);
+            berry.jumpTo(x, y, false, null, 80.0);
         }
     }
 }
