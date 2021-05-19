@@ -129,17 +129,7 @@ class CollisionHandler
                 var boulder:Boulder = cast entity;
                 if (direction2 == 0)
                 {
-                    switch (direction1)
-                    {
-                        case FlxObject.UP:
-                            boulder.setFacingCliff(FlxObject.DOWN);
-                        case FlxObject.DOWN:
-                            boulder.setFacingCliff(FlxObject.UP);
-                        case FlxObject.LEFT:
-                            boulder.setFacingCliff(FlxObject.RIGHT);
-                        case FlxObject.RIGHT:
-                            boulder.setFacingCliff(FlxObject.LEFT);
-                    }
+                    boulder.setFacingCliff(GameWorld.oppositeDirection(direction1));
                 }
             }
 

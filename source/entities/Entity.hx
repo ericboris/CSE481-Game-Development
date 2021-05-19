@@ -35,6 +35,8 @@ class Entity
 
     var isFadingOut:Bool = false;
 
+    var lastVelocity:FlxPoint = FlxPoint.weak();
+
     public var nextJumps: Array<FlxPoint> = new Array<FlxPoint>();
 
     public function new()
@@ -85,7 +87,7 @@ class Entity
             while (nextJumps.length > 0)
             {
                 var nextJump = nextJumps.pop();
-                var angle = Math.atan2(nextJump.y - sprite.y, nextJump.x - sprite.x);
+                var angle = GameWorld.pointAngle(1, 0, nextJump.x - sprite.x, nextJump.y - sprite.y);
                 var magn = GameWorld.pointDistance(sprite.x, sprite.y, nextJump.x, nextJump.y);
 
                 var multipliers = [0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.7];
@@ -110,6 +112,7 @@ class Entity
         // Delete all seen entities.
         // These will be refilled in during the following collision check cycle.
         seenEntities.resize(0);
+        lastVelocity = new FlxPoint(sprite.velocity.x, sprite.velocity.y);
     }
 
     public function addHitbox(hitbox:Hitbox)
@@ -218,16 +221,23 @@ class Entity
                 jump2X = jumpDist;
         }
 
-        nextJumps.push(new FlxPoint(sprite.x + jumpX + jump2X, sprite.y + jumpY + jump2Y));
+        // Jump angle based on velocity
+        var angle = GameWorld.pointAngle(1, 0, lastVelocity.x, lastVelocity.y);
+        var velocityJump = new FlxPoint(getX() + Math.cos(angle) * jumpDist, getY() + Math.sin(angle) * jumpDist);
         
-        if (sprite.touching & direction1 != 0)
+        if (direction2 != 0)
         {
-            nextJumps.push(new FlxPoint(sprite.x + jumpX, sprite.y + jumpY));
-        }
-
-        if (sprite.touching & direction2 != 0)
-        {
+            // Order decides priority jumps are attempted.
+            // Last inserted = first to be tried
+            nextJumps.push(new FlxPoint(sprite.x + jumpX + jump2X, sprite.y + jumpY + jump2Y));
             nextJumps.push(new FlxPoint(sprite.x + jump2X, sprite.y + jump2Y));
+            nextJumps.push(new FlxPoint(sprite.x + jumpX, sprite.y + jumpY));
+            nextJumps.push(velocityJump);
+        }
+        else
+        {
+            nextJumps.push(velocityJump);
+            nextJumps.push(new FlxPoint(sprite.x + jumpX, sprite.y + jumpY));
         }
     }
 

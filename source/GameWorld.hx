@@ -275,4 +275,18 @@ class GameWorld
     {
         return (num - low1) / (high1 - low1) * (high2 - low2) + low2;
     }
+
+    static public function oppositeDirection(dir:Int):Int
+    {
+        if (dir == FlxObject.LEFT)
+            return FlxObject.RIGHT;
+        else if (dir == FlxObject.RIGHT)
+            return FlxObject.LEFT;
+        else if (dir == FlxObject.UP)
+            return FlxObject.DOWN;
+        else if (dir == FlxObject.DOWN)
+            return FlxObject.UP;
+        else
+            return FlxObject.NONE;
+    }
 }

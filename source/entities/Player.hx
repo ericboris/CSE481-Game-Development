@@ -256,28 +256,35 @@ class Player extends Entity
 
         // Get nearest cave
         var cave = GameWorld.getNearestEntity(this, cast PlayState.world.getCaves());
-        var distance = GameWorld.entityDistance(this, cave);
- 
-        // Position along circle
-        var angle = GameWorld.entityAngle(this, cave);
-        var circleX = getX() + Math.cos(angle) * callRadius;
-        var circleY = getY() + Math.sin(angle) * callRadius;
-        
-        // Interpolate between position along circle and the position above the cave
-        // This creates a smooth transition of position when the cave enters the call radius
-        var interpolation:Float = GameWorld.map(callRadius * 7/8, callRadius * 9/8, 0.0, 1.0, distance);
-        var bounded:Float = Math.min(Math.max(interpolation, 0.0), 1.0);
-        
-        // Interpolate between circle position and indicator over cave
-        var arrowX = bounded * circleX + (1.0 - bounded) * cave.getX();
-        var arrowY = bounded * circleY + (1.0 - bounded) * (cave.getY() - 32);
+        if (cave == null)
+        {
+            caveArrow.alpha = 0;
+        }
+        else
+        {
+            var distance = GameWorld.entityDistance(this, cave);
+     
+            // Position along circle
+            var angle = GameWorld.entityAngle(this, cave);
+            var circleX = getX() + Math.cos(angle) * callRadius;
+            var circleY = getY() + Math.sin(angle) * callRadius;
+            
+            // Interpolate between position along circle and the position above the cave
+            // This creates a smooth transition of position when the cave enters the call radius
+            var interpolation:Float = GameWorld.map(callRadius * 7/8, callRadius * 9/8, 0.0, 1.0, distance);
+            var bounded:Float = Math.min(Math.max(interpolation, 0.0), 1.0);
+            
+            // Interpolate between circle position and indicator over cave
+            var arrowX = bounded * circleX + (1.0 - bounded) * cave.getX();
+            var arrowY = bounded * circleY + (1.0 - bounded) * (cave.getY() - 32);
 
-        // Interpolate between angle towards cave and pointing straight down at cave
-        var angle = bounded * (GameWorld.toDegrees(angle) - 90);
+            // Interpolate between angle towards cave and pointing straight down at cave
+            var angle = bounded * (GameWorld.toDegrees(angle) - 90);
 
-        // Update position and angle
-        caveArrow.setPosition(arrowX - caveArrow.width/2, arrowY - caveArrow.height/2);
-        caveArrow.angle = angle;
+            // Update position and angle
+            caveArrow.setPosition(arrowX - caveArrow.width/2, arrowY - caveArrow.height/2);
+            caveArrow.angle = angle;
+        }
     }
 
     function updateSpeedBoost(elapsed:Float)
