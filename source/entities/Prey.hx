@@ -88,7 +88,6 @@ class Prey extends Dino
             // We only care about this collision if we are unherded.
             // Add to player's herd.
             addToHerd(player);
-            canJumpCliffs = true;
         }
     }
 
@@ -121,6 +120,8 @@ class Prey extends Dino
             herdedLeader = player;
             herdedPlayer = player;
             state = Herded;
+            canJumpCliffs = true;
+            
             think("<3", 0.8);
         }
     }
