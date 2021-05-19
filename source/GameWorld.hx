@@ -267,4 +267,12 @@ class GameWorld
             return tutorialInformation[levelIndex];
         }
     }
+
+    /**
+     * Maps num from the range [low1, high1] to the range [low2, high2]
+     */
+    static public function map(low1:Float, high1:Float, low2:Float, high2:Float, num:Float)
+    {
+        return (num - low1) / (high1 - low1) * (high2 - low2) + low2;
+    }
 }

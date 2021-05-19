@@ -61,6 +61,7 @@ class Player extends Entity
 
     var callCircle:FlxShapeCircle;
     // An arrow that appears on calling and points towards nearest cave
+    var caveArrow:FlxSprite;
     //var cavePointer:FlxShapeArrow;
 
     var inCancellableAnimation:Bool=true;
@@ -140,10 +141,16 @@ class Player extends Entity
 
         var lineStyle = {thickness: 1.0, color: FlxColor.WHITE};
         callCircle = new FlxShapeCircle(0, 0, 0, lineStyle, FlxColor.TRANSPARENT);
-        callCircle.alpha = 0.7;
+        callCircle.alpha = 0.0;
         callCircle.health = PlayState.world.bottomLayerSortIndex() + 2;
         PlayState.world.add(callCircle);
 
+
+        caveArrow = new FlxSprite(0, 0);
+        caveArrow.loadRotatedGraphic(AssetPaths.down_arrow__png, 32);
+        caveArrow.alpha = 0.0;
+        caveArrow.health = PlayState.world.topLayerSortIndex();
+        PlayState.world.add(caveArrow);
         /**
         cavePointer = new FlxShapeArrow(0, 0, new FlxPoint(0, 0), new FlxPoint(0, 0), 0, lineStyle);
         cavePointer.alpha = 0.7;
@@ -219,9 +226,14 @@ class Player extends Entity
     {
         if (isCalling)
         {
-            if (callCircle.alpha < 0.8)
+            if (callCircle.alpha < 0.7)
             {
                 callCircle.alpha += 0.05;
+            }
+
+            if (callRadius > MAX_CALL_RADIUS / 2 && caveArrow.alpha < 1.0)
+            {
+                caveArrow.alpha += 0.05;
             }
 
             if (callRadius != callCircle.radius)
@@ -233,16 +245,32 @@ class Player extends Entity
         else
         {
             callCircle.alpha -= 0.1;
+            caveArrow.alpha -= 0.2;
         }
 
+        // Center call circle on player
         callCircle.setPosition(getX() - callCircle.width/2, getY() - callCircle.height/2);
+
+        // Set position of cave pointer arrow
+        var cave = PlayState.world.getRespawnCave();
+        var distance = GameWorld.entityDistance(this, cave);
+ 
+        // Position along circle
+        var angle = GameWorld.entityAngle(this, cave);
+        var circleX = getX() + Math.cos(angle) * callRadius;
+        var circleY = getY() + Math.sin(angle) * callRadius;
         
-        /** TODO Complete an arrow on the callcircle pointing towards nearest cave.
-        var startPoint = new FlxPoint(getX(), getY());
-        var endPoint = new FlxPoint(getX(), getY() - 10);
-        cavePointer.setPosition(getX(), getY());
-        Console.log(cavePointer.point + ", " + cavePointer.point2);
-        */
+        // Interpolate between position along circle and the position above the cave
+        // This creates a smooth transition of position when the cave enters the call radius
+        var interpolation:Float = GameWorld.map(callRadius * 7/8, callRadius * 9/8, 0.0, 1.0, distance);
+        var bounded:Float = Math.min(Math.max(interpolation, 0.0), 1.0);
+        
+        var arrowX = bounded * circleX + (1.0 - bounded) * cave.getX();
+        var arrowY = bounded * circleY + (1.0 - bounded) * (cave.getY() - 32);
+        var angle = bounded * (GameWorld.toDegrees(angle) - 90);
+
+        caveArrow.setPosition(arrowX - caveArrow.width/2, arrowY - caveArrow.height/2);
+        caveArrow.angle = angle;
     }
 
     function updateSpeedBoost(elapsed:Float)
@@ -333,7 +361,11 @@ class Player extends Entity
             }
 
             isCalling = false;
-            callRadius = 0;
+            callRadius -= CALL_GROWTH_RATE * 2;
+            if (callRadius < 0)
+            {
+                callRadius = 0;
+            }
         }
     }
 
