@@ -237,10 +237,10 @@ class PlayState extends FlxState
             if (!uncollidableTiles.contains(tileNum)) uncollidableTiles.push(tileNum);
 
             var sprite = obstacle.getSprite();
-            sprite.x = tileX * TILE_SIZE + TILE_SIZE/2 - sprite.width/2;
-            sprite.y = tileY * TILE_SIZE + TILE_SIZE/2 - sprite.height/2;
-
-            collidableSprites.add(sprite);
+            var x = tileX * TILE_SIZE + TILE_SIZE/2 - sprite.width/2;
+            var y = tileY * TILE_SIZE + TILE_SIZE/2 - sprite.height/2;
+            obstacle.setPosition(x, y);
+            
             if (TileType.isStatic(tileNum))
             {
                 staticCollidableSprites.add(sprite);
@@ -356,7 +356,11 @@ class PlayState extends FlxState
         PlayLogger.incrementTime(elapsed);
  
         // Do collision checks
-        collisionChecks();
+        // Don't do collision checks on the very first frame of execution. This prevents weird spawning in bugs.
+        if (frameCounter > 0)
+        {
+            collisionChecks();
+        }
  
         updateTransitionScreen();
         updateScore();

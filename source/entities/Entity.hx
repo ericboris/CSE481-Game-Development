@@ -158,7 +158,7 @@ class Entity
     {
         if (centered)
         {
-            sprite.setPosition(x + sprite.frameWidth/2, y + sprite.frameHeight/2);
+            sprite.setPosition(x - sprite.frameWidth/2, y - sprite.frameHeight/2);
         }
         else
         {

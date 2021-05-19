@@ -145,18 +145,11 @@ class Player extends Entity
         callCircle.health = PlayState.world.bottomLayerSortIndex() + 2;
         PlayState.world.add(callCircle);
 
-
         caveArrow = new FlxSprite(0, 0);
         caveArrow.loadRotatedGraphic(AssetPaths.down_arrow__png, 32);
         caveArrow.alpha = 0.0;
         caveArrow.health = PlayState.world.topLayerSortIndex();
         PlayState.world.add(caveArrow);
-        /**
-        cavePointer = new FlxShapeArrow(0, 0, new FlxPoint(0, 0), new FlxPoint(0, 0), 0, lineStyle);
-        cavePointer.alpha = 0.7;
-        cavePointer.health = PlayState.world.bottomLayerSortIndex() + 2;
-        PlayState.world.add(cavePointer);
-        */
     }
 
     public override function update(elapsed:Float)
