@@ -33,7 +33,7 @@ class GameWorld
                             AssetPaths.map5w100h54__json,
                             AssetPaths.map6w119h125__json,
                             AssetPaths.map1w125h103__json,
-                            AssetPaths.map2w150h150__json];
+                            AssetPaths.map2w125h125__json];
 
     static public function levelId()
     {
