@@ -32,8 +32,8 @@ class GameWorld
                             AssetPaths.map3w50h50__json,
                             AssetPaths.map5w100h54__json,
                             AssetPaths.map6w150h158__json,
-                            AssetPaths.map1w200h165__json,
-                            AssetPaths.map2w200h200__json];
+                            AssetPaths.map1w150h124__json,
+                            AssetPaths.map2w150h150__json];
 
     static public function levelId()
     {
@@ -50,6 +50,7 @@ class GameWorld
                             EntityPrey,
                             EntityBoulder,
                             EntityPredator,
+                            EntityNull,
                             EntityNull,
                             EntityNull,
                             EntityNull,
