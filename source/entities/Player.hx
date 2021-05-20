@@ -19,7 +19,7 @@ class Player extends Entity
     static final STICK_HITBOX_ID    = 1;
 
     static final SPEED = 100.0;
-    static final SPEED_BOOST_MULTIPLIER = 1.2;
+    static final SPEED_BOOST_MULTIPLIER = 1.5;
     static final SWIPE_SPEED = 45.0;
     static final CALL_SPEED = 82.0;
     
