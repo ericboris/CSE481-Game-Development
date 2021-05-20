@@ -13,6 +13,8 @@ class Prey extends Dino
 
     var touchingCaveCount:Int = 0;
 
+    var facing:String;
+
     public function new()
     {
         super();
@@ -32,6 +34,11 @@ class Prey extends Dino
         sprite.animation.add("l", [4, 5, 6, 7], 6, false);
         sprite.animation.add("r", [0, 1, 2, 3], 6, false);
         sprite.animation.add("u", [12, 13, 14, 15], 6, false);
+        sprite.animation.add("ds", [8], 0, false);
+        sprite.animation.add("ls", [4], 0, false);
+        sprite.animation.add("rs", [0], 0, false);
+        sprite.animation.add("us", [1], 0, false);
+
         setHitboxSize(6, 6);
 
 
@@ -45,6 +52,8 @@ class Prey extends Dino
 
         this.SIGHT_ANGLE = GameWorld.toRadians(360);
         this.SIGHT_RANGE = 100;
+
+        this.facing = "down";
     }
 
     public override function update(elapsed:Float)
@@ -61,26 +70,47 @@ class Prey extends Dino
 
     function move(elapsed:Float)
     {
-        if (Math.abs(sprite.velocity.y) > Math.abs(sprite.velocity.x))
+        if (Math.abs(sprite.velocity.y) > 0 || Math.abs(sprite.velocity.x) > 0)
         {
-            if (sprite.velocity.y >= 0)
+            if (Math.abs(sprite.velocity.y) > Math.abs(sprite.velocity.x))
             {
-                sprite.animation.play("d");
+                if (sprite.velocity.y >= 0)
+                {
+                    facing = "down";
+                    sprite.animation.play("d");
+                }
+                else
+                {
+                    facing = "up";
+                    sprite.animation.play("u");
+                }
             }
             else
             {
-                sprite.animation.play("u");
+                if (sprite.velocity.x >= 0)
+                {
+                    facing = "right";
+                    sprite.animation.play("r");
+                }
+                else
+                {
+                    facing = "left";
+                    sprite.animation.play("l");
+                }
             }
         }
-        else
+        else 
         {
-            if (sprite.velocity.x >= 0)
-            {
-                sprite.animation.play("r");
-            }
-            else
-            {
-                sprite.animation.play("l");
+            switch (facing)
+            {  
+                case "left":
+                    sprite.animation.play("ls");
+                case "right":
+                    sprite.animation.play("rs");
+                case "up":
+                    sprite.animation.play("us");
+                case "down":
+                    sprite.animation.play("down");
             }
         }
     }
