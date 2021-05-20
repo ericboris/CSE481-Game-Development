@@ -79,6 +79,8 @@ class Player extends Entity
     var speedBoostTimer:Float = 0;
     var alphaRate = 0.04;
 
+    var BERRY_SHIFT = 48;
+
     public function new()
     {
         super();
@@ -101,6 +103,19 @@ class Player extends Entity
         sprite.animation.add("itemu", [30, 31, 32, 33, 34, 35], 20, false);
         sprite.animation.add("itemlr", [42, 43, 44, 45, 46, 47], 20, false);
         sprite.animation.add("itemd", [24, 25, 26, 27, 28, 29], 20, false);
+
+        sprite.animation.add("slr_berry", [18+BERRY_SHIFT], 15, false);
+        sprite.animation.add("su_berry", [6+BERRY_SHIFT], 15, false);
+        sprite.animation.add("sd_berry", [2+BERRY_SHIFT], 15, false);
+
+        sprite.animation.add("lr_berry", [19+BERRY_SHIFT, 20+BERRY_SHIFT, 21+BERRY_SHIFT, 22+BERRY_SHIFT], FRAMERATE, false);
+        sprite.animation.add("u_berry", [7+BERRY_SHIFT, 8+BERRY_SHIFT, 9+BERRY_SHIFT, 10+BERRY_SHIFT], FRAMERATE, false);
+        sprite.animation.add("d_berry", [1+BERRY_SHIFT, 2+BERRY_SHIFT, 3+BERRY_SHIFT, 4+BERRY_SHIFT], FRAMERATE, false);
+
+        sprite.animation.add("itemu_berry", [30+BERRY_SHIFT, 31+BERRY_SHIFT, 32+BERRY_SHIFT, 33+BERRY_SHIFT, 34+BERRY_SHIFT, 35+BERRY_SHIFT], 20, false);
+        sprite.animation.add("itemlr_berry", [42+BERRY_SHIFT, 43+BERRY_SHIFT, 44+BERRY_SHIFT, 45+BERRY_SHIFT, 46+BERRY_SHIFT, 47+BERRY_SHIFT], 20, false);
+        sprite.animation.add("itemd_berry", [24+BERRY_SHIFT, 25+BERRY_SHIFT, 26+BERRY_SHIFT, 27+BERRY_SHIFT, 28+BERRY_SHIFT, 29+BERRY_SHIFT], 20, false);
+
 
         sprite.setSize(6, 6);
         sprite.offset.set(4, 6);
@@ -199,11 +214,32 @@ class Player extends Entity
             switch (sprite.facing)
             {
                 case FlxObject.LEFT, FlxObject.RIGHT:
-                    sprite.animation.play("slr");
+                    if (speedBoost)
+                    {
+                        sprite.animation.play("slr_berry");
+                    }
+                    else
+                    {
+                        sprite.animation.play("slr");
+                    }
                 case FlxObject.UP:
-                    sprite.animation.play("su");
+                    if (speedBoost)
+                    {
+                        sprite.animation.play("su_berry");
+                    }
+                    else
+                    {
+                        sprite.animation.play("su");
+                    }
                 case FlxObject.DOWN:
-                    sprite.animation.play("sd");
+                    if (speedBoost)
+                    {
+                        sprite.animation.play("sd_berry");
+                    }
+                    else
+                    {
+                        sprite.animation.play("sd");
+                    }
             }
         }
 
@@ -492,11 +528,32 @@ class Player extends Entity
                 switch (sprite.facing)
                 {
                     case FlxObject.LEFT, FlxObject.RIGHT:
-                        sprite.animation.play("slr");
+                        if (speedBoost)
+                        {
+                            sprite.animation.play("slr_berry");
+                        }
+                        else
+                        {
+                            sprite.animation.play("slr");
+                        }
                     case FlxObject.UP:
-                        sprite.animation.play("su");
+                        if (speedBoost)
+                        {
+                            sprite.animation.play("su_berry");
+                        }
+                        else
+                        {
+                            sprite.animation.play("su");
+                        }
                     case FlxObject.DOWN:
-                        sprite.animation.play("sd");
+                        if (speedBoost)
+                        {
+                            sprite.animation.play("sd_berry");
+                        }
+                        else
+                        {
+                            sprite.animation.play("sd");
+                        }
                 }
                 inCancellableAnimation = true;
                 var frameRate = Std.int(movementSpeed / speed * (FRAMERATE - MIN_FRAMERATE) + MIN_FRAMERATE);
@@ -516,11 +573,33 @@ class Player extends Entity
             switch (sprite.facing)
             {
                 case FlxObject.LEFT, FlxObject.RIGHT:
-                    sprite.animation.play("lr");
+                    if (speedBoost)
+                    {
+                        sprite.animation.play("lr_berry");
+                    }
+                    else
+                    {
+                        sprite.animation.play("lr");
+                    }
                 case FlxObject.UP:
-                    sprite.animation.play("u");
+                    if (speedBoost)
+                    {
+                        sprite.animation.play("u_berry");
+                    }
+                    else
+                    {
+                        sprite.animation.play("u");
+                    }
                 case FlxObject.DOWN:
-                    sprite.animation.play("d");
+                    if (speedBoost)
+                    {
+                        sprite.animation.play("d_berry");
+                    }
+                    else
+                    {
+                        sprite.animation.play("d");
+                    }
+
             }
             inCancellableAnimation = true;
             var frameRate = Std.int(movementSpeed / speed * (FRAMERATE - MIN_FRAMERATE) + MIN_FRAMERATE);
@@ -546,11 +625,33 @@ class Player extends Entity
                 switch (sprite.facing)
                 {
                     case FlxObject.LEFT, FlxObject.RIGHT:
-                        sprite.animation.play("itemlr");
+                        if (speedBoost)
+                        {
+                            sprite.animation.play("itemlr_berry");
+                        }
+                        else
+                        {
+                            sprite.animation.play("itemlr");
+                        }
                     case FlxObject.UP:
-                        sprite.animation.play("itemu");
+                        if (speedBoost)
+                        {
+                            sprite.animation.play("itemu_berry");
+                        }
+                        else
+                        {
+                            sprite.animation.play("itemu");
+                        }
                     case FlxObject.DOWN:
-                        sprite.animation.play("itemd");
+                        if (speedBoost)
+                        {
+                            sprite.animation.play("itemd_berry");
+                        }
+                        else
+                        {
+                            sprite.animation.play("itemd");
+                        }
+
                 }
                 inCancellableAnimation = false;
 
