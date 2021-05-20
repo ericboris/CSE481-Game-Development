@@ -11,7 +11,7 @@ class Berry extends Entity
         sprite.loadGraphic(AssetPaths.berry__png, 16, 16, false);
         sprite.immovable = true;
 
-        setHitboxSize(4, 4);
+        setHitboxSize(12, 12);
 
         type = EntityPickup;
     }

@@ -19,24 +19,15 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxTimer;
 
-class PlayState extends FlxState
+class MenuPlayState extends FlxState
 {
-    // A singleton reference to the global PlayState.
-    public static var world:PlayState;
-
     static public final SCREEN_WIDTH = 800;
     static public final SCREEN_HEIGHT = 600;
 
     // Size of tiles/chunks
     static public final TILE_SIZE = 16;
-    static public final CHUNK_WIDTH = 400;
-    static public final CHUNK_HEIGHT = 300;
-
-    // Enables debug commands (spawn prey, next level)
-    static public final DEBUG = true;
-
-    // Makes player move faster
-    static public final DEBUG_FAST_SPEED = false;
+    static public final CHUNK_WIDTH = 640;
+    static public final CHUNK_HEIGHT = 480;
 
     // Update every time update() is called.
     var frameCounter:Int = 0;
@@ -79,12 +70,6 @@ class PlayState extends FlxState
     var transitioningToNextLevel:Bool = false;
     var transitionScreen:FlxSprite;
 
-    // This level's new, previously unseen entity.
-    var newEntity:EntityType;
-    var hasSeenNewEntity = false;
-    var playerReaction:String;
-    var entityReaction:String;
-
     // Used for score display
     public var numPlayerDeaths:Int = 0;
     public var numPreyDeaths:Int = 0;
@@ -99,11 +84,7 @@ class PlayState extends FlxState
     {
         super.create();
 
-        // Set singleton reference
-        PlayState.world = this;
-
-        // Hide the cursor
-        FlxG.mouse.visible = false;
+        PlayState.world = cast this;
 
         // Initialize member variables
         entityGroups = new Map<EntityType, Array<Entity>>();
@@ -118,24 +99,10 @@ class PlayState extends FlxState
             entityGroups[type] = new Array<Entity>();
             spriteGroups[type] = new FlxGroup();
         }
-
-        // Must have call to getNewEntity before call to getNextMap
-        newEntity = GameWorld.getNewEntity();
-        playerReaction = GameWorld.getPlayerReaction(newEntity);
-        entityReaction = GameWorld.getEntityReaction(newEntity);
-        // Add any tutorial information.
-        for (tutorial in GameWorld.getTutorialInformation())
-        {
-            var tutorialText = new FlxText(tutorial.x, tutorial.y, tutorial.text);
-            tutorialText.x -= tutorialText.width / 2;
-            tutorialText.health = -9;
-            tutorialText.alignment = CENTER;
-            //tutorialText.borderStyle = SHADOW;
-            add(tutorialText);
-        }
-
+        
         // Set up the tilemap.
-        map = new FlxOgmo3Loader(AssetPaths.DinoHerder__ogmo, GameWorld.getNextMap());
+        player = new Player();
+        map = new FlxOgmo3Loader(AssetPaths.DinoHerder__ogmo, AssetPaths.main_menu__json);
 
         // Static Entities.
         // Load tiles from tile maps
@@ -176,19 +143,18 @@ class PlayState extends FlxState
         // Set up camera
         setupCamera();
 
-        // Set up score counter
-        scoreText = new FlxText(0, 0, 0, "", 10);
-        scoreText.alpha = 0;
-        scoreText.setBorderStyle(SHADOW, FlxColor.BLACK, 1, 1);
-        scoreText.health = topLayerSortIndex();
-        add(scoreText);
-
         // Set up transition screen
         transitionScreen = new FlxSprite(-10, -10);
         transitionScreen.makeGraphic(TILE_SIZE * mapWidth + 10, TILE_SIZE * mapHeight + 10, FlxColor.BLACK);
         transitionScreen.alpha = 1;
         transitionScreen.health = topLayerSortIndex() + 1;
         add(transitionScreen);
+
+        var menu = new MenuState(FlxColor.TRANSPARENT);
+        openSubState(menu);
+
+        this.persistentDraw = true;
+        this.persistentUpdate = true;
      
         PlayLogger.startLevel(GameWorld.levelId());
     }
@@ -253,118 +219,19 @@ class PlayState extends FlxState
         }
     }
 
-    function nextLevel()
-    {
-        PlayLogger.endLevel();
-
-        if (this.numPrey == 0)
-        {
-            // There are no prey on this level, so skip displaying the score.
-            FlxG.switchState(new PlayState());
-            return;
-        }
-        else
-        {
-            FlxG.switchState(new TransitionState());
-        }
-    }
-
-    function updateTransitionScreen()
-    {
-        // Check to load next level.
-        transitioningToNextLevel = player.isInRangeOfCave() && levelIsComplete();
-        if (DEBUG)
-        {
-            if (FlxG.keys.anyPressed([N]))
-            {
-                nextLevel();
-            }
-        }
-
-        // Update transition screen
-        if (transitioningToNextLevel)
-        {
-            transitionScreen.alpha += 0.03;
-            if (transitionScreen.alpha >= 1.0)
-            {
-                // Go to next level!
-                nextLevel();
-            }
-        }
-        else if (transitionScreen.alpha > 0)
-        {
-            transitionScreen.alpha -= 0.03;
-        }
-    }
-
-    function updateScore()
-    {
-        scoreText.text = "" + Score.get();
-        scoreText.x = player.getX() - scoreText.textField.textWidth/2;
-        scoreText.y = player.getY() - scoreText.textField.textHeight/2 - 16;
-
-        // Fade out score text.
-        if (scoreText.alpha > 0)
-        {
-            scoreText.alpha -= 0.01;
-        }
-    }
-
-    function updateCamera()
-    {
-        var zoom = FlxG.camera.zoom;
-        if (player.isPlayerCalling())
-        {
-            if (zoom > minZoom() && cameraZoomDirection == -1)
-            {
-                var options = {ease: FlxEase.expoOut, onComplete: function (tween) {
-                    cameraZoomTween = null;
-                }};
-                
-                if (cameraZoomTween != null) cameraZoomTween.cancel();
-                cameraZoomTween = FlxTween.num(zoom, minZoom(), 1.0, options, function (f: Float) {
-                    FlxG.camera.zoom = f;
-                });
-                cameraZoomDirection = 1;
-            }
-        }
-        else
-        {
-            if (zoom < baseZoom() && cameraZoomDirection == 1)
-            {
-                var options = {ease: FlxEase.expoOut, onComplete: function (tween) {
-                    cameraZoomTween = null;
-                }};
-                
-                if (cameraZoomTween != null) cameraZoomTween.cancel();
-                cameraZoomTween = FlxTween.num(zoom, baseZoom(), 1.0, options, function (f: Float) {
-                    FlxG.camera.zoom = f;
-                });
-                cameraZoomDirection = -1;
-            }
-        }
-    }
-
     override public function update(elapsed:Float)
     {
-        if (!PlayLogger.loggerInitialized())
-        {
-            // Don't execute update method until logger session has been created.
-            return;
-        }
+        transitionScreen.alpha -= 0.03;
+        if (transitionScreen.alpha < 0.1)
+            transitionScreen.alpha = 0.1;
 
-        PlayLogger.incrementTime(elapsed);
- 
+
         // Do collision checks
         // Don't do collision checks on the very first frame of execution. This prevents weird spawning in bugs.
         if (frameCounter > 0)
         {
             collisionChecks();
         }
- 
-        updateTransitionScreen();
-        updateScore();
-        updateCamera();
 
         // Update all entities
         for (entity in entities)
@@ -372,17 +239,6 @@ class PlayState extends FlxState
             entity.update(elapsed);
         }
 
-        if (DEBUG)
-        {
-            if (FlxG.keys.anyPressed([P]))
-            {
-                var prey = new Prey();
-                prey.setPosition(player.getSprite().x, player.getSprite().y);
-                addEntity(prey);
-            }
-        }
-
-        scoreSoundMultiplier -= 0.005;
         frameCounter++;
 
         this.sort(sortSprites);
@@ -398,7 +254,6 @@ class PlayState extends FlxState
     {
         return -mapHeight * TILE_SIZE;
     }
-
 
     function sortSprites(order:Int, obj1:FlxBasic, obj2:FlxBasic):Int {
         if (obj1 == null && obj2 == null)
@@ -470,11 +325,6 @@ class PlayState extends FlxState
         }
     }
 
-    public function removeFromCollidableSprites(entity:Entity)
-    {
-        collidableSprites.remove(entity.getSprite());
-    }
-
     function collisionChecks()
     {
         var playerGroup = spriteGroups[EntityPlayer];
@@ -535,22 +385,6 @@ class PlayState extends FlxState
                 }
             }
         }
-
-
-        if (newEntity != EntityNull)
-        {
-            for (entity in entityGroups[newEntity])
-            {
-                //var visionCheck = GameWorld.checkVision(player, entity)) // and in range
-                if (!hasSeenNewEntity && GameWorld.entityDistance(player, entity) < CHUNK_HEIGHT * 3 / 4)
-                {
-                    player.think(playerReaction);
-                    entity.think(entityReaction);
-                    hasSeenNewEntity = true;
-                }
-            }
-        }
-
     }
 
     public function toggleAdditionalTilemapCollisions(toggle:Bool)
@@ -573,7 +407,7 @@ class PlayState extends FlxState
             case "player":
                 player = new Player();
                 player.setPosition(x, y);
-                addEntity(player);
+                //addEntity(player);
             case "prey":
                 numPrey++;
                 var prey = new Prey();
@@ -643,22 +477,6 @@ class PlayState extends FlxState
         }
     }
 
-    public function getCaves()
-    {
-        return caves;
-    }
-
-    function levelIsComplete()
-    {
-        return entityGroups[EntityPrey].length == 0;
-    }
-
-    public function incrementScore(amount:Int):Void
-    {
-        Score.increment(amount);
-        //scoreText.alpha = 1;
-    }
-
     public function getObstacles()
     {
         return obstacles;
@@ -667,100 +485,5 @@ class PlayState extends FlxState
     public function getStaticObstacles()
     {
         return staticCollidableSprites;
-    }
-
-    public function triggerLevelTransition()
-    {
-        transitioningToNextLevel = true;
-    }
-
-    public function getRespawnCave():Cave
-    {
-        return this.respawnCave;
-    }
-
-    public function setRespawnCave(cave:Cave):Void
-    {
-        this.respawnCave = cave;
-    }
-
-    private function playerIsCalling():Bool
-    {
-        return this.player.isPlayerCalling();
-    }
-
-    public function callNearbyDinos(callRadius:Float):Void
-    {   
-        for (entity in entityGroups[EntityPrey])
-        {   
-            var prey:Prey = cast entity;
-            var withinRange = GameWorld.entityDistance(player, prey) < callRadius;
-            if (withinRange)
-            {
-                prey.addToHerd(player);
-            }
-        }
-
-        for (entity in entityGroups[EntityPredator])
-        {
-            var predator:Predator = cast entity;
-            var withinRange = GameWorld.entityDistance(player, predator) < callRadius;
-            if (withinRange)
-            {
-                predator.track(player);
-            }
-        }
-    }
-
-    var scoreSoundMultiplier:Float = 0.0;
-    public function collectDino(dino:Dino, cave:Cave)
-    {
-        if (!dino.dead)
-        {
-            var numPreyLeft = 0;
-            dino.dead = true;
-            
-            if (dino.getType() == EntityPrey)
-            {
-                for (prey in entityGroups[EntityPrey])
-                {
-                    if (!prey.dead)
-                        numPreyLeft++;
-                }
-                cave.think("" + numPreyLeft);
-            }
-            else
-            {
-                cave.think("!");
-            }
-
-            incrementScore(1);
-            dino.fadeOutAndRemove();
-
-            scoreSoundMultiplier += 0.1;
-            if (scoreSoundMultiplier > 0.4) scoreSoundMultiplier = 0.4;
-            if (scoreSoundMultiplier < 0) scoreSoundMultiplier = 0;
-
-            FlxG.sound.play(AssetPaths.scoreSound__mp3, 0.15 + scoreSoundMultiplier);
-
-            if (dino.getType() == EntityPrey)
-            {
-                numPreyCollected++;
-            }
-            else if (dino.getType() == EntityPredator)
-            {
-                numPredatorsCollected++;
-            }
-        }
-    }
-
-    public function getNumPreyLeft():Int
-    {
-        return entityGroups[EntityPrey].length;
-    }
-
-    public function getPlayer():Player
-    {
-        return this.player;
     }
 }

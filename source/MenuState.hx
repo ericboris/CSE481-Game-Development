@@ -1,12 +1,13 @@
 import flixel.FlxG;
-import flixel.FlxState;
+import flixel.FlxSubState;
 import flixel.text.FlxText;
 import flixel.addons.ui.FlxButtonPlus;
 import flixel.ui.FlxButton;
 import openfl.media.Sound;
 import flixel.util.FlxColor;
+import flixel.FlxSprite;
 
-class MenuState extends FlxState
+class MenuState extends FlxSubState
 {
     var playButton:FlxButton;
     var titleText:FlxText;
@@ -23,32 +24,40 @@ class MenuState extends FlxState
             PlayLogger.initializeLogger();
         }
 
-        titleText = new FlxText(210, 180, 400, "Dino Herder", 70);
+        var zoom = FlxG.camera.zoom;
+        var cameraWidth = FlxG.camera.width/2 / FlxG.camera.zoom;
+        var cameraHeight = FlxG.camera.height/2 / FlxG.camera.zoom;
+
+        /*var box = new FlxSprite(150, 150);
+        box.makeGraphic(400, 200, FlxColor.BLACK);
+        box.alpha = 0.95;
+        add(box);*/
+
+        var width = 600;
+        var height = 480;
+
+        titleText = new FlxText(125, 130, 400, "Dino Herder", 60);
         titleText.alignment = CENTER;
+        titleText.setBorderStyle(SHADOW, FlxColor.BLACK, 5);
         add(titleText);
 
         var textColor = 0xFF404040;
 
-        playButton = new FlxButton(0, 0, "Play", clickPlay);
+        playButton = new FlxButton(220, 460, "Play", clickPlay);
         playButton.scale.x = playButton.scale.y = 2.0;
         playButton.updateHitbox();
         playButton.label.setFormat(null, 24, textColor);
         playButton.label.fieldWidth *= 2;
-
-        playButton.x = (FlxG.width / 2) - playButton.width - 10;
-        playButton.y = FlxG.height - playButton.height - 10;
         add(playButton);
 
         //playButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav);
 
-        optionsButton = new FlxButton(0, 0, "Options", clickOptions);
+        optionsButton = new FlxButton(420, 460, "Options", clickOptions);
         optionsButton.scale.x = optionsButton.scale.y = 2.0;
         optionsButton.updateHitbox();
         optionsButton.label.setFormat(null, 24, textColor);
         optionsButton.label.fieldWidth *= 2;
         
-        optionsButton.x = (FlxG.width / 2) + 10;
-        optionsButton.y = FlxG.height - optionsButton.height - 10;
         add(optionsButton);
 
         //optionsButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav);
@@ -73,11 +82,15 @@ class MenuState extends FlxState
 
     function clickPlay()
     {
-        FlxG.switchState(new PlayState());
+        FlxG.camera.fade(FlxColor.BLACK, 0.5, false, function() {
+            FlxG.switchState(new PlayState());
+        });
     }
 
     function clickOptions()
     {
-        FlxG.switchState(new OptionsState());
+        FlxG.camera.fade(FlxColor.BLACK, 0.5, false, function() {
+            FlxG.switchState(new OptionsState());
+        });
     }
 }

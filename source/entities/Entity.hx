@@ -255,7 +255,7 @@ class Entity
     }
 
     public function jumpTo(x:Float, y:Float, collisionCheck:Bool = true, ?completeCallback: Entity -> Void,
-                           jumpSpeed:Float = 80.0, heightMultiplier:Float = 1.5):Bool
+                           jumpDuration:Float = 0.3, heightMultiplier:Float = 1.5):Bool
     {
         if (isJumping)
         {
@@ -286,7 +286,7 @@ class Entity
                 completeCallback(this);
             }
         }};
-        FlxTween.quadPath(this.sprite, [start, control, end], jumpSpeed, false, options);
+        FlxTween.quadPath(this.sprite, [start, control, end], jumpDuration, true, options);
         
         sprite.velocity.x = 0;
         sprite.velocity.y = 0;

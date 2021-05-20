@@ -39,7 +39,7 @@ class BerryBush extends Obstacle
             // Choose random destination coordiantes
             // var x = berry.sprite.x + FlxG.random.float(-12, 12);
             // var y = berry.sprite.y + FlxG.random.float(-12, 12);
-            berry.jumpTo(playerX, playerY, false, null, 80.0);
+            berry.jumpTo(playerX, playerY, false, null, 0.25);
         }
     }
 }

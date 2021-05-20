@@ -117,7 +117,7 @@ class OptionsState extends FlxState
         save.close();
         FlxG.camera.fade(FlxColor.BLACK, .33, false, function()
         {
-            FlxG.switchState(new MenuState());
+            FlxG.switchState(new MenuPlayState());
         });
     }
 

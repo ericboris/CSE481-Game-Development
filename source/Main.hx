@@ -10,7 +10,7 @@ class Main extends Sprite
     public function new()
     {
         super();
-        addChild(new FlxGame(PlayState.SCREEN_WIDTH, PlayState.SCREEN_HEIGHT, MenuState, 1.0, 60, 60, true, false));
+        addChild(new FlxGame(PlayState.SCREEN_WIDTH, PlayState.SCREEN_HEIGHT, MenuPlayState, 1.0, 60, 60, true, false));
 
         if (PlayState.DEBUG)
         {
