@@ -54,8 +54,8 @@ class Player extends Entity
     var berrySound:FlxSound;
 
     final MIN_CALL_RADIUS:Int = 1;
-    final MAX_CALL_RADIUS:Int = 100;
-    final CALL_GROWTH_RATE:Int = 3;
+    final MAX_CALL_RADIUS:Int = 120;
+    final CALL_GROWTH_RATE:Int = 2;
     var callRadius:Int = 0;
     var isCalling:Bool = false;
 

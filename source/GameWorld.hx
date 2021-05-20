@@ -74,10 +74,10 @@ class GameWorld
     // Tutorial info to show the player at the start of a relevant level.
     static var tutorialInformation: Map<Int, Array<TutorialText>>
                                                 = [0 => [new TutorialText("Arrow keys to move", 184, 215)],
-                                                   1 => [new TutorialText("Hold C to call Dinos", 120, 270),
-                                                         new TutorialText("Deliver Dinos to the cave!", 470, 145)],
+                                                   1 => [new TutorialText("Hold C to call Mammoths", 120, 270),
+                                                         new TutorialText("Deliver Mammoths to the cave!", 470, 145)],
                                                    3 => [new TutorialText("Press space to swipe", 180, 350),
-                                                         new TutorialText("Hitting predators briefly\nstuns them!", 480, 120)]];
+                                                         new TutorialText("Hitting Predators \nstuns them!", 480, 120)]];
 
     static public function getNearestEntity(src:Entity, entities:Array<Entity>, pathfind:Bool = false):Entity
     {

@@ -10,6 +10,7 @@ class Prey extends Dino
     final PREY_ELASTICITY = 0.9;
 
     var herdedSound:FlxSound;
+    var killedSound:FlxSound;
 
     var touchingCaveCount:Int = 0;
 
@@ -44,7 +45,9 @@ class Prey extends Dino
 
         sprite.elasticity = PREY_ELASTICITY;
 
-        herdedSound = FlxG.sound.load(AssetPaths.addedToHerd__mp3, 0.5);
+        herdedSound = FlxG.sound.load(AssetPaths.addedToHerd__mp3, 0.6);
+        killedSound = FlxG.sound.load(AssetPaths.preyKilled__mp3, 0.3);
+        killedSound.proximity(sprite.x, sprite.y, FlxG.camera.target, FlxG.width * 0.6);
 
         thought.setOffset(0, -11);
 
@@ -149,6 +152,7 @@ class Prey extends Dino
             // Die instantly!
             PlayState.world.numPreyDeaths++;
             PlayState.world.removeEntity(this);
+            killedSound.play();
         }
     }
 

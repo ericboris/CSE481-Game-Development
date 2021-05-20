@@ -10,14 +10,14 @@ import flixel.system.FlxSound;
 class Predator extends Dino
 {
     /* Unherded state */
-    static final SPEED = 75.0;
-    static final ACCELERATION = 30.0;
+    static final SPEED = 60.0;
+    static final ACCELERATION = 50.0;
     static final ELASTICITY = 1.0;
     static final PURSUING_ELASTICITY = 1.0;
 
     /* Pursuing state */
     static final ANGULAR_ACCELERATION = GameWorld.toRadians(20);
-    static final PURSUING_SPEED = 92.0;
+    static final PURSUING_SPEED = 120.0;
     static final SEEN_TIMER = 1.5;
 
     static final SATIATED_TIMER = 6.0;
