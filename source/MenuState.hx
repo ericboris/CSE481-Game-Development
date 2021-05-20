@@ -36,7 +36,7 @@ class MenuState extends FlxSubState
         var width = 600;
         var height = 480;
 
-        titleText = new FlxText(125, 130, 400, "Dino Herder", 60);
+        titleText = new FlxText(125, 130, 400, "Mammoth Herder", 60);
         titleText.alignment = CENTER;
         titleText.setBorderStyle(SHADOW, FlxColor.BLACK, 5);
         add(titleText);
