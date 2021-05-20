@@ -30,9 +30,7 @@
         {"name": "prey", "id": 19, "_eid": "72472484", "x": 224, "y": 384, "originX": 0, "originY": 0},
         {"name": "prey", "id": 20, "_eid": "72472484", "x": 176, "y": 96, "originX": 0, "originY": 0},
         {"name": "boulder", "id": 22, "_eid": "84531456", "x": 368, "y": 336, "originX": 0, "originY": 0},
-        {"name": "boulder", "id": 23, "_eid": "84531456", "x": 448, "y": 416, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 24, "_eid": "72487415", "x": 368, "y": 400, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 25, "_eid": "72487415", "x": 368, "y": 416, "originX": 0, "originY": 0}
+        {"name": "boulder", "id": 23, "_eid": "84531456", "x": 448, "y": 416, "originX": 0, "originY": 0}
       ]
     },
     {

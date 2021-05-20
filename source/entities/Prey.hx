@@ -11,6 +11,8 @@ class Prey extends Dino
 
     var herdedSound:FlxSound;
 
+    var touchingCaveCount:Int = 0;
+
     public function new()
     {
         super();
@@ -137,16 +139,21 @@ class Prey extends Dino
         */
     }
 
+    override function canBeCollected()
+    {
+        return state == Herded;
+    }
+
     private override function unherded(elapsed:Float)
     {
         idle(elapsed);
     }
 
-    public override function handleCaveCollision(cave:Cave)
+    public override function handleCaveDeposit(cave:Cave)
     {
         if (state == Herded)
         {
-            herdedPlayer.notifyCaveDeposit(this);
+            herdedPlayer.notifyCaveDeposit(this, cave);
         }
     }
 }

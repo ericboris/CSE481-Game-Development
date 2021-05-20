@@ -30,21 +30,9 @@
         {"name": "prey", "id": 12, "_eid": "72472484", "x": 560, "y": 432, "originX": 0, "originY": 0},
         {"name": "player", "id": 13, "_eid": "72460224", "x": 144, "y": 352, "originX": 0, "originY": 0},
         {"name": "boulder", "id": 17, "_eid": "84531456", "x": 304, "y": 336, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 18, "_eid": "72487415", "x": 320, "y": 384, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 19, "_eid": "72487415", "x": 320, "y": 400, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 20, "_eid": "72487415", "x": 352, "y": 400, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 21, "_eid": "72487415", "x": 352, "y": 384, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 22, "_eid": "72487415", "x": 352, "y": 368, "originX": 0, "originY": 0},
         {"name": "boulder", "id": 23, "_eid": "84531456", "x": 288, "y": 384, "originX": 0, "originY": 0},
         {"name": "prey", "id": 24, "_eid": "72472484", "x": 544, "y": 320, "originX": 0, "originY": 0},
-        {"name": "prey", "id": 25, "_eid": "72472484", "x": 480, "y": 320, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 26, "_eid": "72487415", "x": 160, "y": 336, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 27, "_eid": "72487415", "x": 160, "y": 320, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 28, "_eid": "72487415", "x": 160, "y": 304, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 29, "_eid": "72487415", "x": 176, "y": 304, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 30, "_eid": "72487415", "x": 192, "y": 304, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 31, "_eid": "72487415", "x": 192, "y": 320, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 32, "_eid": "72487415", "x": 192, "y": 336, "originX": 0, "originY": 0}
+        {"name": "prey", "id": 25, "_eid": "72472484", "x": 480, "y": 320, "originX": 0, "originY": 0}
       ]
     },
     {

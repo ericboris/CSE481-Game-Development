@@ -45,6 +45,9 @@ class Dino extends Entity
     var idleTimer:Float;
     var moveDirection:Float;
 
+    var collidedWithCave:Cave = null;
+    var caveCollisionCount:Int = 0;
+
     public function new()
     {
         super();
@@ -105,6 +108,21 @@ class Dino extends Entity
                     sprite.animation.play("d");
             }
         }
+
+        if (canBeCollected() && collidedWithCave != null)
+        {
+            caveCollisionCount++;
+            if (caveCollisionCount == 5)
+            {
+                handleCaveDeposit(collidedWithCave);
+                caveCollisionCount = 0;
+            }
+        }
+        else
+        {
+            caveCollisionCount = 0;
+        }
+        collidedWithCave = null;
 
         newLeaderFlag = false;
         lastPosition = new FlxPoint(getX(), getY());
@@ -350,5 +368,20 @@ class Dino extends Entity
             var angle = Math.atan2(dir.y, dir.x);
             sprite.velocity.set(Math.cos(angle) * UNHERDED_SPEED, Math.sin(angle) * UNHERDED_SPEED);
         }
+    }
+
+    public override function handleCaveCollision(cave:Cave)
+    {
+        collidedWithCave = cave;
+    }
+
+    public function handleCaveDeposit(cave:Cave)
+    {
+    
+    }
+
+    function canBeCollected()
+    {
+        return false;
     }
 }

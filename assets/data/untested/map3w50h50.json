@@ -25,14 +25,7 @@
         {"name": "prey", "id": 7, "_eid": "72472484", "x": 400, "y": 128, "originX": 0, "originY": 0},
         {"name": "predator", "id": 8, "_eid": "72474834", "x": 672, "y": 560, "originX": 0, "originY": 0},
         {"name": "prey", "id": 9, "_eid": "72472484", "x": 400, "y": 480, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 10, "_eid": "72487415", "x": 128, "y": 528, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 11, "_eid": "72487415", "x": 144, "y": 528, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 12, "_eid": "72487415", "x": 160, "y": 528, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 13, "_eid": "72487415", "x": 160, "y": 544, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 14, "_eid": "72487415", "x": 160, "y": 560, "originX": 0, "originY": 0},
         {"name": "cave", "id": 15, "_eid": "72487415", "x": 144, "y": 560, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 16, "_eid": "72487415", "x": 128, "y": 560, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 17, "_eid": "72487415", "x": 128, "y": 544, "originX": 0, "originY": 0},
         {"name": "player", "id": 18, "_eid": "72460224", "x": 144, "y": 480, "originX": 0, "originY": 0},
         {"name": "prey", "id": 19, "_eid": "72472484", "x": 624, "y": 160, "originX": 0, "originY": 0}
       ]

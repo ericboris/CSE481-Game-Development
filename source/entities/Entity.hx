@@ -64,7 +64,7 @@ class Entity
     {
         if (isFadingOut)
         {
-            sprite.alpha -= 0.05;
+            sprite.alpha -= 0.1;
             if (sprite.alpha <= 0)
             {
                 PlayState.world.removeEntity(this);
@@ -271,9 +271,9 @@ class Entity
         }
 
         var control = new FlxPoint((end.x + start.x) / 2, (end.y + start.y) / 2);
-        if (end.x - start.x != 0)
+        if (Math.abs(end.x - start.x) > Math.abs(end.y - start.y))
             control.y -= 20.0 * heightMultiplier;
-        if (end.y - start.y != 0)
+        else
             control.x += 10.0 * heightMultiplier;
         
         var options = {ease: FlxEase.sineInOut, type: ONESHOT, onComplete: function(tween:FlxTween)
@@ -366,6 +366,7 @@ class Entity
     public function fadeOutAndRemove()
     {
         isFadingOut = true;
+        this.sprite.allowCollisions = FlxObject.NONE;
     }
 
     public function setHitboxSize(width:Int, height:Int)

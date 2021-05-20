@@ -10,7 +10,7 @@ import flixel.system.FlxSound;
 class Predator extends Dino
 {
     /* Unherded state */
-    static final SPEED = 60.0;
+    static final SPEED = 75.0;
     static final ACCELERATION = 30.0;
     static final ELASTICITY = 1.0;
     static final PURSUING_ELASTICITY = 1.0;
@@ -269,11 +269,11 @@ class Predator extends Dino
         speedUp(PURSUING_SPEED);
     }
 
-    public override function handleCaveCollision(cave:Cave)
+    public override function handleCaveDeposit(cave:Cave)
     {
         if (dazed)
         {
-            PlayState.world.collectDino(this);
+            PlayState.world.collectDino(this, cave);
         }
     }
 
@@ -317,5 +317,10 @@ class Predator extends Dino
     public function track(entity:Entity)
     {
         seenEntities.push(entity);
+    }
+
+    override function canBeCollected()
+    {
+        return dazed;
     }
 }

@@ -16,11 +16,7 @@
       "gridCellsY": 30,
       "entities": [
         {"name": "player", "id": 0, "_eid": "72460224", "x": 160, "y": 208, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 1, "_eid": "72487415", "x": 480, "y": 224, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 2, "_eid": "72487415", "x": 464, "y": 208, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 3, "_eid": "72487415", "x": 464, "y": 224, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 4, "_eid": "72487415", "x": 496, "y": 224, "originX": 0, "originY": 0},
-        {"name": "cave", "id": 5, "_eid": "72487415", "x": 496, "y": 208, "originX": 0, "originY": 0}
+        {"name": "cave", "id": 1, "_eid": "72487415", "x": 480, "y": 224, "originX": 0, "originY": 0}
       ]
     },
     {

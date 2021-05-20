@@ -541,7 +541,8 @@ class PlayState extends FlxState
         {
             for (entity in entityGroups[newEntity])
             {
-                if (!hasSeenNewEntity && GameWorld.checkVision(player, entity)) // and in range
+                //var visionCheck = GameWorld.checkVision(player, entity)) // and in range
+                if (!hasSeenNewEntity && GameWorld.entityDistance(player, entity) < CHUNK_HEIGHT * 3 / 4)
                 {
                     player.think(playerReaction);
                     entity.think(entityReaction);
@@ -584,7 +585,7 @@ class PlayState extends FlxState
                 addEntity(predator);
             case "cave":
                 var cave = new Cave();
-                cave.setPosition(x, y);
+                cave.setPosition(x - TILE_SIZE, y - 2 * TILE_SIZE);
                 addEntity(cave, false);
                 caves.push(cave);
             case "boulder":
@@ -712,12 +713,29 @@ class PlayState extends FlxState
     }
 
     var scoreSoundMultiplier:Float = 0.0;
-    public function collectDino(dino:Dino)
+    public function collectDino(dino:Dino, cave:Cave)
     {
         if (!dino.dead)
         {
+            var numPreyLeft = 0;
+            dino.dead = true;
+            
+            if (dino.getType() == EntityPrey)
+            {
+                for (prey in entityGroups[EntityPrey])
+                {
+                    if (!prey.dead)
+                        numPreyLeft++;
+                }
+                cave.think("" + numPreyLeft);
+            }
+            else
+            {
+                cave.think("!");
+            }
+
             incrementScore(1);
-            removeEntity(dino);
+            dino.fadeOutAndRemove();
 
             scoreSoundMultiplier += 0.1;
             if (scoreSoundMultiplier > 0.4) scoreSoundMultiplier = 0.4;
