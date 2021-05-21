@@ -17,7 +17,7 @@ class Predator extends Dino
 
     /* Pursuing state */
     static final ANGULAR_ACCELERATION = GameWorld.toRadians(20);
-    static final PURSUING_SPEED = 120.0;
+    static final PURSUING_SPEED = 100.0;
     static final SEEN_TIMER = 1.5;
 
     static final SATIATED_TIMER = 6.0;
@@ -96,10 +96,18 @@ class Predator extends Dino
             // Can only puruse if not dazed.
             if (seenEntities.length > 0)
             {
+                if (state != Pursuing)
+                {
+                    think("!", 0.3);
+                }
                 state = Pursuing;
             }
             else
             {
+                if (state == Pursuing)
+                {
+                    think("?", 0.3);
+                }
                 state = Unherded;
             }
         }
@@ -110,7 +118,6 @@ class Predator extends Dino
             satiatedTimer -= elapsed;
             if (satiatedTimer < 0)
                 satiated = false;
-            flash();
         }
 
         if (dazed || satiated)
@@ -281,6 +288,7 @@ class Predator extends Dino
         }
     }
 
+    var lastHitTimestamp:Float = 0.0;
     public function hitWithStick()
     {
         if (!dazed)
@@ -289,14 +297,22 @@ class Predator extends Dino
             sprite.velocity.y *= -1;
         }
 
+        // Log predator swipe
+        var timestamp = haxe.Timer.stamp();
+        if (timestamp - lastHitTimestamp > 0.4)
+        {
+            lastHitTimestamp = timestamp;
+            PlayLogger.recordPredatorSwipe(this);
+        }
+
 
         var random = FlxG.random.float(0, 1.0);
         if (random < 0.3)
-            this.think(":O", 0.5);
+            this.think(":O", 0.4);
         else if (random < 0.6)
-            this.think(":|", 0.5);
+            this.think(":|", 0.4);
         else
-            this.think("o:", 0.5);
+            this.think("o:", 0.4);
 
         this.dazed = true;
         this.dazedTimer = DAZED_TIMER;
@@ -319,6 +335,10 @@ class Predator extends Dino
             satiated = true;
             satiatedTimer = SATIATED_TIMER;
             hasRoared = false;
+            state = Fleeing;
+
+            think(">:)", 0.4);
+
             return true;
         }
         else

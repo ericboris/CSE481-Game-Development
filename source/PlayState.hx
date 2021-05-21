@@ -69,7 +69,6 @@ class PlayState extends FlxState
     var ground:FlxTilemap;
     var obstacles:FlxTilemap;
 
-    var caves:Array<Cave>;
     var respawnCave:Cave;
 
     // The level's score
@@ -113,7 +112,6 @@ class PlayState extends FlxState
         entities = new Array<Entity>();
         collidableSprites = new FlxGroup();
         staticCollidableSprites = new FlxGroup();
-        caves = new Array<Cave>();
 
         for (type in Type.allEnums(EntityType))
         {
@@ -449,7 +447,7 @@ class PlayState extends FlxState
     }
 
     // Adds entity to the world and respective sprite group.
-    public function addEntity(entity:Entity, collidable:Bool = true)
+    public function addEntity(entity:Entity)
     {
         var type = entity.getType();
         var sprite = entity.getSprite();
@@ -463,10 +461,7 @@ class PlayState extends FlxState
         add(sprite);
 
         // Add to collidable entities
-        if (collidable)
-        {
-            collidableSprites.add(sprite);
-        }
+        collidableSprites.add(sprite);
     }
 
     public function removeEntity(entity:Entity)
@@ -513,14 +508,6 @@ class PlayState extends FlxState
         // Collision resolution
 
         // Check collidable entity overlap
-        FlxG.overlap(playerGroup, collidableSprites, handleCollision);
-        FlxG.overlap(preyGroup, collidableSprites, handleCollision);
-        FlxG.overlap(hitboxGroup, collidableSprites, handleCollision);
-
-        // Check cave overlap
-        FlxG.overlap(collidableSprites, caveGroup, handleCollision);
-
-        // Collision resolution -- physics
         FlxG.overlap(collidableSprites, collidableSprites, handleSeparationCollision);
         FlxG.collide(collidableSprites, staticCollidableSprites);
         
@@ -533,11 +520,7 @@ class PlayState extends FlxState
         toggleAdditionalTilemapCollisions(true);
 
         // Vision checks
-        // Only check vision every other frame (to save performance)
-        if (frameCounter % 2 != 0)
-        {
-            visionChecks();
-        }
+        visionChecks();
     }
 
     function visionChecks()
@@ -612,8 +595,7 @@ class PlayState extends FlxState
             case "cave":
                 var cave = new Cave();
                 cave.setPosition(x - TILE_SIZE, y - 2 * TILE_SIZE);
-                addEntity(cave, false);
-                caves.push(cave);
+                addEntity(cave);
             case "boulder":
                 var boulder = new Boulder();
                 boulder.setPosition(x, y);
@@ -641,6 +623,8 @@ class PlayState extends FlxState
     {
         var e1 = s1.entity;
         var e2 = s2.entity;
+        e1.handleCollision(e2);
+        e2.handleCollision(e1);
 
         var player:Player = null;
         if (e1.getType() == EntityPlayer) player = cast e1;
@@ -671,7 +655,7 @@ class PlayState extends FlxState
 
     public function getCaves()
     {
-        return caves;
+        return entityGroups[EntityCave];
     }
 
     function levelIsComplete()
@@ -756,11 +740,11 @@ class PlayState extends FlxState
                     if (!prey.dead)
                         numPreyLeft++;
                 }
-                cave.think("" + numPreyLeft);
+                cave.think("" + numPreyLeft, 3.5, true);
             }
             else
             {
-                cave.think("!?");
+                cave.think("!?", 1.5, true);
             }
 
             incrementScore(1);

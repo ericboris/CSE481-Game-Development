@@ -123,7 +123,7 @@ class Entity
         hitboxes.push(hitbox);
 
         // Add hitbox entity to world
-        PlayState.world.addEntity(hitbox, false);
+        PlayState.world.addEntity(hitbox);
     }
 
     public function handleCollision(entity:Entity)
@@ -350,7 +350,7 @@ class Entity
         return this.sprite.y;
     }
 
-    public function think(content:String, fadeOutDelay:Float=2.5):Void
+    public function think(content:String, fadeOutDelay:Float=2.5, force:Bool = false):Void
     {
         if (content == "V")
         {
@@ -358,7 +358,7 @@ class Entity
         }
         else
         {
-            thought.setContent(content, fadeOutDelay);
+            thought.setContent(content, fadeOutDelay, force);
         }
     }
 

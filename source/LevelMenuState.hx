@@ -41,7 +41,7 @@ class LevelMenuState extends FlxSubState
         FlxG.mouse.visible = true;
 
         var boxWidth = 100;
-        var boxHeight = 70;
+        var boxHeight = 68;
 
         box = new FlxSprite();
         box.makeGraphic(boxWidth, boxHeight, FlxColor.BLACK);
@@ -54,17 +54,21 @@ class LevelMenuState extends FlxSubState
         var totalPrey = PlayState.world.numPrey;
         var numPreds = PlayState.world.numPredatorsCollected;
 
-        var textString = "You've collected:\n" + numPrey + " / " + totalPrey + " mammoths";
+        var textString = "You've collected:\n" + numPrey + " mammoths";
         if (numPreds > 0)
         {
-            textString += "\n" + numPreds + " predator!";
+            boxHeight += 16;
+            textString += "\n" + numPreds + " predator";
             if (numPreds > 1)
             {
                 textString += "s";
             }
+            textString += "!";
         }
+        
+        textString += "\n" + PlayState.world.getNumPreyLeft() + " remaining";
+
         text = new FlxText(0, 0, boxWidth - 8, textString, 8);
-        text.alignment = CENTER;
         text.x = box.x + box.width/2 - text.width/2;
         text.y = box.y + 5;
         text.alpha = 0.0;

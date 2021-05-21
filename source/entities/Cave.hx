@@ -12,6 +12,8 @@ class Cave extends Obstacle
         sprite.visible = false;
         this.setHitboxSize(16 * 3, 16 * 3);
 
+        this.collidable = false;
+
         this.type = EntityCave;
         this.thought.setOffset(0, -16);
         this.thought.setSprite(16, 16, AssetPaths.down_arrow__png);

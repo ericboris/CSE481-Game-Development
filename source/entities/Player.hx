@@ -372,6 +372,7 @@ class Player extends Entity
             // Sound playing logic
             if (!isCalling)
             {
+                PlayLogger.recordCallStart();
                 var duration = callStartSound.length / 1000;
                 callStartSound.fadeIn(duration, 0.0, CALL_VOLUME/2);
                 callStartSound.play(true);
@@ -402,6 +403,7 @@ class Player extends Entity
             // Call sound playing logic
             if (isCalling)
             {
+                PlayLogger.recordCallEnd();
                 var volume:Float = 1.0;
 
                 if (callStartSound.playing)
