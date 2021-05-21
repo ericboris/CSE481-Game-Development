@@ -2,6 +2,7 @@ package;
 
 import entities.*;
 import js.html.Console;
+import flixel.util.FlxTimer;
 
 class PlayLogger
 {
@@ -10,6 +11,8 @@ class PlayLogger
     static final GAME_KEY = "4fc8038359b26ec7a1044c1c6bc85745";
     static final GAME_NAME = "dinosaurherd";
  
+    static final HEARTBEAT_TIME = 4.0;
+
     static final DEBUG_VERSION = 1;
     static final MAY_11_VERSION = 2;
     static final MAY_16_VERSION = 3;
@@ -23,10 +26,23 @@ class PlayLogger
     static final PLAYER_DEATH_ACTION = 1;
     static final PLAYER_CALL_ACTION  = 2;
     static final PLAYER_SKIPPED_LEVEL = 3;
+    static final HEARTBEAT = 4;
+    static final PREY_UNHERDED = 5;
 
     // Reset each level
     static var logTimer: Float = 0.0;
     static var playerDeaths: Int = 0;
+
+    static var lastTimestamp:Float;
+    static var averageFramerate:Float = 0.0;
+    static var averageFramerateCount:Int = 0;
+
+    static var unherdedPreyTimer:Float = 0.5;
+    static var unherdedPrey:Int = 0;
+    static var unherdedDistanceAverage:Float = 0.0;
+
+    // Time until next heartbeat, in seconds
+    static var heartbeatTimer:Float = 0.0;
 
     public static function initializeLogger()
     {
@@ -58,11 +74,52 @@ class PlayLogger
             Console.log("Logger session failed to initialize.");
         }
         createdLoggerSession = true;
+
+        lastTimestamp = haxe.Timer.stamp();
     }
 
     public static function loggerInitialized()
     {
         return createdLoggerSession;
+    }
+    
+    public static function update()
+    {
+        if (createdLoggerSession)
+        {
+            var timestamp = haxe.Timer.stamp();
+            var timestep = timestamp - lastTimestamp;
+            lastTimestamp = timestamp;
+            
+            averageFramerate += timestep;
+            averageFramerateCount++;
+
+            /* HEARTBEAT LOGGING */
+            heartbeatTimer -= timestep;
+            if (heartbeatTimer <= 0)
+            {
+                var framerate = averageFramerate / averageFramerateCount;
+                averageFramerate = averageFramerateCount = 0;
+                var details = {fps: Std.int(1 / framerate)};
+                heartbeatTimer = HEARTBEAT_TIME;
+            }
+            
+            /* UNHERDED PREY LOGGING */
+            if (unherdedPrey > 0)
+            {
+                unherdedPreyTimer -= timestep;
+                if (unherdedPreyTimer <= 0)
+                {
+                    var details = {unherded: unherdedPrey, distance:unherdedDistanceAverage / unherdedPrey};
+                    logger.logLevelAction(PREY_UNHERDED, details);
+                 
+                    Console.log(details);
+                    unherdedPrey = 0;
+                    unherdedDistanceAverage = 0.0;
+                    unherdedPreyTimer = 0.5;
+                }
+            }
+        }
     }
 
     public static function startLevel(levelId: Int)
@@ -105,5 +162,11 @@ class PlayLogger
     public static function incrementTime(elapsed:Float)
     {
         logTimer += elapsed;
+    }
+
+    public static function recordUnherded(dino:Dino)
+    {
+        unherdedPrey++;
+        unherdedDistanceAverage += GameWorld.entityDistance(dino, PlayState.world.getPlayer());
     }
 }

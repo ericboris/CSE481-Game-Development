@@ -302,13 +302,14 @@ class Dino extends Entity
     /* State transition methods */
     public function setUnherded(notify:Bool = false)
     {
+        PlayLogger.recordUnherded(this);
+
         var player = herdedPlayer;
         herdedLeader = null;
         herdedPlayer = null;
         state = Unherded;
 
         canJumpCliffs = false;
-
         think("?", 2.0);
 
         herdedDisableFollowingRadius = false;
@@ -375,10 +376,7 @@ class Dino extends Entity
         collidedWithCave = cave;
     }
 
-    public function handleCaveDeposit(cave:Cave)
-    {
-    
-    }
+    public function handleCaveDeposit(cave:Cave) {}
 
     function canBeCollected()
     {

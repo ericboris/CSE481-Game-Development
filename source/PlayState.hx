@@ -358,6 +358,7 @@ class PlayState extends FlxState
             return;
         }
 
+        PlayLogger.update();
         PlayLogger.incrementTime(elapsed);
  
         // Do collision checks
