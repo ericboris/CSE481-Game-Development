@@ -56,6 +56,12 @@ class TileType
                 sprite.immovable = true;
                 object.setHitboxSize(4, 4);
                 return object;
+            case CAVE_1, CAVE_2:
+                var object = new Obstacle();
+                var sprite = object.getSprite();
+                sprite.loadGraphic(FlxGraphic.fromFrame(tilemap.frames.frames[tile]), false, 16, 16);
+                sprite.immovable = true;
+                return object;
             default:
                 return null;
         }
