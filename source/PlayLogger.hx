@@ -32,6 +32,7 @@ class PlayLogger
     static final NO_PREY_HERDED = 7;
     static final PREY_DEATH = 8;
     static final BERRY_COLLECT = 9;
+    static final PREDATOR_SWIPE = 10;
 
     // Reset each level
     static var logTimer: Float = 0.0;
@@ -206,7 +207,6 @@ class PlayLogger
     {
         var timestamp = haxe.Timer.stamp();
         var details = {time: timestamp - callStartTimestamp};
-        Console.log(details.time);
         logger.logLevelAction(PLAYER_CALL_ACTION, details);
     }
 
@@ -214,5 +214,12 @@ class PlayLogger
     {
         var details = {x: bush.getX(), y: bush.getY()};
         logger.logLevelAction(BERRY_COLLECT, details);
+    }
+
+    public static function recordPredatorSwipe(pred:Predator)
+    {
+        Console.log("Swipe");
+        var details = {x: pred.getX(), y: pred.getY()};
+        logger.logLevelAction(PREDATOR_SWIPE, details);
     }
 }

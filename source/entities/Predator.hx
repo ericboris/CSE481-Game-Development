@@ -281,12 +281,21 @@ class Predator extends Dino
         }
     }
 
+    var lastHitTimestamp:Float = 0.0;
     public function hitWithStick()
     {
         if (!dazed)
         {
             sprite.velocity.x *= -1;
             sprite.velocity.y *= -1;
+        }
+
+        // Log predator swipe
+        var timestamp = haxe.Timer.stamp();
+        if (timestamp - lastHitTimestamp > 0.4)
+        {
+            lastHitTimestamp = timestamp;
+            PlayLogger.recordPredatorSwipe(this);
         }
 
 
