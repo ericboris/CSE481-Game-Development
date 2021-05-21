@@ -28,7 +28,9 @@ class Hitbox extends Entity
         this.id = id;
 
         this.sprite.visible = false;
- 
+
+        this.collidable = false;
+
         offsetUp = FlxPoint.weak();
         offsetDown = FlxPoint.weak();
         offsetLeft = FlxPoint.weak();

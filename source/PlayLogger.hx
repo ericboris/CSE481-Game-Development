@@ -218,7 +218,6 @@ class PlayLogger
 
     public static function recordPredatorSwipe(pred:Predator)
     {
-        Console.log("Swipe");
         var details = {x: pred.getX(), y: pred.getY()};
         logger.logLevelAction(PREDATOR_SWIPE, details);
     }

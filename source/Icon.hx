@@ -85,12 +85,16 @@ class Icon
         text.setBorderStyle(SHADOW, FlxColor.BLACK, 1, 1);
     }
 
-    public function setContent(content:String, fadeOutDelay:Float=3.5)
+    public function setContent(content:String, fadeOutDelay:Float=3.5, force:Bool = false)
     {
+        if (!force && shouldFadeOut)
+        {
+            return;
+        }
+
         if (!Std.is(sprite, FlxText))
         {
             setText(content);
-            return;
         }
         var text:FlxText = cast sprite;
         text.text = content;
