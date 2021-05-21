@@ -149,6 +149,9 @@ class Prey extends Dino
                 FlxG.camera.shake(0.01, 0.1);
             }
 
+            var isHerded = state == Herded;
+            PlayLogger.logPreyDeath(getX(), getY(), isHerded);
+
             // Die instantly!
             PlayState.world.numPreyDeaths++;
             PlayState.world.removeEntity(this);

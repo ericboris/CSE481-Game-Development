@@ -289,6 +289,15 @@ class Predator extends Dino
             sprite.velocity.y *= -1;
         }
 
+
+        var random = FlxG.random.float(0, 1.0);
+        if (random < 0.3)
+            this.think(":O", 0.5);
+        else if (random < 0.6)
+            this.think(":|", 0.5);
+        else
+            this.think("o:", 0.5);
+
         this.dazed = true;
         this.dazedTimer = DAZED_TIMER;
         this.state = Fleeing;

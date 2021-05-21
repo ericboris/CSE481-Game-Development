@@ -19,7 +19,7 @@ class Player extends Entity
     static final STICK_HITBOX_ID    = 1;
 
     static final SPEED = 100.0;
-    static final SPEED_BOOST_MULTIPLIER = 1.5;
+    static final SPEED_BOOST_MULTIPLIER = 1.35;
     static final SWIPE_SPEED = 45.0;
     static final CALL_SPEED = 82.0;
     
@@ -33,7 +33,7 @@ class Player extends Entity
     var speed:Float = SPEED;
 
     // Array of followers. TODO: Should be linked list.
-    var followers:Array<Dino>;
+    public var followers:Array<Dino>;
     var primaryFollower:Dino;
 
     // State variables

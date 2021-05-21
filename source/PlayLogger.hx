@@ -28,6 +28,9 @@ class PlayLogger
     static final PLAYER_SKIPPED_LEVEL = 3;
     static final HEARTBEAT = 4;
     static final PREY_UNHERDED = 5;
+    static final PREY_HERDED = 6;
+    static final NO_PREY_HERDED = 7;
+    static final PREY_DEATH = 8;
 
     // Reset each level
     static var logTimer: Float = 0.0;
@@ -43,6 +46,9 @@ class PlayLogger
 
     // Time until next heartbeat, in seconds
     static var heartbeatTimer:Float = 0.0;
+
+    static final HERDED_PREY_TIMER = 8.0;
+    static var herdedPreyTimer:Float = HERDED_PREY_TIMER;
 
     public static function initializeLogger()
     {
@@ -113,11 +119,20 @@ class PlayLogger
                     var details = {unherded: unherdedPrey, distance:unherdedDistanceAverage / unherdedPrey};
                     logger.logLevelAction(PREY_UNHERDED, details);
                  
-                    Console.log(details);
                     unherdedPrey = 0;
                     unherdedDistanceAverage = 0.0;
                     unherdedPreyTimer = 0.5;
                 }
+            }
+
+            /* HERDED PREY LOGGING */
+            herdedPreyTimer -= timestep;
+            if (herdedPreyTimer <= 0)
+            {
+                herdedPreyTimer = HERDED_PREY_TIMER;
+
+                var details = {};
+                logger.logLevelAction(NO_PREY_HERDED, details);
             }
         }
     }
@@ -168,5 +183,19 @@ class PlayLogger
     {
         unherdedPrey++;
         unherdedDistanceAverage += GameWorld.entityDistance(dino, PlayState.world.getPlayer());
+    }
+
+    public static function recordHerded(player:Player)
+    {
+        var details = {numInHerd: player.followers.length};
+        logger.logLevelAction(PREY_HERDED, details);
+
+        herdedPreyTimer = HERDED_PREY_TIMER;
+    }
+
+    public static function recordPreyDeath(x:Float, y:Float, isHerded:Bool)
+    {
+        var details = {x:x, y:y, isHerded:isHerded};
+        logger.logLevelAction(PREY_DEATH, details);
     }
 }

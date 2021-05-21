@@ -36,7 +36,7 @@ class Icon
     {
         this.center = centeredOn;
         var offset = FlxG.random.float(-0.1, 0.1);
-        this.tween = FlxTween.num(0, 6, 2.5 + offset, {ease: FlxEase.quadInOut, type: FlxTweenType.PINGPONG}, updateTween);
+        this.tween = FlxTween.num(-1, 4, 2.5 + offset, {ease: FlxEase.quadInOut, type: FlxTweenType.PINGPONG}, updateTween);
         setOffset(x, y);
         setText("");
     }
@@ -63,6 +63,9 @@ class Icon
         sprite.alpha = 0;
         // This is a hacky workaround to indicate that this sprite should be drawn on top.
         sprite.health = PlayState.world.topLayerSortIndex();
+ 
+        width = sprite.width;
+        height = sprite.height;
     }
 
     public function setSprite(width:Int, height:Int, asset:String)
@@ -70,8 +73,6 @@ class Icon
         var sprite = new FlxSprite();
         sprite.loadGraphic(asset, false, width, height);
         sprite.setGraphicSize(width, height);
-        this.width = width;
-        this.height = height;
 
         setNewFlxSprite(sprite);
     }
