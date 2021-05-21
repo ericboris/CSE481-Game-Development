@@ -262,11 +262,13 @@ class Entity
             return false;
         }
 
+        isJumping = true;
         var start = new FlxPoint(sprite.x, sprite.y);
         var end = new FlxPoint(x, y);
 
         if (collisionCheck && checkCollision(end))
         {
+            isJumping = false;
             return false;
         }
 
@@ -291,7 +293,6 @@ class Entity
         sprite.velocity.x = 0;
         sprite.velocity.y = 0;
         sprite.allowCollisions = FlxObject.NONE;
-        isJumping = true;
 
         return true;
     }
