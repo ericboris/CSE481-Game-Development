@@ -31,9 +31,9 @@ class PlayLogger
     static final PREY_HERDED = 6;
     static final NO_PREY_HERDED = 7;
     static final PREY_DEATH = 8;
-    static final CAVE_DEPOSIT = 9;
     static final BERRY_COLLECT = 9;
     static final PREDATOR_SWIPE = 10;
+    static final CAVE_DEPOSIT = 11;
 
     // Reset each level
     static var logTimer: Float = 0.0;
@@ -43,7 +43,8 @@ class PlayLogger
     static var averageFramerate:Float = 0.0;
     static var averageFramerateCount:Int = 0;
 
-    static var unherdedPreyTimer:Float = 0.5;
+    static final UNHERDED_PREY_TIMER_DEFAULT = 0.5;
+    static var unherdedPreyTimer:Float = UNHERDED_PREY_TIMER_DEFAULT;
     static var unherdedPrey:Int = 0;
     static var unherdedDistanceAverage:Float = 0.0;
 
@@ -130,7 +131,7 @@ class PlayLogger
                  
                     unherdedPrey = 0;
                     unherdedDistanceAverage = 0.0;
-                    unherdedPreyTimer = 0.5;
+                    unherdedPreyTimer = UNHERDED_PREY_TIMER_DEFAULT;
                 }
             }
 
@@ -201,7 +202,7 @@ class PlayLogger
     {
         unherdedPrey++;
         unherdedDistanceAverage += GameWorld.entityDistance(dino, PlayState.world.getPlayer());
-        unherdedPreyTimer = 0.5;
+        unherdedPreyTimer = UNHERDED_PREY_TIMER_DEFAULT;
     }
 
     public static function recordHerded(player:Player)
@@ -221,6 +222,7 @@ class PlayLogger
     public static function recordCaveDeposit():Void
     {
         caveDepositCount++;
+        caveDepositTimer = CAVE_DEPOSIT_TIMER_DEFAULT;
     }
 
     public static function recordCallStart()
