@@ -43,13 +43,6 @@ class LevelMenuState extends FlxSubState
         var boxWidth = 100;
         var boxHeight = 68;
 
-        box = new FlxSprite();
-        box.makeGraphic(boxWidth, boxHeight, FlxColor.BLACK);
-        box.x = (this.x - camera.scroll.x) - box.width/2;
-        box.y = (this.y - camera.scroll.y) - box.height - 16;
-        box.alpha = 0.0;
-        box.resetSizeFromFrame();
-
         var numPrey = PlayState.world.numPreyCollected;
         var totalPrey = PlayState.world.numPrey;
         var numPreds = PlayState.world.numPredatorsCollected;
@@ -57,7 +50,7 @@ class LevelMenuState extends FlxSubState
         var textString = "You've collected:\n" + numPrey + " mammoths";
         if (numPreds > 0)
         {
-            boxHeight += 16;
+            boxHeight += 8;
             textString += "\n" + numPreds + " predator";
             if (numPreds > 1)
             {
@@ -65,6 +58,13 @@ class LevelMenuState extends FlxSubState
             }
             textString += "!";
         }
+
+        box = new FlxSprite();
+        box.makeGraphic(boxWidth, boxHeight, FlxColor.BLACK);
+        box.x = (this.x - camera.scroll.x) - box.width/2;
+        box.y = (this.y - camera.scroll.y) - box.height - 16;
+        box.alpha = 0.0;
+        box.resetSizeFromFrame();
         
         textString += "\n" + PlayState.world.getNumPreyLeft() + " remaining";
 

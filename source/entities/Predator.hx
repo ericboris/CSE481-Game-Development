@@ -91,7 +91,7 @@ class Predator extends Dino
 
             flash();
         }
-        else
+        else if (!satiated && !dazed)
         {
             // Can only puruse if not dazed.
             if (seenEntities.length > 0)

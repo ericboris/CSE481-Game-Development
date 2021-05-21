@@ -447,6 +447,7 @@ class Player extends Entity
             {
                 followersCopy.push(dino);
             }
+            dino.herdedFollower = null;
             dino.herdedDisableFollowingRadius = false;
         }
 
@@ -474,6 +475,11 @@ class Player extends Entity
                 first = false;
             }
 
+            if (Std.is(lastEntity, Dino))
+            {
+                var lastDino:Dino = cast lastEntity;
+                lastDino.herdedFollower = dino;
+            }
             dino.setLeader(lastEntity);
             lastEntity = dino;
         }
@@ -688,7 +694,6 @@ class Player extends Entity
 
     public function notifyUnherded(dino:Dino)
     {
-        // TODO: Scatter the line of prey that is following this player
         followers.remove(dino);
     }
 
@@ -706,7 +711,14 @@ class Player extends Entity
     public function notifyDeadFollower(dino:Dino)
     {
         // TODO: Scatter any following herd
-        followers.remove(dino);
+        var nextDino:Dino = dino;
+        while (nextDino != null)
+        {
+            followers.remove(nextDino);
+            var next = nextDino.herdedFollower;
+            nextDino.setUnherded(false);
+            nextDino = next;
+        }
     }
 
     public function addDino(dino:Dino)
