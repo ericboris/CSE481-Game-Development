@@ -50,6 +50,8 @@ class PlayLogger
     static final HERDED_PREY_TIMER = 8.0;
     static var herdedPreyTimer:Float = HERDED_PREY_TIMER;
 
+    static var callStartTimestamp:Float;
+
     public static function initializeLogger()
     {
         if (!createdLoggerSession)
@@ -162,12 +164,6 @@ class PlayLogger
         logger.logLevelAction(PLAYER_DEATH_ACTION, details);
     }
 
-    public static function recordPlayerCallStart(player: Player)
-    {
-        var details = {playerX: player.getX(), playerY: player.getY()};
-        logger.logLevelAction(PLAYER_CALL_ACTION, details);
-    }
-
     public static function recordPlayerSkippedLevel()
     {
         var details = {levelId: GameWorld.levelId()};
@@ -198,5 +194,18 @@ class PlayLogger
     {
         var details = {x:x, y:y, isHerded:isHerded};
         logger.logLevelAction(PREY_DEATH, details);
+    }
+
+    public static function recordCallStart()
+    {
+        callStartTimestamp = haxe.Timer.stamp();
+    }
+
+    public static function recordCallEnd()
+    {
+        var timestamp = haxe.Timer.stamp();
+        var details = {time: timestamp - callStartTimestamp};
+        Console.log(details.time);
+        logger.logLevelAction(PLAYER_CALL_ACTION, details);
     }
 }
