@@ -768,9 +768,9 @@ class Player extends Entity
     {
         runningIntoCave = true;
         nearCaveCounter++;
-        if (nearCaveCounter > 10)
+        if (nearCaveCounter > 3)
         {
-            PlayState.world.openLevelMenu();
+            PlayState.world.openLevelMenu(cave);
         }
     }
 

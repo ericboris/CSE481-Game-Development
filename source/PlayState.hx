@@ -775,11 +775,11 @@ class PlayState extends FlxState
     }
 
     public var levelMenu:LevelMenuState;
-    public function openLevelMenu()
+    public function openLevelMenu(cave:Cave)
     {
         if (!levelIsComplete() && lastDeliveredTimer <= 0 && levelMenu == null)
         {
-            levelMenu = new LevelMenuState();
+            levelMenu = new LevelMenuState(cave.getX(), cave.getY());
             openSubState(levelMenu);
         }
     }

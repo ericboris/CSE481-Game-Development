@@ -14,11 +14,21 @@ class LevelMenuState extends FlxSubState
 {
     var box:FlxSprite;
     var text:FlxText;
-    var resumeButton:FlxButton;
     var nextButton:FlxButton;
 
     var fadingOut:Bool = false;
     var dead:Bool = false;
+
+    var x:Float;
+    var y:Float;
+    public function new(x:Float, y:Float)
+    {
+        super();
+
+        this.x = x;
+        this.y = y;
+    }
+
     override public function create()
     {
         super.create();
@@ -30,13 +40,13 @@ class LevelMenuState extends FlxSubState
 
         FlxG.mouse.visible = true;
 
-        var boxWidth = 160;
-        var boxHeight = 110;
+        var boxWidth = 100;
+        var boxHeight = 70;
 
         box = new FlxSprite();
         box.makeGraphic(boxWidth, boxHeight, FlxColor.BLACK);
-        box.x = camera.width/2 - box.width/2;
-        box.y = camera.height/2 - box.height/2;
+        box.x = (this.x - camera.scroll.x) - box.width/2;
+        box.y = (this.y - camera.scroll.y) - box.height - 16;
         box.alpha = 0.0;
         box.resetSizeFromFrame();
 
@@ -47,47 +57,37 @@ class LevelMenuState extends FlxSubState
         var textString = "You've collected:\n" + numPrey + " / " + totalPrey + " mammoths";
         if (numPreds > 0)
         {
-            textString += "\n" + numPreds + "! predator";
+            textString += "\n" + numPreds + " predator!";
             if (numPreds > 1)
             {
                 textString += "s";
             }
         }
-        text = new FlxText(0, 0, boxWidth - 20, textString, 11);
-        text.x = box.x + 10;
-        text.y = box.y + 10;
+        text = new FlxText(0, 0, boxWidth - 8, textString, 8);
+        text.alignment = CENTER;
+        text.x = box.x + box.width/2 - text.width/2;
+        text.y = box.y + 5;
         text.alpha = 0.0;
 
         var textColor = 0xFF404040;
-        resumeButton = new FlxButton(0, 0, "Resume", clickResume);
-        resumeButton.scale.x = resumeButton.scale.y = 0.9;
-        resumeButton.updateHitbox();
-        resumeButton.label.fieldWidth *= 0.9;
-        resumeButton.alpha = 0.0;
-        resumeButton.label.size = 8;
-        resumeButton.x = box.x + 5;
-        resumeButton.y = box.y + box.height - resumeButton.height - 5;
-
-        nextButton = new FlxButton(0, 0, "Next", clickNext);
-        nextButton.scale.x = nextButton.scale.y = 0.9;
+        nextButton = new FlxButton(0, 0, "Move on", clickNext);
+        nextButton.scale.x = nextButton.scale.y = 0.8;
         nextButton.updateHitbox();
-        nextButton.label.fieldWidth *= 0.9;
+        nextButton.label.fieldWidth *= 0.8;
         nextButton.alpha = 0.0;
-        nextButton.label.size = 8;
-        nextButton.x = box.x + box.width - nextButton.width - 5;
+        nextButton.label.size = 6;
+        nextButton.x = box.x + box.width/2 - nextButton.width/2;
         nextButton.y = box.y + box.height - nextButton.height - 5;
 
-        fadeTween(box, 0.0, 0.8);
-        fadeTween(text, 0.0, 1.0);
-        fadeTween(resumeButton, 0.0, 1.0);
-        fadeTween(nextButton, 0.0, 1.0);
+        fadeTween(box, 0.0, 0.8, 0.25);
+        fadeTween(text, 0.0, 1.0, 0.25);
+        fadeTween(nextButton, 0.0, 1.0, 0.25);
 
         setOverlay(box);
         setOverlay(text);
 
         add(box);
         add(text);
-        add(resumeButton);
         add(nextButton);
     }
 
@@ -97,10 +97,9 @@ class LevelMenuState extends FlxSubState
         sprite.scrollFactor.y = 0;
     }
 
-    function fadeTween(sprite:FlxSprite, from:Float, to:Float, onComplete:(FlxTween) -> Void = null)
+    function fadeTween(sprite:FlxSprite, from:Float, to:Float, duration:Float, onComplete:(FlxTween) -> Void = null)
     {
-        var duration = 0.1;
-        var options = {ease: FlxEase.sineInOut, onComplete:onComplete}
+        var options = {ease: FlxEase.quartOut, onComplete:onComplete}
         var tween = FlxTween.num(from, to, duration, options, setAlpha.bind(sprite));
     }
 
@@ -111,11 +110,7 @@ class LevelMenuState extends FlxSubState
 
     override public function update(elapsed:Float)
     {
-        if (FlxG.keys.anyPressed([R]))
-        {
-            clickResume();
-        }
-        else if (FlxG.keys.anyPressed([N]))
+        if (FlxG.keys.anyPressed([N]))
         {
             clickNext();
         }
@@ -142,10 +137,9 @@ class LevelMenuState extends FlxSubState
         if (!fadingOut)
         {
             fadingOut = true;
-            fadeTween(box, box.alpha, 0.0, closed);
-            fadeTween(text, text.alpha, 0.0);
-            fadeTween(resumeButton, resumeButton.alpha, 0.0);
-            fadeTween(nextButton, nextButton.alpha, 0.0);
+            fadeTween(box, box.alpha, 0.0, 0.15, closed);
+            fadeTween(text, text.alpha, 0.0, 0.15);
+            fadeTween(nextButton, nextButton.alpha, 0.0, 0.15);
         }
     }
 
@@ -158,10 +152,5 @@ class LevelMenuState extends FlxSubState
             PlayLogger.recordPlayerSkippedLevel();
             PlayState.world.nextLevel();
         }
-    }
-
-    function clickResume()
-    {
-        closeMenu();
     }
 }
