@@ -151,8 +151,13 @@ class LevelMenuState extends FlxSubState
 
     function clickNext()
     {
-        close();
-        PlayState.world.nextLevel();
+        if (!dead)
+        {
+            closed(null);
+
+            PlayLogger.recordPlayerSkippedLevel();
+            PlayState.world.nextLevel();
+        }
     }
 
     function clickResume()

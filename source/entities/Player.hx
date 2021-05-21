@@ -201,7 +201,7 @@ class Player extends Entity
         
         }
 
-        if (!inRangeOfCave)
+        if (frameCounter > 20 && !inRangeOfCave)
         {
             openedMenu = false;
         }

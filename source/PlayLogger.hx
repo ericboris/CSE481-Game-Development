@@ -22,6 +22,7 @@ class PlayLogger
     // Constant IDs for logged actions
     static final PLAYER_DEATH_ACTION = 1;
     static final PLAYER_CALL_ACTION  = 2;
+    static final PLAYER_SKIPPED_LEVEL = 3;
 
     // Reset each level
     static var logTimer: Float = 0.0;
@@ -95,6 +96,11 @@ class PlayLogger
         logger.logLevelAction(PLAYER_CALL_ACTION, details);
     }
 
+    public static function recordPlayerSkippedLevel()
+    {
+        var details = {levelId: GameWorld.levelId()};
+        logger.logLevelAction(PLAYER_SKIPPED_LEVEL, details);
+    }
 
     public static function incrementTime(elapsed:Float)
     {
