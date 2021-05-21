@@ -135,13 +135,9 @@ class Boulder extends Entity
             var end = new FlxPoint(x, y);
             
             var control = new FlxPoint((end.x + start.x) / 2, (end.y + start.y) / 2);
+            control.y -= 15;
 
-            if (control.x - end.x != 0)
-                control.y -= 10;
-            if (start.y - end.y != 0)
-                control.x += 7;
-
-            var duration = 1.0;
+            var duration = 0.5;
             var options = {ease: FlxEase.quadInOut, type: ONESHOT, onComplete:inWater};
             FlxTween.quadPath(this.sprite, [start, control, end], duration, true, options);
             isInWater = true;

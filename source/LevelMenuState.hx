@@ -79,9 +79,10 @@ class LevelMenuState extends FlxSubState
         nextButton.x = box.x + box.width/2 - nextButton.width/2;
         nextButton.y = box.y + box.height - nextButton.height - 5;
 
-        fadeTween(box, 0.0, 0.8, 0.25);
-        fadeTween(text, 0.0, 1.0, 0.25);
-        fadeTween(nextButton, 0.0, 1.0, 0.25);
+        var duration = 0.5;
+        fadeTween(box, 0.0, 0.8, duration);
+        fadeTween(text, 0.0, 1.0, duration);
+        fadeTween(nextButton, 0.0, 1.0, duration);
 
         setOverlay(box);
         setOverlay(text);
@@ -137,9 +138,10 @@ class LevelMenuState extends FlxSubState
         if (!fadingOut)
         {
             fadingOut = true;
-            fadeTween(box, box.alpha, 0.0, 0.15, closed);
-            fadeTween(text, text.alpha, 0.0, 0.15);
-            fadeTween(nextButton, nextButton.alpha, 0.0, 0.15);
+            var duration = 0.4;
+            fadeTween(box, box.alpha, 0.0, duration, closed);
+            fadeTween(text, text.alpha, 0.0, duration);
+            fadeTween(nextButton, nextButton.alpha, 0.0, duration);
         }
     }
 

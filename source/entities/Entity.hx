@@ -255,7 +255,7 @@ class Entity
     }
 
     public function jumpTo(x:Float, y:Float, collisionCheck:Bool = true, ?completeCallback: Entity -> Void,
-                           jumpDuration:Float = 0.3, heightMultiplier:Float = 1.5):Bool
+                           jumpDuration:Float = 0.34, heightMultiplier:Float = 1.5):Bool
     {
         if (isJumping)
         {
@@ -273,10 +273,7 @@ class Entity
         }
 
         var control = new FlxPoint((end.x + start.x) / 2, (end.y + start.y) / 2);
-        if (Math.abs(end.x - start.x) > Math.abs(end.y - start.y))
-            control.y -= 20.0 * heightMultiplier;
-        else
-            control.x += 10.0 * heightMultiplier;
+        control.y -= 20.0 * heightMultiplier;
         
         var options = {ease: FlxEase.sineInOut, type: ONESHOT, onComplete: function(tween:FlxTween)
         {

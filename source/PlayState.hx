@@ -238,21 +238,24 @@ class PlayState extends FlxState
         }
         else
         {
-            if (!uncollidableTiles.contains(tileNum)) uncollidableTiles.push(tileNum);
-
             var sprite = obstacle.getSprite();
             var x = tileX * TILE_SIZE + TILE_SIZE/2 - sprite.width/2;
             var y = tileY * TILE_SIZE + TILE_SIZE/2 - sprite.height/2;
-            obstacle.setPosition(x, y);
             
-            if (TileType.isStatic(tileNum))
+            if (TileType.nonCollidable(tileNum) && !uncollidableTiles.contains(tileNum))
             {
-                staticCollidableSprites.add(sprite);
+                uncollidableTiles.push(tileNum);
+                if (TileType.isStatic(tileNum))
+                {
+                    staticCollidableSprites.add(sprite);
+                }
+                else
+                {
+                    collidableSprites.add(sprite);
+                }
             }
-            else
-            {
-                collidableSprites.add(sprite);
-            }
+
+            obstacle.setPosition(x, y);
             add(sprite);
         }
     }

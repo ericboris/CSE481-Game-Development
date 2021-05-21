@@ -67,6 +67,17 @@ class TileType
         }
     }
 
+    public static function nonCollidable(tile:Int)
+    {
+        switch (tile)
+        {
+            case BERRY_BUSH, TREE_2, TREE_3, TREE_4:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public static function isStatic(tile: Int)
     {
         switch (tile)

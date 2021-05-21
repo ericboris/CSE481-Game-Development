@@ -234,15 +234,19 @@ class Predator extends Dino
         var angleBetween = GameWorld.entityAngle(this, entity);
         var angleDiff = angleBetween - moveAngle;
 
-        if (angleDiff > Math.PI / 2.0)
-        {
-            sprite.velocity.scale(0.5);
-        }
 
         // Angular acceleration
         var sign = angleDiff < 0 ? -1 : 1;
         var acceleration = Math.min(Math.abs(angleDiff), ANGULAR_ACCELERATION);
         acceleration *= sign;
+
+        if (angleDiff > Math.PI / 2.0)
+        {
+            // Predator has a long way to turn around.
+            // Slow down and turn more towards the entity
+            sprite.velocity.scale(0.8);
+            sprite.velocity.rotate(FlxPoint.weak(), GameWorld.toDegrees(acceleration));
+        }
 
         sprite.velocity.rotate(FlxPoint.weak(), GameWorld.toDegrees(acceleration));
 
