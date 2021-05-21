@@ -31,6 +31,7 @@ class PlayLogger
     static final PREY_HERDED = 6;
     static final NO_PREY_HERDED = 7;
     static final PREY_DEATH = 8;
+    static final BERRY_COLLECT = 9;
 
     // Reset each level
     static var logTimer: Float = 0.0;
@@ -207,5 +208,11 @@ class PlayLogger
         var details = {time: timestamp - callStartTimestamp};
         Console.log(details.time);
         logger.logLevelAction(PLAYER_CALL_ACTION, details);
+    }
+
+    public static function recordBerryCollect(bush:BerryBush)
+    {
+        var details = {x: bush.getX(), y: bush.getY()};
+        logger.logLevelAction(BERRY_COLLECT, details);
     }
 }

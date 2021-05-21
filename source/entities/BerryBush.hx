@@ -23,6 +23,7 @@ class BerryBush extends Obstacle
     {
         if (!isEmpty)
         {
+            PlayLogger.recordBerryCollect(this);
             isEmpty = true;
             
             // Set graphic to empty bush
