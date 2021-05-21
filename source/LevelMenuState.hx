@@ -29,15 +29,13 @@ class LevelMenuState extends FlxSubState
 
         FlxG.mouse.visible = true;
 
-        var midx = camera.scroll.x + camera.width/2;
-        var midy = camera.scroll.y + camera.height/2;
+        var boxWidth = 160;
+        var boxHeight = 110;
 
         box = new FlxSprite();
-        var boxWidth = 200;
-        var boxHeight = 110;
         box.makeGraphic(boxWidth, boxHeight, FlxColor.BLACK);
-        box.x = midx - box.width/2;
-        box.y = camera.scroll.y + camera.height/2 - box.height/2;
+        box.x = camera.width/2 - box.width/2;
+        box.y = camera.height/2 - box.height/2;
         box.alpha = 0.0;
         box.resetSizeFromFrame();
 
@@ -54,23 +52,27 @@ class LevelMenuState extends FlxSubState
                 textString += "s";
             }
         }
-        text = new FlxText(0, 0, boxWidth - 20, textString, 14);
+        text = new FlxText(0, 0, boxWidth - 20, textString, 11);
         text.x = box.x + 10;
         text.y = box.y + 10;
         text.alpha = 0.0;
 
         var textColor = 0xFF404040;
         resumeButton = new FlxButton(0, 0, "Resume", clickResume);
-        resumeButton.scrollFactor.x = 1;
-        resumeButton.scrollFactor.y = 1;
+        resumeButton.scale.x = resumeButton.scale.y = 0.9;
+        resumeButton.updateHitbox();
+        resumeButton.label.fieldWidth *= 0.9;
         resumeButton.alpha = 0.0;
+        resumeButton.label.size = 8;
         resumeButton.x = box.x + 5;
         resumeButton.y = box.y + box.height - resumeButton.height - 5;
 
         nextButton = new FlxButton(0, 0, "Next", clickNext);
-        nextButton.scrollFactor.x = 1;
-        nextButton.scrollFactor.y = 1;
+        nextButton.scale.x = nextButton.scale.y = 0.9;
+        nextButton.updateHitbox();
+        nextButton.label.fieldWidth *= 0.9;
         nextButton.alpha = 0.0;
+        nextButton.label.size = 8;
         nextButton.x = box.x + box.width - nextButton.width - 5;
         nextButton.y = box.y + box.height - nextButton.height - 5;
 
@@ -79,10 +81,19 @@ class LevelMenuState extends FlxSubState
         fadeTween(resumeButton, 0.0, 1.0);
         fadeTween(nextButton, 0.0, 1.0);
 
+        setOverlay(box);
+        setOverlay(text);
+
         add(box);
         add(text);
         add(resumeButton);
         add(nextButton);
+    }
+
+    function setOverlay(sprite:FlxSprite)
+    {
+        sprite.scrollFactor.x = 0;
+        sprite.scrollFactor.y = 0;
     }
 
     function fadeTween(sprite:FlxSprite, from:Float, to:Float, onComplete:(FlxTween) -> Void = null)
@@ -114,15 +125,24 @@ class LevelMenuState extends FlxSubState
     function closed(tween:FlxTween)
     {
         PlayState.world.levelMenu = null;
+        FlxG.mouse.visible = false;
         close();
     }
 
     public function closeMenu()
     {
-        fadeTween(box, box.alpha, 0.0, closed);
-        fadeTween(text, text.alpha, 0.0);
-        fadeTween(resumeButton, resumeButton.alpha, 0.0);
-        fadeTween(nextButton, nextButton.alpha, 0.0);
+        if (!dead && box != null)
+        {
+            dead = true;
+            fadeTween(box, box.alpha, 0.0, closed);
+            fadeTween(text, text.alpha, 0.0);
+            fadeTween(resumeButton, resumeButton.alpha, 0.0);
+            fadeTween(nextButton, nextButton.alpha, 0.0);
+        }
+        else
+        {
+            closed(null);
+        }
     }
 
     function clickNext()

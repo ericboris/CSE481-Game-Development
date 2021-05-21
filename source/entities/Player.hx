@@ -758,7 +758,7 @@ class Player extends Entity
         if (!openedMenu)
         {
             nearCaveCounter++;
-            if (nearCaveCounter > 15)
+            if (nearCaveCounter > 30)
             {
                 openedMenu = true;
                 PlayState.world.openLevelMenu();

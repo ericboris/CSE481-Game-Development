@@ -788,7 +788,6 @@ class PlayState extends FlxState
         if (levelMenu != null)
         {
             levelMenu.closeMenu();
-            levelMenu = null;
         }
     }
 }
