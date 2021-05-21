@@ -31,6 +31,7 @@ class PlayLogger
     static final PREY_HERDED = 6;
     static final NO_PREY_HERDED = 7;
     static final PREY_DEATH = 8;
+    static final CAVE_DEPOSIT = 9;
 
     // Reset each level
     static var logTimer: Float = 0.0;
@@ -43,6 +44,10 @@ class PlayLogger
     static var unherdedPreyTimer:Float = 0.5;
     static var unherdedPrey:Int = 0;
     static var unherdedDistanceAverage:Float = 0.0;
+
+    static final CAVE_DEPOSIT_TIMER_DEFAULT:Float = 2.0;
+    static var caveDepositTimer:Float = CAVE_DEPOSIT_TIMER_DEFAULT;
+    static var caveDepositCount:Int = 0;
 
     // Time until next heartbeat, in seconds
     static var heartbeatTimer:Float = 0.0;
@@ -125,6 +130,21 @@ class PlayLogger
                 }
             }
 
+            /* CAVE DEPOSIT LOGGINT */
+            if (caveDepositCount > 0)
+            {
+                caveDepositTimer -= timestep;
+                if (caveDepositTimer <= 0)
+                {
+                    var details = {caveDepositCount:caveDepositCount}
+                    logger.logLevelAction(CAVE_DEPOSIT, details);
+
+                    caveDepositCount = 0;
+                    caveDepositTimer = CAVE_DEPOSIT_TIMER_DEFAULT;
+                }
+
+            }
+
             /* HERDED PREY LOGGING */
             herdedPreyTimer -= timestep;
             if (herdedPreyTimer <= 0)
@@ -155,10 +175,10 @@ class PlayLogger
         logger.logLevelEnd(details);
     }
 
-    public static function recordPlayerDeath(player: Player)
+    public static function recordPlayerDeath(player:Player, herdSizeOnDeath:Int)
     {
         playerDeaths++;
-        var details = {playerX: player.getX(), playerY: player.getY()};
+        var details = {playerX: player.getX(), playerY: player.getY(), herdSizeOnDeath:herdSizeOnDeath};
         logger.logLevelAction(PLAYER_DEATH_ACTION, details);
     }
 
@@ -197,5 +217,10 @@ class PlayLogger
     {
         var details = {x:x, y:y, isHerded:isHerded};
         logger.logLevelAction(PREY_DEATH, details);
+    }
+
+    public static function recordCaveDeposit():Void
+    {
+        caveDepositCount++;
     }
 }

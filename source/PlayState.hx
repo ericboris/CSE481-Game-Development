@@ -495,6 +495,12 @@ class PlayState extends FlxState
         collidableSprites.remove(entity.getSprite());
     }
 
+    // TODO
+    public function getNumPreyRemaining():Int
+    {
+       return entityGroups[EntityPrey].length;
+    }
+
     function collisionChecks()
     {
         var playerGroup = spriteGroups[EntityPlayer];

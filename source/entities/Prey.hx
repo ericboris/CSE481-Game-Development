@@ -151,6 +151,7 @@ class Prey extends Dino
 
             var isHerded = state == Herded;
             PlayLogger.recordPreyDeath(getX(), getY(), isHerded);
+            //PlayLogger.recordPreyRemoved(getX(), getY(), isHerded, true, PlayState.world.getNumPreyRemaining());
 
             // Die instantly!
             PlayState.world.numPreyDeaths++;
@@ -200,6 +201,7 @@ class Prey extends Dino
         if (state == Herded)
         {
             herdedPlayer.notifyCaveDeposit(this, cave);
+            PlayLogger.recordCaveDeposit();
         }
     }
 }

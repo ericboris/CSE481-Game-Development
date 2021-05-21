@@ -780,13 +780,13 @@ class Player extends Entity
     {
         if (predator.canEat(this))
         {
+            respawn();
             // Unherd all dinosaurs.
             for (follower in followers)
             {
                 follower.setUnherded();
             }
             followers.resize(0);
-            respawn();
             think("!", 2.0);
         }
     }
@@ -794,7 +794,7 @@ class Player extends Entity
     public function respawn()
     {
         PlayState.world.numPlayerDeaths++;
-        PlayLogger.recordPlayerDeath(this);
+        PlayLogger.recordPlayerDeath(this, followers.length);
 
         // Move player to nearest cave.
         var respawnCave = PlayState.world.getRespawnCave();
