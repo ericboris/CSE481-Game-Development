@@ -72,7 +72,7 @@ class MenuState extends FlxSubState
 
     override public function update(elapsed:Float)
     {
-        if (FlxG.keys.anyPressed([P]))
+        if (FlxG.keys.anyPressed([P, SPACE]))
         {
             clickPlay();
         }
