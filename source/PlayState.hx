@@ -803,5 +803,9 @@ class PlayState extends FlxState
         {
             levelMenu.closeMenu();
         }
+        else
+        {
+            closeSubState();
+        }
     }
 }

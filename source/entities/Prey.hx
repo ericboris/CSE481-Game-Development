@@ -40,7 +40,7 @@ class Prey extends Dino
         sprite.animation.add("rs", [0], 0, false);
         sprite.animation.add("us", [1], 0, false);
 
-        setHitboxSize(6, 6);
+        setHitboxSize(7, 7);
 
 
         sprite.elasticity = PREY_ELASTICITY;

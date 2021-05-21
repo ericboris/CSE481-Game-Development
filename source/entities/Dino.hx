@@ -52,8 +52,6 @@ class Dino extends Entity
     {
         super();
 
-        setSprite(20, 20, FlxColor.YELLOW);
-        sprite.mass = 0.4; // Make the dino easier to push by player.
         state = Unherded;
 
         idleTimer = 0;
@@ -189,7 +187,7 @@ class Dino extends Entity
             leaderPos = new FlxPoint(herdedPlayer.getX(), herdedPlayer.getY());
             dist = leaderPos.distanceTo(dinoPos);
             followingRadius *= 2;
-            speed *= 1.2;
+            speed *= 1.05;
 
             // Setting this will instigate the prey to begin pathfinding towards the player.
             framesStuck = 20;
