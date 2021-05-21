@@ -92,6 +92,8 @@ class PlayState extends FlxState
     public var numPredatorsCollected:Int = 0;
     public var numPrey:Int = 0;
 
+    var lastDeliveredTimer:Float = 0.0;
+
     var cameraZoomDirection:Int = -1;
     var cameraZoomTween:FlxTween;
 
@@ -150,7 +152,6 @@ class PlayState extends FlxState
         mapWidth = obstacles.widthInTiles;
         mapHeight = obstacles.heightInTiles;
         add(obstacles);
-        
 
         ground.health = bottomLayerSortIndex() - 1;
         obstacles.health = bottomLayerSortIndex() + 1;
@@ -189,7 +190,10 @@ class PlayState extends FlxState
         transitionScreen.alpha = 1;
         transitionScreen.health = topLayerSortIndex() + 1;
         add(transitionScreen);
-     
+
+        this.persistentDraw = true;
+        this.persistentUpdate = true;
+
         PlayLogger.startLevel(GameWorld.levelId());
     }
 
@@ -253,7 +257,7 @@ class PlayState extends FlxState
         }
     }
 
-    function nextLevel()
+    public function nextLevel()
     {
         PlayLogger.endLevel();
 
@@ -284,6 +288,7 @@ class PlayState extends FlxState
         // Update transition screen
         if (transitioningToNextLevel)
         {
+            closeLevelMenu();
             transitionScreen.alpha += 0.03;
             if (transitionScreen.alpha >= 1.0)
             {
@@ -382,6 +387,7 @@ class PlayState extends FlxState
             }
         }
 
+        lastDeliveredTimer -= elapsed;
         scoreSoundMultiplier -= 0.005;
         frameCounter++;
 
@@ -542,7 +548,7 @@ class PlayState extends FlxState
             for (entity in entityGroups[newEntity])
             {
                 //var visionCheck = GameWorld.checkVision(player, entity)) // and in range
-                if (!hasSeenNewEntity && GameWorld.entityDistance(player, entity) < CHUNK_HEIGHT * 3 / 4)
+                if (!hasSeenNewEntity && GameWorld.entityDistance(player, entity) < player.getSightRange())
                 {
                     player.think(playerReaction);
                     entity.think(entityReaction);
@@ -717,6 +723,9 @@ class PlayState extends FlxState
     {
         if (!dino.dead)
         {
+            closeLevelMenu();
+            lastDeliveredTimer = 1.0;
+
             var numPreyLeft = 0;
             dino.dead = true;
             
@@ -762,5 +771,24 @@ class PlayState extends FlxState
     public function getPlayer():Player
     {
         return this.player;
+    }
+
+    public var levelMenu:LevelMenuState;
+    public function openLevelMenu()
+    {
+        if (!levelIsComplete() && lastDeliveredTimer <= 0 && levelMenu == null)
+        {
+            levelMenu = new LevelMenuState();
+            openSubState(levelMenu);
+        }
+    }
+
+    public function closeLevelMenu()
+    {
+        if (levelMenu != null)
+        {
+            levelMenu.closeMenu();
+            levelMenu = null;
+        }
     }
 }

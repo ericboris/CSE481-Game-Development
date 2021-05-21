@@ -28,7 +28,7 @@ class Player extends Entity
     static final CALL_VOLUME = 0.55;
 
     static final FRAMERATE = 10;
-    static final MIN_FRAMERATE = 1;
+    static final MIN_FRAMERATE = 0;
 
     var speed:Float = SPEED;
 
@@ -198,6 +198,13 @@ class Player extends Entity
                 primaryFollower.setLeader(cave);
                 primaryFollower.herdedDisableFollowingRadius = true;
             }
+        }
+
+        if (!inRangeOfCave)
+        {
+            openedMenu = false;
+            nearCaveCounter = 0;
+            PlayState.world.closeLevelMenu();
         }
 
 
@@ -703,7 +710,6 @@ class Player extends Entity
         {
             if (entity.type == EntityCave)
             {
-                handleCaveCollision(cast entity);
             }
         }
         else if (hitbox.getId() == STICK_HITBOX_ID)
@@ -740,12 +746,24 @@ class Player extends Entity
         return this.inRangeOfCave;
     }
 
+    var nearCaveCounter:Int = 0;
+    var openedMenu:Bool = true;
     public override function handleCaveCollision(cave:Cave)
     {
+        this.cave = cave;
         depositingToCave = true;
         inRangeOfCave = true;
-        this.cave = cave;
         PlayState.world.setRespawnCave(cave);
+        
+        if (!openedMenu)
+        {
+            nearCaveCounter++;
+            if (nearCaveCounter > 15)
+            {
+                openedMenu = true;
+                PlayState.world.openLevelMenu();
+            }
+        }
     }
 
     public override function handlePredatorCollision(predator:Predator)
