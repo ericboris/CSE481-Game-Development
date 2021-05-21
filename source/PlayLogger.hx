@@ -183,6 +183,7 @@ class PlayLogger
     {
         unherdedPrey++;
         unherdedDistanceAverage += GameWorld.entityDistance(dino, PlayState.world.getPlayer());
+        unherdedPreyTimer = 0.5;
     }
 
     public static function recordHerded(player:Player)
