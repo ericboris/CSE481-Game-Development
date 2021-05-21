@@ -17,6 +17,7 @@ class LevelMenuState extends FlxSubState
     var resumeButton:FlxButton;
     var nextButton:FlxButton;
 
+    var fadingOut:Bool = false;
     var dead:Bool = false;
     override public function create()
     {
@@ -124,6 +125,7 @@ class LevelMenuState extends FlxSubState
 
     function closed(tween:FlxTween)
     {
+        dead = true;
         PlayState.world.levelMenu = null;
         FlxG.mouse.visible = false;
         close();
@@ -131,17 +133,19 @@ class LevelMenuState extends FlxSubState
 
     public function closeMenu()
     {
-        if (!dead && box != null)
+        if (!dead && box == null)
         {
-            dead = true;
+            closed(null);
+            return;
+        }
+
+        if (!fadingOut)
+        {
+            fadingOut = true;
             fadeTween(box, box.alpha, 0.0, closed);
             fadeTween(text, text.alpha, 0.0);
             fadeTween(resumeButton, resumeButton.alpha, 0.0);
             fadeTween(nextButton, nextButton.alpha, 0.0);
-        }
-        else
-        {
-            closed(null);
         }
     }
 

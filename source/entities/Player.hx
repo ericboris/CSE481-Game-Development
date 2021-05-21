@@ -198,11 +198,17 @@ class Player extends Entity
                 primaryFollower.setLeader(cave);
                 primaryFollower.herdedDisableFollowingRadius = true;
             }
+        
         }
 
         if (!inRangeOfCave)
         {
             openedMenu = false;
+        }
+        
+        var isMoving:Bool = sprite.velocity.x != 0 || sprite.velocity.y != 0;
+        if (!inRangeOfCave || isCalling || !inCancellableAnimation || isMoving)
+        {
             nearCaveCounter = 0;
             PlayState.world.closeLevelMenu();
         }
@@ -758,7 +764,7 @@ class Player extends Entity
         if (!openedMenu)
         {
             nearCaveCounter++;
-            if (nearCaveCounter > 30)
+            if (nearCaveCounter > 5)
             {
                 openedMenu = true;
                 PlayState.world.openLevelMenu();
