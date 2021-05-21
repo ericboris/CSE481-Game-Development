@@ -16,6 +16,7 @@ class BerryBush extends Obstacle
         setHitboxSize(4, 4);
 
         this.type = EntityBerryBush;
+        this.collidable = false;
     }
 
     public function swipe()

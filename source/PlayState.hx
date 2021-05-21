@@ -242,9 +242,13 @@ class PlayState extends FlxState
             var x = tileX * TILE_SIZE + TILE_SIZE/2 - sprite.width/2;
             var y = tileY * TILE_SIZE + TILE_SIZE/2 - sprite.height/2;
             
-            if (TileType.nonCollidable(tileNum) && !uncollidableTiles.contains(tileNum))
+            if (TileType.nonCollidable(tileNum))
             {
-                uncollidableTiles.push(tileNum);
+                if (!uncollidableTiles.contains(tileNum))
+                {
+                    uncollidableTiles.push(tileNum);
+                }
+
                 if (TileType.isStatic(tileNum))
                 {
                     staticCollidableSprites.add(sprite);
@@ -646,7 +650,7 @@ class PlayState extends FlxState
         {
             return;
         }
-        else
+        else if (e1.collides() && e2.collides())
         {
             // Only separate them if the other conditions are not met.
             FlxObject.separate(s1, s2);

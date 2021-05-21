@@ -37,6 +37,8 @@ class Entity
 
     var lastVelocity:FlxPoint = FlxPoint.weak();
 
+    var collidable:Bool = true;
+
     public var nextJumps: Array<FlxPoint> = new Array<FlxPoint>();
 
     public function new()
@@ -372,4 +374,6 @@ class Entity
         sprite.setSize(width, height);
         sprite.centerOffsets();
     }
+
+    public function collides() { return collidable; }
 }
