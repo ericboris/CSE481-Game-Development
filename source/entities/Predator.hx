@@ -67,7 +67,7 @@ class Predator extends Dino
 
         this.attackRoar = FlxG.sound.load(AssetPaths.PredatorRoar1__mp3, 0.7);
         attackRoar.proximity(sprite.x, sprite.y, FlxG.camera.target, FlxG.width * 0.6);
-    
+        this.thought.setOffset(0, -17);
     }
 
     function flash()

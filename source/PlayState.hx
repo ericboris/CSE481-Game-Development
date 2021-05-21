@@ -215,12 +215,13 @@ class PlayState extends FlxState
         // Set camera to follow player
         FlxG.camera.setScrollBoundsRect(0, 0, TILE_SIZE * mapWidth, TILE_SIZE * mapHeight);
         FlxG.camera.zoom = baseZoom();
-        FlxG.camera.follow(player.getSprite(), TOPDOWN, 1);
+        FlxG.camera.follow(player.getSprite(), TOPDOWN, 0.2);
+        FlxG.camera.snapToTarget();
 
         var camera_x = SCREEN_WIDTH/2;
         var camera_y = SCREEN_HEIGHT/2;
-        var camera_w = CHUNK_WIDTH/4;
-        var camera_h = CHUNK_HEIGHT/4;
+        var camera_w = CHUNK_WIDTH/5;
+        var camera_h = CHUNK_HEIGHT/5;
         FlxG.camera.deadzone.set(camera_x - camera_w/2, camera_y - camera_h/2, camera_w, camera_h);
     
         FlxG.camera.pixelPerfectRender = true;
@@ -393,6 +394,11 @@ class PlayState extends FlxState
                 prey.setPosition(player.getSprite().x, player.getSprite().y);
                 addEntity(prey);
             }
+        }
+
+        if (frameCounter == 0)
+        {
+            FlxG.camera.snapToTarget();
         }
 
         lastDeliveredTimer -= elapsed;
@@ -734,9 +740,9 @@ class PlayState extends FlxState
             closeLevelMenu();
             lastDeliveredTimer = 1.0;
 
-            var numPreyLeft = 0;
             dino.dead = true;
-            
+
+            var numPreyLeft = 0;
             if (dino.getType() == EntityPrey)
             {
                 for (prey in entityGroups[EntityPrey])
@@ -748,7 +754,7 @@ class PlayState extends FlxState
             }
             else
             {
-                cave.think("!");
+                cave.think("!?");
             }
 
             incrementScore(1);

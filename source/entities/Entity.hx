@@ -257,7 +257,7 @@ class Entity
     }
 
     public function jumpTo(x:Float, y:Float, collisionCheck:Bool = true, ?completeCallback: Entity -> Void,
-                           jumpDuration:Float = 0.34, heightMultiplier:Float = 1.5):Bool
+                           jumpDuration:Float = 0.4, heightMultiplier:Float = 1.5):Bool
     {
         if (isJumping)
         {
@@ -276,7 +276,11 @@ class Entity
 
         var control = new FlxPoint((end.x + start.x) / 2, (end.y + start.y) / 2);
         control.y -= 20.0 * heightMultiplier;
-        
+        if (end.x - start.x == 0)
+        {
+            control.x -= 5.0;
+        }
+
         var options = {ease: FlxEase.sineInOut, type: ONESHOT, onComplete: function(tween:FlxTween)
         {
             sprite.allowCollisions = FlxObject.ANY;

@@ -10,7 +10,9 @@ import flixel.math.FlxPoint;
 import flixel.addons.display.shapes.FlxShapeCircle;
 import flixel.addons.display.shapes.FlxShapeArrow;
 import js.html.Console;
-import flixel.util.FlxSpriteUtil; // For drawing call radius
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxTimer;
 
 class Player extends Entity
 {
@@ -795,11 +797,23 @@ class Player extends Entity
         PlayLogger.recordPlayerDeath(this);
 
         // Move player to nearest cave.
-        FlxG.camera.shake(0.01, 0.2);
-        FlxG.camera.fade(FlxColor.BLACK, 0.33, true);
-        
         var respawnCave = PlayState.world.getRespawnCave();
         this.setPosition(respawnCave.getX(), respawnCave.getY());
+        
+        // Camera effects
+        var camera = FlxG.camera;
+
+        var baseLerp = camera.followLerp;
+        camera.followLerp = 0.08;
+        new FlxTimer().start(1.5, function (timer) {
+            camera.followLerp = baseLerp;
+        }, 1);
+        var color = 0x88000000;
+        camera.shake(0.01, 0.3);
+        camera.fade(color, 0.16, false, function() {
+            camera.fade(color, 0.16, true);
+        });
+        
         killedSound.play();
     }
 

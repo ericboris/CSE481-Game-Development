@@ -49,7 +49,7 @@ class Prey extends Dino
         killedSound = FlxG.sound.load(AssetPaths.preyKilled__mp3, 0.3);
         killedSound.proximity(sprite.x, sprite.y, FlxG.camera.target, FlxG.width * 0.6);
 
-        thought.setOffset(0, -11);
+        thought.setOffset(0, -13);
 
         canJumpCliffs = false;
 
@@ -150,7 +150,7 @@ class Prey extends Dino
             }
 
             var isHerded = state == Herded;
-            PlayLogger.logPreyDeath(getX(), getY(), isHerded);
+            PlayLogger.recordPreyDeath(getX(), getY(), isHerded);
 
             // Die instantly!
             PlayState.world.numPreyDeaths++;
