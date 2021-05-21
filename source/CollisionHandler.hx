@@ -46,6 +46,9 @@ class CollisionHandler
         obstacles.setTileProperties(TileType.WATER_EDGE_LEFT, FlxObject.ANY, CollisionHandler.handleLeftWaterEdgeCollision);
         obstacles.setTileProperties(TileType.WATER_EDGE_UP, FlxObject.ANY, CollisionHandler.handleUpWaterEdgeCollision);
         obstacles.setTileProperties(TileType.WATER_EDGE_DOWN, FlxObject.ANY, CollisionHandler.handleDownWaterEdgeCollision);
+ 
+        obstacles.setTileProperties(TileType.CAVE_1, FlxObject.ANY, CollisionHandler.handleCaveCollision);
+        obstacles.setTileProperties(TileType.CAVE_2, FlxObject.ANY, CollisionHandler.handleCaveCollision);
     }
 
 
@@ -247,6 +250,19 @@ class CollisionHandler
              || tile == TileType.WATER_EDGE_DOWN_RIGHT || tile == TileType.WATER_EDGE_DOWN || tile == TileType.WATER_EDGE_DOWN_LEFT)
             {
                 tilemap.setTileByIndex(i, tile+42);
+            }
+        }
+    }
+
+    static function handleCaveCollision(tile:FlxObject, entity:FlxObject)
+    {
+        if (Std.is(entity, SpriteWrapper))
+        {
+            var sprite:SpriteWrapper<Entity> = cast entity;
+            if (sprite.entity.getType() == EntityPlayer)
+            {
+                var player:Player = cast sprite.entity;
+                player.handleCaveTileCollision();
             }
         }
     }

@@ -201,17 +201,18 @@ class Player extends Entity
         
         }
 
-        if (frameCounter > 20 && !inRangeOfCave)
+        if (!runningIntoCave)
         {
-            openedMenu = false;
+            nearCaveCounter = 0;
         }
         
-        var isMoving:Bool = sprite.velocity.x != 0 || sprite.velocity.y != 0;
-        if (!inRangeOfCave || isCalling || !inCancellableAnimation || isMoving)
+        var isMoving = sprite.velocity.x != 0 || sprite.velocity.y != 0;
+        if ((!runningIntoCave && isMoving) || isCalling || !inCancellableAnimation)
         {
             nearCaveCounter = 0;
             PlayState.world.closeLevelMenu();
         }
+        runningIntoCave = false;
 
 
         // Assume that we are now out of range of the cave.
@@ -716,6 +717,7 @@ class Player extends Entity
         {
             if (entity.type == EntityCave)
             {
+                handleCaveCollision(cast entity);
             }
         }
         else if (hitbox.getId() == STICK_HITBOX_ID)
@@ -752,23 +754,23 @@ class Player extends Entity
         return this.inRangeOfCave;
     }
 
-    var nearCaveCounter:Int = 0;
-    var openedMenu:Bool = true;
     public override function handleCaveCollision(cave:Cave)
     {
         this.cave = cave;
         depositingToCave = true;
         inRangeOfCave = true;
         PlayState.world.setRespawnCave(cave);
-        
-        if (!openedMenu)
+    }
+
+    var runningIntoCave:Bool = false;
+    var nearCaveCounter:Int = 0;
+    public function handleCaveTileCollision()
+    {
+        runningIntoCave = true;
+        nearCaveCounter++;
+        if (nearCaveCounter > 10)
         {
-            nearCaveCounter++;
-            if (nearCaveCounter > 5)
-            {
-                openedMenu = true;
-                PlayState.world.openLevelMenu();
-            }
+            PlayState.world.openLevelMenu();
         }
     }
 

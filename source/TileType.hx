@@ -37,7 +37,10 @@ class TileType
     public static final TREE_2 = 15;
     public static final TREE_3 = 21;
     public static final TREE_4 = 22;
-    
+ 
+    public static final CAVE_1 = 40;
+    public static final CAVE_2 = 41;
+
     public static function getTileObstacle(tile:Int):Null<Obstacle>
     {
         var tilemap = PlayState.world.getObstacles();
