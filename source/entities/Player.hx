@@ -169,6 +169,8 @@ class Player extends Entity
         caveArrow.alpha = 0.0;
         caveArrow.health = PlayState.world.topLayerSortIndex();
         PlayState.world.add(caveArrow);
+
+        PlayLogger.recordPlayerLives(numLives);
     }
 
     public override function update(elapsed:Float)
@@ -178,6 +180,8 @@ class Player extends Entity
         call();
         updateItem();
         move();
+
+        PlayLogger.recordPlayerMovement(this);
  
         frameCounter++;
         if (frameCounter % 10 == 0)
@@ -849,6 +853,8 @@ class Player extends Entity
         triggerSpeedBoost();
         
         think(getLives() + " x <3", 2.0);
+        
+        PlayLogger.recordPlayerLives(numLives);
     }
 
     public override function handleBoulderCollision(boulder:Boulder)
