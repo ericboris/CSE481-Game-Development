@@ -18,6 +18,8 @@ import flixel.graphics.FlxGraphic;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxTimer;
+import flixel.FlxSubState;
+import flixel.math.FlxPoint;
 
 class MenuPlayState extends FlxState
 {
@@ -76,9 +78,13 @@ class MenuPlayState extends FlxState
     public var numPreyCollected:Int = 0;
     public var numPredatorsCollected:Int = 0;
     public var numPrey:Int = 0;
+    
+    var preySpawnPositions:Array<FlxPoint> = [];
 
     var cameraZoomDirection:Int = -1;
     var cameraZoomTween:FlxTween;
+
+    static public var menuState:Class<FlxSubState> = MenuState;
 
     override public function create()
     {
@@ -150,12 +156,21 @@ class MenuPlayState extends FlxState
         transitionScreen.health = topLayerSortIndex() + 1;
         add(transitionScreen);
 
-        var menu = new MenuState(FlxColor.TRANSPARENT);
-        openSubState(menu);
+
+        // Spawn prey!
+        for (i in 0...Score.getTotalScore())
+        {
+            var prey = new Prey();
+            var position = preySpawnPositions[i % preySpawnPositions.length];
+            prey.setPosition(position.x, position.y);
+            addEntity(prey);
+        }
 
         this.persistentDraw = true;
         this.persistentUpdate = true;
-     
+ 
+        openSubState(cast Type.createInstance(menuState, []));
+
         PlayLogger.startLevel(GameWorld.levelId());
     }
 
@@ -409,10 +424,8 @@ class MenuPlayState extends FlxState
                 player.setPosition(x, y);
                 //addEntity(player);
             case "prey":
-                numPrey++;
-                var prey = new Prey();
-                prey.setPosition(x, y);
-                addEntity(prey);
+                Console.log("Spawn point");
+                preySpawnPositions.push(new FlxPoint(x, y));
             case "predator":
                 var predator = new Predator();
                 predator.setPosition(x, y);
