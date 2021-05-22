@@ -312,7 +312,7 @@ class Predator extends Dino
         else if (random < 0.6)
             this.think(":|", 0.4);
         else
-            this.think("o:", 0.4);
+            this.think(":o", 0.4);
 
         this.dazed = true;
         this.dazedTimer = DAZED_TIMER;
@@ -337,7 +337,7 @@ class Predator extends Dino
             hasRoared = false;
             state = Fleeing;
 
-            think(">:)", 0.4);
+            think(">:(", 0.4);
 
             return true;
         }

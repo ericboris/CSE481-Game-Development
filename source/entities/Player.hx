@@ -85,6 +85,8 @@ class Player extends Entity
 
     var BERRY_SHIFT = 48;
 
+    var HEART:Icon;
+
     public function new()
     {
         super();
@@ -169,6 +171,9 @@ class Player extends Entity
         caveArrow.alpha = 0.0;
         caveArrow.health = PlayState.world.topLayerSortIndex();
         PlayState.world.add(caveArrow);
+
+        HEART = new Icon(this, 0, 0);
+        HEART.setSprite(9, 8, AssetPaths.heart__png);
     }
 
     public override function update(elapsed:Float)
@@ -797,26 +802,22 @@ class Player extends Entity
     {
         if (predator.canEat(this))
         {
-            respawn();
+            death();
             // Unherd all dinosaurs.
             for (follower in followers)
             {
                 follower.setUnherded();
             }
             followers.resize(0);
-            think("!", 2.0);
+            //think("!", 2.0);
         }
     }
 
-    public function respawn()
+    public function death():Void
     {
         PlayState.world.numPlayerDeaths++;
         PlayLogger.recordPlayerDeath(this, followers.length);
 
-        // Move player to nearest cave.
-        var respawnCave = PlayState.world.getRespawnCave();
-        this.setPosition(respawnCave.getX(), respawnCave.getY());
-        
         // Camera effects
         var camera = FlxG.camera;
 
@@ -840,9 +841,19 @@ class Player extends Entity
         else
         {
             decrementLives();
+            respawn();
         }
+    }
 
+    public function respawn()
+    {
+       // Move player to nearest cave.
+        var respawnCave = PlayState.world.getRespawnCave();
+        this.setPosition(respawnCave.getX(), respawnCave.getY());
+        
         triggerSpeedBoost();
+
+        HEART.appear(2.0);
     }
 
     public override function handleBoulderCollision(boulder:Boulder)
