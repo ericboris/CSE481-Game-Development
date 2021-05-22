@@ -35,13 +35,10 @@ class PlayLogger
     static final PREDATOR_SWIPE = 10;
     static final CAVE_DEPOSIT = 11;
     static final PREY_SWIPE = 12;
-<<<<<<< HEAD
     static final PLAYER_LIVES = 13;
     static final PLAYER_LOCATION = 14;
-=======
-    static final GAME_OVER = 13;
-    static final GAME_OVER_TRY_AGAIN = 14;
->>>>>>> 1aee6d20f90d66f76259344f1186384a0653795b
+    static final GAME_OVER = 15;
+    static final GAME_OVER_TRY_AGAIN = 16;
 
     // Reset each level
     static var logTimer: Float = 0.0;
@@ -68,7 +65,7 @@ class PlayLogger
 
     static var callStartTimestamp:Float;
 
-    static final PLAYER_LOCATION_TIMER_DEFAULT:Float = 1.0;
+    static final PLAYER_LOCATION_TIMER_DEFAULT:Float = 4.0;
     static var playerLocationTimer = PLAYER_LOCATION_TIMER_DEFAULT;
     static var playerX:Float = 0;
     static var playerY:Float = 0;
@@ -275,22 +272,18 @@ class PlayLogger
     {
         var details = {x: prey.getX(), y: prey.getY()};
         logger.logLevelAction(PREY_SWIPE, details);
-<<<<<<< HEAD
     }
 
     public static function recordPlayerLives(livesRemaining:Int):Void
     {
         var details = {livesRemaining:livesRemaining};
         logger.logLevelAction(PLAYER_LIVES, details);
-        Console.log("LIVES REMAINING: " + livesRemaining);
     }
 
     public static function recordPlayerMovement(player:Player):Void
     {
         playerX = player.getX();
         playerY = player.getY();
-=======
->>>>>>> 1aee6d20f90d66f76259344f1186384a0653795b
     }
 
     public static function recordGameOver()
