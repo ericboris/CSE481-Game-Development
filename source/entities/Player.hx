@@ -932,8 +932,8 @@ class Player extends Entity
     {
         numLives -= amount;
     }
-
-    public function getLives():Int
+    
+    public static function getLives():Int
     {
         return numLives;
     }

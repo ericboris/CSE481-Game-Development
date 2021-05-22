@@ -38,7 +38,8 @@ class PlayLogger
     static final PLAYER_LIVES = 13;
     static final PLAYER_LOCATION = 14;
     static final GAME_OVER = 15;
-    static final GAME_OVER_TRY_AGAIN = 16;
+    static final GAME_OVER_TRY_AGAIN = 16; // Player restarted game
+    static final GAME_WIN = 17;
 
     // Reset each level
     static var logTimer: Float = 0.0;
@@ -296,5 +297,11 @@ class PlayLogger
     {
         var details = {};
         logger.logLevelAction(GAME_OVER_TRY_AGAIN, null);
+    }
+
+    public static function recordGameWin()
+    {
+        var details = { lives: Player.getLives(), score: Score.getTotalScore() }
+        logger.logLevelAction(GAME_WIN, details);
     }
 }

@@ -12,17 +12,17 @@ import flixel.util.FlxColor;
 import flixel.FlxSubState;
 import js.html.Console;
 
-class GameOverState extends FlxSubState
+class GameWinState extends FlxSubState
 {
     public override function create()
     {
         super.create();
 
-        camera.fade(0xFF800000, 1.0, true);
+        camera.fade(FlxColor.BLACK, 1.0, true);
         
-        var gameOver = new FlxText(0, 0, 300, " GAME OVER", 36);
+        var gameOver = new FlxText(0, 0, 300, "YOU WIN!", 36);
         setOverlay(gameOver);
-        gameOver.x = camera.width/2 - gameOver.width/2;
+        gameOver.x = camera.width/2 - gameOver.width/2 + 50;
         gameOver.y = camera.height/2 - gameOver.height - 40;
         add(gameOver);
 
@@ -33,11 +33,11 @@ class GameOverState extends FlxSubState
         savedText.y = gameOver.y + gameOver.height + 30;
         add(savedText);
 
-        var tryAgainText = new FlxText(0, 0, 0, "Try again?", 30);
+        var tryAgainText = new FlxText(0, 0, 0, "Thanks for playing!", 30);
         setOverlay(tryAgainText);
         tryAgainText.x = camera.width/2 - tryAgainText.width/2;
         tryAgainText.y = savedText.y + savedText.height + 10;
-        tryAgainText.alpha = 0.0;
+        tryAgainText.alpha = 1.0;
         add(tryAgainText);
 
         var restartText = new FlxText(0, 0, 0, "Space to restart", 18);
@@ -53,16 +53,15 @@ class GameOverState extends FlxSubState
         setShadow(restartText);
 
         transitioning = true;
-        new FlxTimer().start(1.0, function(timer:FlxTimer) {
+        new FlxTimer().start(1.5, function(timer:FlxTimer) {
             var options = { ease: FlxEase.expoIn }
             transitioning = false;
             FlxTween.num(0.0, 1.0, 0.9, options, function (f:Float) {
-                tryAgainText.alpha = f;
                 restartText.alpha = f;
             });
         });
 
-        PlayLogger.recordGameOver();
+        PlayLogger.recordGameWin();
     }
 
     function setOverlay(sprite:FlxSprite)

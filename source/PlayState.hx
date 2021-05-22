@@ -134,8 +134,18 @@ class PlayState extends FlxState
             add(tutorialText);
         }
 
+        var nextMap = GameWorld.getNextMap();
+        if (nextMap == null)
+        {
+            // Go to game win screen!
+            dead = true;
+            MenuPlayState.menuState = GameWinState;
+            FlxG.switchState(new MenuPlayState());
+            return;
+        }
+        
         // Set up the tilemap.
-        map = new FlxOgmo3Loader(AssetPaths.DinoHerder__ogmo, GameWorld.getNextMap());
+        map = new FlxOgmo3Loader(AssetPaths.DinoHerder__ogmo, nextMap);
 
         // Static Entities.
         // Load tiles from tile maps
@@ -356,8 +366,14 @@ class PlayState extends FlxState
         }
     }
 
+    var dead:Bool = false;
     override public function update(elapsed:Float)
     {
+        if (dead)
+        {
+            return;
+        }
+
         if (!PlayLogger.loggerInitialized())
         {
             // Don't execute update method until logger session has been created.
