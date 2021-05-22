@@ -64,10 +64,8 @@ class MenuState extends FlxSubState
 
         if (FlxG.sound.music == null)
         {
-            FlxG.sound.playMusic(AssetPaths.Theme__mp3, 0.5, true);
+            FlxG.sound.playMusic(AssetPaths.Theme__mp3, BASE_VOLUME, true);
         }
-
-        FlxG.sound.volume = BASE_VOLUME;
     }
 
     override public function update(elapsed:Float)

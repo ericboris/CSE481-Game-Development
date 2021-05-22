@@ -35,6 +35,8 @@ class PlayLogger
     static final PREDATOR_SWIPE = 10;
     static final CAVE_DEPOSIT = 11;
     static final PREY_SWIPE = 12;
+    static final PLAYER_LIVES = 13;
+    static final PLAYER_LOCATION = 14;
 
     // Reset each level
     static var logTimer: Float = 0.0;
@@ -60,6 +62,11 @@ class PlayLogger
     static var herdedPreyTimer:Float = HERDED_PREY_TIMER;
 
     static var callStartTimestamp:Float;
+
+    static final PLAYER_LOCATION_TIMER_DEFAULT:Float = 1.0;
+    static var playerLocationTimer = PLAYER_LOCATION_TIMER_DEFAULT;
+    static var playerX:Float = 0;
+    static var playerY:Float = 0;
 
     public static function initializeLogger()
     {
@@ -160,6 +167,15 @@ class PlayLogger
                 var details = {};
                 logger.logLevelAction(NO_PREY_HERDED, details);
             }
+
+            /* PLAYER LOCATION LOGGING */
+            playerLocationTimer -= timestep;
+            if (playerLocationTimer <= 0)
+            {
+                var details = {playerX:playerX, playerY:playerY};
+                logger.logLevelAction(PLAYER_LOCATION, details);
+                playerLocationTimer = PLAYER_LOCATION_TIMER_DEFAULT;
+            }
         }
     }
 
@@ -250,11 +266,23 @@ class PlayLogger
         logger.logLevelAction(PREDATOR_SWIPE, details);
     }
 
-   public static function recordPreySwipe(prey:Prey)
+    public static function recordPreySwipe(prey:Prey)
     {
         var details = {x: prey.getX(), y: prey.getY()};
         logger.logLevelAction(PREY_SWIPE, details);
-        Console.log("PREY SWIPE");
+    }
+
+    public static function recordPlayerLives(livesRemaining:Int):Void
+    {
+        var details = {livesRemaining:livesRemaining};
+        logger.logLevelAction(PLAYER_LIVES, details);
+        Console.log("LIVES REMAINING: " + livesRemaining);
+    }
+
+    public static function recordPlayerMovement(player:Player):Void
+    {
+        playerX = player.getX();
+        playerY = player.getY();
     }
 
 }
