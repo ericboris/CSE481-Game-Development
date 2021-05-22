@@ -831,6 +831,7 @@ class Player extends Entity
         if (numLives == 0) 
         {
             // TODO - GAME OVER STATE
+            PlayState.world.gameOverScreen();
         }
         else
         {

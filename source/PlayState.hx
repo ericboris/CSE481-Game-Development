@@ -310,7 +310,7 @@ class PlayState extends FlxState
 
     function updateScore()
     {
-        scoreText.text = "" + Score.get();
+        scoreText.text = "" + Score.getScore();
         scoreText.x = player.getX() - scoreText.textField.textWidth/2;
         scoreText.y = player.getY() - scoreText.textField.textHeight/2 - 16;
 
@@ -796,6 +796,20 @@ class PlayState extends FlxState
         else
         {
             closeSubState();
+        }
+    }
+
+    var gameOver:Bool = false;
+    public function gameOverScreen()
+    {
+        if (!gameOver)
+        {
+            gameOver = true;
+            camera.shake(0.012, 0.3);
+            camera.fade(0xFF800000, 0.6, false, function() {
+                MenuPlayState.menuState = GameOverState;
+                FlxG.switchState(new MenuPlayState());
+            }, true);
         }
     }
 }

@@ -1,11 +1,12 @@
 import flixel.FlxG;
-import flixel.FlxSubState;
+import flixel.FlxState;
 import flixel.text.FlxText;
 import flixel.addons.ui.FlxButtonPlus;
 import flixel.ui.FlxButton;
 import openfl.media.Sound;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
+import flixel.FlxSubState;
 
 class MenuState extends FlxSubState
 {
@@ -23,18 +24,6 @@ class MenuState extends FlxSubState
         {
             PlayLogger.initializeLogger();
         }
-
-        var zoom = FlxG.camera.zoom;
-        var cameraWidth = FlxG.camera.width/2 / FlxG.camera.zoom;
-        var cameraHeight = FlxG.camera.height/2 / FlxG.camera.zoom;
-
-        /*var box = new FlxSprite(150, 150);
-        box.makeGraphic(400, 200, FlxColor.BLACK);
-        box.alpha = 0.95;
-        add(box);*/
-
-        var width = 600;
-        var height = 480;
 
         titleText = new FlxText(125, 130, 400, "Mammoth Herder", 60);
         titleText.alignment = CENTER;

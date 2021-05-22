@@ -36,7 +36,7 @@ class Icon
     {
         this.center = centeredOn;
         var offset = FlxG.random.float(-0.1, 0.1);
-        this.tween = FlxTween.num(-1, 4, 2.5 + offset, {ease: FlxEase.quadInOut, type: FlxTweenType.PINGPONG}, updateTween);
+        this.tween = FlxTween.num(-1, 5, 2.5 + offset, {ease: FlxEase.linear, type: FlxTweenType.PINGPONG}, updateTween);
         setOffset(x, y);
         setText("");
     }

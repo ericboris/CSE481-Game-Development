@@ -35,6 +35,8 @@ class PlayLogger
     static final PREDATOR_SWIPE = 10;
     static final CAVE_DEPOSIT = 11;
     static final PREY_SWIPE = 12;
+    static final GAME_OVER = 13;
+    static final GAME_OVER_TRY_AGAIN = 14;
 
     // Reset each level
     static var logTimer: Float = 0.0;
@@ -169,13 +171,13 @@ class PlayLogger
         playerDeaths = 0;
         logTimer = 0;
 
-        var details = {score: Score.get()}
+        var details = {score: Score.getScore()}
         logger.logLevelStart(levelId, details);
     }
 
     public static function endLevel()
     {
-        var details = {deathCount: playerDeaths, score: Score.get(), time: logTimer,
+        var details = {deathCount: playerDeaths, score: Score.getScore(), time: logTimer,
                        preyCollected: PlayState.world.numPreyCollected, predCollected: PlayState.world.numPredatorsCollected,
                        preyDeaths: PlayState.world.numPreyDeaths};
         logger.logLevelEnd(details);
@@ -254,7 +256,17 @@ class PlayLogger
     {
         var details = {x: prey.getX(), y: prey.getY()};
         logger.logLevelAction(PREY_SWIPE, details);
-        Console.log("PREY SWIPE");
     }
 
+    public static function recordGameOver()
+    {
+        var details = { level: GameWorld.levelId() };
+        logger.logLevelAction(GAME_OVER, details);
+    }
+
+    public static function recordGameOverTryAgain()
+    {
+        var details = {};
+        logger.logLevelAction(GAME_OVER_TRY_AGAIN, null);
+    }
 }

@@ -45,6 +45,13 @@ class GameWorld
         levelIndex--;
     }
 
+    static public function restart()
+    {
+        PlayLogger.recordGameOverTryAgain();
+        Score.resetTotalScore();
+        levelIndex = 0;
+    }
+
     // New entities to display reactions above.
     static var newEntities = [EntityCave,
                             EntityPrey,
