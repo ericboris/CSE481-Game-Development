@@ -35,8 +35,10 @@ class PlayLogger
     static final PREDATOR_SWIPE = 10;
     static final CAVE_DEPOSIT = 11;
     static final PREY_SWIPE = 12;
+
     static final GAME_OVER = 13;
-    static final GAME_OVER_TRY_AGAIN = 14;
+    static final GAME_OVER_TRY_AGAIN = 14; // Player restarted game
+    static final GAME_WIN = 15;
 
     // Reset each level
     static var logTimer: Float = 0.0;
@@ -268,5 +270,11 @@ class PlayLogger
     {
         var details = {};
         logger.logLevelAction(GAME_OVER_TRY_AGAIN, null);
+    }
+
+    public static function recordGameWin()
+    {
+        var details = { lives: Player.getLives(), score: Score.getTotalScore() }
+        logger.logLevelAction(GAME_WIN, details);
     }
 }

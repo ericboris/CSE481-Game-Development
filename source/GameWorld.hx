@@ -224,14 +224,14 @@ class GameWorld
     }
 
     static public function getNextMap()
-    {   
-        if (levelIndex < levelArray.length - 1) 
+    {
+        if (levelIndex < levelArray.length) 
         {
             return levelArray[levelIndex++];
         }
         else
         {
-            return levelArray[levelIndex];
+            return null;
         }
     }
    

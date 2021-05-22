@@ -424,7 +424,6 @@ class MenuPlayState extends FlxState
                 player.setPosition(x, y);
                 //addEntity(player);
             case "prey":
-                Console.log("Spawn point");
                 preySpawnPositions.push(new FlxPoint(x, y));
             case "predator":
                 var predator = new Predator();
