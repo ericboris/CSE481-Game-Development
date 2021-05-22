@@ -28,6 +28,7 @@ class Dino extends Entity
     /* State for herded behavior */
     var herdedPlayer:Player;
     var herdedLeader:Entity;
+    public var herdedFollower:Dino;
     var herdedSpeed:Float;
 
     var lastPosition:FlxPoint = new FlxPoint();
@@ -73,7 +74,7 @@ class Dino extends Entity
         // If we're herded but our leader is unherded, switch to unherded.
         if (state == Herded && Std.is(herdedLeader, Dino) && cast(herdedLeader, Dino).getState() == Unherded)
         {
-            setUnherded();
+            setUnherded(true);
         }
 
         // Update animation
@@ -134,6 +135,12 @@ class Dino extends Entity
         {
             herdedLeader = entity;
             newLeaderFlag = true;
+        }
+
+        if (Std.is(entity, Dino))
+        {
+            var dino:Dino = cast entity;
+            dino.herdedFollower = this;
         }
     }
 
@@ -300,19 +307,26 @@ class Dino extends Entity
     /* State transition methods */
     public function setUnherded(notify:Bool = false)
     {
-        PlayLogger.recordUnherded(this);
+        if (state != Unherded)
+        {
+            PlayLogger.recordUnherded(this);
 
-        var player = herdedPlayer;
-        herdedLeader = null;
-        herdedPlayer = null;
-        state = Unherded;
+            var player = herdedPlayer;
+            herdedLeader = null;
+            herdedFollower = null;
+            herdedPlayer = null;
+            state = Unherded;
 
-        canJumpCliffs = false;
-        think("?", 2.0);
+            canJumpCliffs = false;
+            think("?", 2.0);
 
-        herdedDisableFollowingRadius = false;
+            herdedDisableFollowingRadius = false;
 
-        player.notifyUnherded(this);
+            if (notify)
+            {
+                player.notifyUnherded(this);
+            }
+        }
     }
 
     public function getState()
