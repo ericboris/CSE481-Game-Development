@@ -85,8 +85,6 @@ class Player extends Entity
 
     var BERRY_SHIFT = 48;
 
-    var HEART:Icon;
-
     public function new()
     {
         super();
@@ -171,9 +169,6 @@ class Player extends Entity
         caveArrow.alpha = 0.0;
         caveArrow.health = PlayState.world.topLayerSortIndex();
         PlayState.world.add(caveArrow);
-
-        HEART = new Icon(this, 0, 0);
-        HEART.setSprite(9, 8, AssetPaths.heart__png);
     }
 
     public override function update(elapsed:Float)
@@ -809,7 +804,6 @@ class Player extends Entity
                 follower.setUnherded();
             }
             followers.resize(0);
-            //think("!", 2.0);
         }
     }
 
@@ -852,8 +846,8 @@ class Player extends Entity
         this.setPosition(respawnCave.getX(), respawnCave.getY());
         
         triggerSpeedBoost();
-
-        HEART.appear(2.0);
+        
+        think(getLives() + " x <3", 2.0);
     }
 
     public override function handleBoulderCollision(boulder:Boulder)
