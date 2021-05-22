@@ -32,6 +32,8 @@ class Player extends Entity
     static final FRAMERATE = 10;
     static final MIN_FRAMERATE = 0;
 
+    static var numLives:Int = 3;
+
     var speed:Float = SPEED;
 
     // Array of followers. TODO: Should be linked list.
@@ -830,6 +832,17 @@ class Player extends Entity
         });
         
         killedSound.play();
+
+        if (numLives == 0) 
+        {
+            // TODO - GAME OVER STATE
+        }
+        else
+        {
+            decrementLives();
+        }
+
+        triggerSpeedBoost();
     }
 
     public override function handleBoulderCollision(boulder:Boulder)
@@ -891,5 +904,25 @@ class Player extends Entity
         speedBoost = true;
         speedBoostTimer += SPEED_BOOST_DURATION;
         berrySound.play();
+    }
+
+    public function setLives(amount:Int):Void
+    {
+        numLives = amount;
+    }
+
+    public function incrementLives(amount:Int=1):Void
+    {
+        numLives += amount;
+    }
+
+    public function decrementLives(amount:Int=1):Void
+    {
+        numLives -= amount;
+    }
+
+    public function getLives():Int
+    {
+        return numLives;
     }
 }

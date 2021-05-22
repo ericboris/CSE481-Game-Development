@@ -172,6 +172,7 @@ class Prey extends Dino
             canJumpCliffs = true;
             
             think("<3", 0.8);
+            PlayLogger.recordHerded(player);
         }
     }
 
