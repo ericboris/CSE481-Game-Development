@@ -1,0 +1,3 @@
+Mammoth Herder is an arcade style game about herding Mammoths.
+It's being developed as a course project and is a work in progress. 
+

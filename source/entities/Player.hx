@@ -739,6 +739,7 @@ class Player extends Entity
                 var diffX = prey.getX() - getX();
                 var diffY = prey.getY() - getY();
                 prey.updatePosition(FlxMath.signOf(diffX), FlxMath.signOf(diffY));
+                PlayLogger.recordPreySwipe(prey);
             }
             else if (entity.type == EntityPredator)
             {

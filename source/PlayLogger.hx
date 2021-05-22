@@ -34,6 +34,7 @@ class PlayLogger
     static final BERRY_COLLECT = 9;
     static final PREDATOR_SWIPE = 10;
     static final CAVE_DEPOSIT = 11;
+    static final PREY_SWIPE = 12;
 
     // Reset each level
     static var logTimer: Float = 0.0;
@@ -248,4 +249,12 @@ class PlayLogger
         var details = {x: pred.getX(), y: pred.getY()};
         logger.logLevelAction(PREDATOR_SWIPE, details);
     }
+
+   public static function recordPreySwipe(prey:Prey)
+    {
+        var details = {x: prey.getX(), y: prey.getY()};
+        logger.logLevelAction(PREY_SWIPE, details);
+        Console.log("PREY SWIPE");
+    }
+
 }
