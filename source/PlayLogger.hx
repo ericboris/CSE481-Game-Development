@@ -16,8 +16,9 @@ class PlayLogger
     static final DEBUG_VERSION = 1;
     static final MAY_11_VERSION = 2;
     static final MAY_16_VERSION = 3;
+    static final INITIAL_RELEASE = 4;
 
-    static final GAME_VERSION = DEBUG_VERSION;
+    static final GAME_VERSION = INITIAL_RELEASE;
 
     static var logger = new CapstoneLogger(GAME_ID, GAME_NAME, GAME_KEY, GAME_VERSION);
     static var createdLoggerSession = false;
@@ -37,7 +38,6 @@ class PlayLogger
     static final PREY_SWIPE = 12;
     static final PLAYER_LIVES = 13;
     static final PLAYER_LOCATION = 14;
-    
     static final GAME_OVER = 15;
     static final GAME_OVER_TRY_AGAIN = 16; // Player restarted game
     static final GAME_WIN = 17;
@@ -67,7 +67,7 @@ class PlayLogger
 
     static var callStartTimestamp:Float;
 
-    static final PLAYER_LOCATION_TIMER_DEFAULT:Float = 1.0;
+    static final PLAYER_LOCATION_TIMER_DEFAULT:Float = 4.0;
     static var playerLocationTimer = PLAYER_LOCATION_TIMER_DEFAULT;
     static var playerX:Float = 0;
     static var playerY:Float = 0;
