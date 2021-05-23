@@ -18,6 +18,7 @@ import flixel.graphics.FlxGraphic;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxTimer;
+import flixel.FlxCamera;
 
 class PlayState extends FlxState
 {
@@ -73,6 +74,7 @@ class PlayState extends FlxState
 
     // The level's score
     var scoreText:FlxText;
+    var scoreSecondaryText:FlxText;
 
     // Screen transition
     var transitioningToNextLevel:Bool = false;
@@ -186,17 +188,30 @@ class PlayState extends FlxState
         setupCamera();
 
         // Set up score counter
-        scoreText = new FlxText(0, 0, 0, "", 10);
-        scoreText.alpha = 0;
-        scoreText.setBorderStyle(SHADOW, FlxColor.BLACK, 1, 1);
+        scoreText = new FlxText(0, 0, 0, "" + Score.getTotalScore(), 24);
+        scoreText.scrollFactor.x = scoreText.scrollFactor.y = 0;
+        scoreText.x = overlayCamera.width - scoreText.width - 16;
+        scoreText.y = 8;
+        scoreText.setBorderStyle(SHADOW, FlxColor.BLACK, 3, 1);
         scoreText.health = topLayerSortIndex();
+        scoreText.camera = overlayCamera;
         add(scoreText);
+        
+        scoreSecondaryText = new FlxText(0, 0, 0, null, 15);
+        scoreSecondaryText.scrollFactor.x = scoreSecondaryText.scrollFactor.y = 0;
+        scoreSecondaryText.x = overlayCamera.width - scoreSecondaryText.width - 16;
+        scoreSecondaryText.y = scoreText.y + scoreText.height + 1;
+        scoreSecondaryText.setBorderStyle(SHADOW, FlxColor.BLACK, 2, 1);
+        scoreSecondaryText.health = topLayerSortIndex();
+        scoreSecondaryText.camera = overlayCamera;
+        add(scoreSecondaryText);
 
         // Set up transition screen
-        transitionScreen = new FlxSprite(-10, -10);
-        transitionScreen.makeGraphic(TILE_SIZE * mapWidth + 10, TILE_SIZE * mapHeight + 10, FlxColor.BLACK);
+        transitionScreen = new FlxSprite(0, 0);
+        transitionScreen.makeGraphic(SCREEN_WIDTH, SCREEN_HEIGHT, FlxColor.BLACK);
         transitionScreen.alpha = 1;
         transitionScreen.health = topLayerSortIndex() + 1;
+        transitionScreen.camera = overlayCamera;
         add(transitionScreen);
 
         this.persistentDraw = true;
@@ -215,16 +230,20 @@ class PlayState extends FlxState
         return baseZoom() * 0.8;
     }
 
+    var overlayCamera:FlxCamera;
     function setupCamera()
     {
         // Set world size
         FlxG.worldBounds.set(0, 0, TILE_SIZE * mapWidth, TILE_SIZE * mapHeight);
+        
+        overlayCamera = new FlxCamera(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 1.0);
+        overlayCamera.bgColor = FlxColor.TRANSPARENT;
+        FlxG.cameras.add(overlayCamera, false);
 
         // Set camera to follow player
         FlxG.camera.setScrollBoundsRect(0, 0, TILE_SIZE * mapWidth, TILE_SIZE * mapHeight);
         FlxG.camera.zoom = baseZoom();
-        FlxG.camera.follow(player.getSprite(), TOPDOWN, 0.2);
-        FlxG.camera.snapToTarget();
+        FlxG.camera.follow(player.getSprite(), TOPDOWN, 0.3);
 
         var camera_x = SCREEN_WIDTH/2;
         var camera_y = SCREEN_HEIGHT/2;
@@ -318,19 +337,6 @@ class PlayState extends FlxState
         }
     }
 
-    function updateScore()
-    {
-        scoreText.text = "" + Score.getScore();
-        scoreText.x = player.getX() - scoreText.textField.textWidth/2;
-        scoreText.y = player.getY() - scoreText.textField.textHeight/2 - 16;
-
-        // Fade out score text.
-        if (scoreText.alpha > 0)
-        {
-            scoreText.alpha -= 0.01;
-        }
-    }
-
     function updateCamera()
     {
         var zoom = FlxG.camera.zoom;
@@ -366,6 +372,33 @@ class PlayState extends FlxState
         }
     }
 
+    function updateScore()
+    {
+        Score.update();
+        var score = Score.getTotalScore();
+        if (score != lastScore)
+        {
+            function setAlpha(f:Float) {
+                scoreSecondaryText.alpha = f;
+            }
+            scoreSecondaryText.text = "+" + (score - lastScore);
+            scoreSecondaryText.x = overlayCamera.width - scoreSecondaryText.width - 16;
+            var details = { ease: FlxEase.expoIn, onComplete: function(tween) {
+                scoreText.text = "" + score;
+                scoreText.x = overlayCamera.width - scoreText.width - 16;
+
+                new FlxTimer().start(1.0, function (timer) {
+                    var details = { ease: FlxEase.expoIn };
+                    FlxTween.num(1.0, 0.0, 0.3, details, setAlpha);
+                });
+            }};
+            FlxTween.num(0.0, 1.0, 0.3, details, setAlpha);
+
+            lastScore = score;
+        }
+    }
+
+    var lastScore:Int = Score.getTotalScore();
     var dead:Bool = false;
     override public function update(elapsed:Float)
     {
@@ -382,7 +415,7 @@ class PlayState extends FlxState
 
         PlayLogger.update();
         PlayLogger.incrementTime(elapsed);
- 
+
         // Do collision checks
         // Don't do collision checks on the very first frame of execution. This prevents weird spawning in bugs.
         if (frameCounter > 0)
@@ -391,8 +424,8 @@ class PlayState extends FlxState
         }
  
         updateTransitionScreen();
-        updateScore();
         updateCamera();
+        updateScore();
 
         // Update all entities
         for (entity in entities)
@@ -679,12 +712,6 @@ class PlayState extends FlxState
         return entityGroups[EntityPrey].length == 0;
     }
 
-    public function incrementScore(amount:Int):Void
-    {
-        Score.increment(amount);
-        //scoreText.alpha = 1;
-    }
-
     public function getObstacles()
     {
         return obstacles;
@@ -763,7 +790,8 @@ class PlayState extends FlxState
                 cave.think("!?", 1.5, true);
             }
 
-            incrementScore(1);
+            Score.collectDino(dino);
+            dino.getSprite().health = bottomLayerSortIndex() + 1;
             dino.fadeOutAndRemove();
 
             scoreSoundMultiplier += 0.1;
