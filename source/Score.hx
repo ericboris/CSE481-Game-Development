@@ -11,7 +11,7 @@ class Score
     
 
     // Track score per delivery
-    static final COLLECTED_TIMER = 1.5;
+    static final COLLECTED_TIMER = 0.8;
     static var _collectedTimer:Float = COLLECTED_TIMER;
     static var _collectedScore:Int = 0;
     static var _collectedMultiplier:Float = 1.0;
@@ -92,6 +92,11 @@ class Score
                 addScore();
             }
         }
+    }
+
+    static public function endLevel()
+    {
+        addScore();
     }
 
     static public function getPreyCount()

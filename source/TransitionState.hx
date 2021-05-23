@@ -14,6 +14,8 @@ class TransitionState extends FlxState
 {
     public override function create()
     {
+        Score.endLevel();
+
         // Display the score for this level.
         var numPreyCollected = PlayState.world.numPreyCollected;
         var numPredsCollected = PlayState.world.numPredatorsCollected;
@@ -40,6 +42,13 @@ class TransitionState extends FlxState
         var levelScoreText = new FlxText(0, 0, 0, scoreString, 36);
         setShadow(levelScoreText);
         levelScoreText.alpha = 0;
+
+        var score  = "Score: " + Score.getScore();
+        var scoreText = new FlxText(0, 0, 0, score, 24);
+        scoreText.x = camera.width - scoreText.width - 16;
+        scoreText.y = 8;
+        setShadow(scoreText);
+        add(scoreText);
 
         var rateText = new FlxText(0, 0, 0, survivalRate, 36);
         setShadow(rateText);
