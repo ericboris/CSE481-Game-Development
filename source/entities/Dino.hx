@@ -222,7 +222,7 @@ class Dino extends Entity
         var positionDiff = new FlxPoint(lastPosition.x - position.x, lastPosition.y - position.y);
         var notMovingCheck = GameWorld.magnitude(positionDiff) < 1.5;
         
-        // Check if we can't see the cave
+        // Check if we can see our destination
         var visionCheck = !GameWorld.checkVision(this, leader);
         
         if (visionCheck || notMovingCheck)
@@ -283,7 +283,7 @@ class Dino extends Entity
     {
         if (herdedPath.length == 0) return;
         
-        if (framesSincePathGenerated > 6)
+        if (framesSincePathGenerated > 10)
         {
             pathTowards(pathLeader);
         }
@@ -299,8 +299,8 @@ class Dino extends Entity
             if (herdedPath.length == 0) return;
             pathPoint = herdedPath[herdedPath.length-1];
             dir = new FlxPoint(pathPoint.x - position.x, pathPoint.y - position.y);
-            if (speed > GameWorld.magnitude(dir) + 7.0) {
-                speed = GameWorld.magnitude(dir) + 7.0;
+            if (speed > GameWorld.magnitude(dir)) {
+                speed = GameWorld.magnitude(dir);
             }
         }
 
