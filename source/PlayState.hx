@@ -272,7 +272,7 @@ class PlayState extends FlxState
             
             if (TileType.nonCollidable(tileNum))
             {
-                if (!uncollidableTiles.contains(tileNum))
+                if (obstacle.collides() && !uncollidableTiles.contains(tileNum))
                 {
                     uncollidableTiles.push(tileNum);
                 }

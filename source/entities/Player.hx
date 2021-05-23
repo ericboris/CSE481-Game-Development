@@ -193,20 +193,6 @@ class Player extends Entity
             // We are no longer in range of cave. Set herd back to normal order.
             depositingToCave = false;
             reorganizeHerd();
-            for (dino in followers)
-            {
-                dino.herdedDisableFollowingRadius = false;
-            }
-        }
-
-        if (depositingToCave)
-        {
-            if (followers.length > 0 && primaryFollower != null)
-            {
-                primaryFollower.setLeader(cave);
-                primaryFollower.herdedDisableFollowingRadius = true;
-            }
-        
         }
 
         if (!runningIntoCave)
@@ -454,7 +440,6 @@ class Player extends Entity
                 followersCopy.push(dino);
             }
             dino.herdedFollower = null;
-            dino.herdedDisableFollowingRadius = false;
         }
 
         var lastEntity:Entity = this;
@@ -710,7 +695,6 @@ class Player extends Entity
             // Remove entity from world
             followers.remove(dino);
             PlayState.world.collectDino(dino, cave);
-            depositingToCave = false;
         }
     }
 
@@ -772,9 +756,19 @@ class Player extends Entity
         }
     }
 
+    public function isDepositingToCave()
+    {
+        return this.depositingToCave;
+    }
+
     public function isInRangeOfCave()
     {
         return this.inRangeOfCave;
+    }
+
+    public function getCave()
+    {
+        return this.cave;
     }
 
     public override function handleCaveCollision(cave:Cave)
@@ -936,5 +930,10 @@ class Player extends Entity
     public static function getLives():Int
     {
         return numLives;
+    }
+
+    public function getFollowers()
+    {
+        return followers;
     }
 }

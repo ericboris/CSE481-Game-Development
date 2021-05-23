@@ -98,8 +98,8 @@ class Icon
         }
         var text:FlxText = cast sprite;
         text.text = content;
-        this.width = text.textField.textWidth;
-        this.height = text.textField.textHeight;
+        this.width = text.width;
+        this.height = text.height;
 
         if (!shouldFadeOut)
         {

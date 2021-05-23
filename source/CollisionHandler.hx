@@ -33,6 +33,8 @@ class CollisionHandler
         
         obstacles.setTileProperties(TileType.WATER_NC, FlxObject.NONE);
 
+        obstacles.setTileProperties(TileType.BERRY_BUSH, FlxObject.NONE);
+
         obstacles.setTileProperties(TileType.WATER_EDGE_RIGHT+42, FlxObject.NONE);
         obstacles.setTileProperties(TileType.WATER_EDGE_LEFT+42, FlxObject.NONE);
         obstacles.setTileProperties(TileType.WATER_EDGE_UP+42, FlxObject.NONE);
