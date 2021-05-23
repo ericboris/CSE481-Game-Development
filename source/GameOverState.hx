@@ -11,27 +11,40 @@ import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.FlxSubState;
 import js.html.Console;
+import flixel.FlxCamera;
 
 class GameOverState extends FlxSubState
 {
+    var overlayCamera:FlxCamera;
     public override function create()
     {
         super.create();
 
-        camera.fade(0xFF800000, 1.0, true);
-        
-        var gameOver = new FlxText(0, 0, 300, " GAME OVER", 36);
+        overlayCamera = new FlxCamera(0, 0, PlayState.SCREEN_WIDTH, PlayState.SCREEN_HEIGHT);
+        overlayCamera.bgColor = FlxColor.TRANSPARENT;
+        FlxG.cameras.add(overlayCamera, false);
+
+        var camera = overlayCamera;
+
+        var gameOver = new FlxText(0, 0, 0, "GAME OVER", 35);
         setOverlay(gameOver);
         gameOver.x = camera.width/2 - gameOver.width/2;
         gameOver.y = camera.height/2 - gameOver.height - 40;
         add(gameOver);
 
-        var saved  = "" + Score.getTotalScore() + " mammoths saved.";
+        var saved  = "" + Score.getCount() + " creatures saved.";
         var savedText = new FlxText(0, 0, 0, saved, 30);
         setOverlay(savedText);
         savedText.x = camera.width/2 - savedText.width/2;
-        savedText.y = gameOver.y + gameOver.height + 30;
+        savedText.y = gameOver.y + gameOver.height + 10;
         add(savedText);
+
+        var score  = "Score: " + Score.getScore();
+        var scoreText = new FlxText(0, 0, 0, score, 24);
+        setOverlay(scoreText);
+        scoreText.x = camera.width - scoreText.width - 16;
+        scoreText.y = 8;
+        add(scoreText);
 
         var tryAgainText = new FlxText(0, 0, 0, "Try again?", 30);
         setOverlay(tryAgainText);
@@ -40,17 +53,18 @@ class GameOverState extends FlxSubState
         tryAgainText.alpha = 0.0;
         add(tryAgainText);
 
-        var restartText = new FlxText(0, 0, 0, "Space to restart", 18);
+        var restartText = new FlxText(0, 0, 0, "Space to restart", 16);
         setOverlay(restartText);
-        restartText.x = restartText.width/2 + 10;
-        restartText.y = tryAgainText.y + 160;
+        restartText.x = 8;
+        restartText.y = camera.height - tryAgainText.height - 8;
         restartText.alpha = 0.0;
         add(restartText);
         
         setShadow(gameOver);
         setShadow(savedText);
         setShadow(tryAgainText);
-        setShadow(restartText);
+        setShadow(scoreText);
+        setShadow(restartText, 3);
 
         transitioning = true;
         new FlxTimer().start(1.0, function(timer:FlxTimer) {
@@ -61,19 +75,22 @@ class GameOverState extends FlxSubState
                 restartText.alpha = f;
             });
         });
+        
+        overlayCamera.fade(0xFF800000, 1.0, true);
 
         PlayLogger.recordGameOver();
     }
 
     function setOverlay(sprite:FlxSprite)
     {
+        sprite.camera = overlayCamera;
         sprite.scrollFactor.x = 0;
         sprite.scrollFactor.y = 0;
     }
 
-    function setShadow(text:FlxText)
+    function setShadow(text:FlxText, shadow:Int = 4)
     {
-        text.setBorderStyle(SHADOW, FlxColor.BLACK, 4, 1);
+        text.setBorderStyle(SHADOW, FlxColor.BLACK, shadow, 1);
     }
 
     var transitioning:Bool = false;
@@ -83,7 +100,7 @@ class GameOverState extends FlxSubState
         if (FlxG.keys.anyPressed([N, R, SPACE]) && !transitioning)
         {
             transitioning = true;
-            camera.fade(FlxColor.BLACK, 0.35, function () {
+            overlayCamera.fade(FlxColor.BLACK, 0.35, false, function () {
                 GameWorld.restart();
                 FlxG.switchState(new PlayState());
             }, true);

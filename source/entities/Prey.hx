@@ -15,6 +15,9 @@ class Prey extends Dino
     var touchingCaveCount:Int = 0;
 
     var facing:String;
+   
+    // This is used to make prey invulnerable on the win/game over screen
+    public var immortal:Bool = false;
 
     public function new()
     {
@@ -137,6 +140,8 @@ class Prey extends Dino
 
     public override function handlePredatorCollision(predator:Predator)
     {
+        if (immortal) return;
+
         if (predator.canEat(this))
         {
             // If Herded, notify the player that we just died

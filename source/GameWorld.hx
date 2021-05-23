@@ -48,7 +48,7 @@ class GameWorld
     static public function restart()
     {
         PlayLogger.recordGameOverTryAgain();
-        Score.resetTotalScore();
+        Score.resetScore();
         levelIndex = 0;
     }
 

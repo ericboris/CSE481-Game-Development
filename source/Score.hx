@@ -5,8 +5,10 @@ import js.html.Console;
 
 class Score
 {
-    // Score per level
     static var _score:Int = 0;
+    static var _preyCount:Int = 0;
+    static var _predatorCount:Int = 0;
+    
 
     // Track score per delivery
     static final COLLECTED_TIMER = 1.5;
@@ -14,11 +16,6 @@ class Score
     static var _collectedScore:Int = 0;
     static var _collectedMultiplier:Float = 1.0;
 
-    // Total score (cumulative, between levels)
-    static var _totalScore:Int = 0;
-    static var _totalPreyCount:Int = 0;
-    static var _totalPredatorCount:Int = 0;
-    
     // Used to track time for multiplier
     static var _lastTimestamp = 0.0;
 
@@ -29,9 +26,11 @@ class Score
             case EntityPrey:
                 _collectedScore += 1;
                 _collectedMultiplier += 0.05;
+                _preyCount += 1;
             case EntityPredator:
                 _collectedScore += 5;
                 _collectedMultiplier += 0.2;
+                _predatorCount += 1;
             default:
                 // This shouldn't happen.
                 Console.log("herdedIncrement() : invalid entity");
@@ -44,44 +43,30 @@ class Score
     static public function increment(amount:Int):Void
     {
         _score += amount;
-        _totalScore += amount;
     }
 
     static public function decrement(amount:Int):Void
     {  
         _score -= amount;
-        _totalScore -= amount;
         if (_score < 0)
         {
             _score = 0;
         }
-        if (_totalScore < 0)
-        {
-            _totalScore = 0;
-        }
     }
 
-    static public function resetTotalScore():Void
+    static public function resetScore():Void
     {
-        addScore();
         _score = 0;
-        _totalScore = 0;
-    }
-
-    static public function resetLevelScore():Void
-    {
-        addScore();
-        _score = 0;
+        _preyCount = 0;
+        _predatorCount = 0;
+        _collectedScore = 0;
+        _collectedTimer = COLLECTED_TIMER;
+        _collectedMultiplier = 1.0;
     }
 
     static public function getScore():Int
     {
         return _score;
-    }
-
-    static public function getTotalScore()
-    {
-        return _totalScore;
     }
 
     static function addScore()
@@ -107,5 +92,20 @@ class Score
                 addScore();
             }
         }
+    }
+
+    static public function getPreyCount()
+    {
+        return _preyCount;
+    }
+
+    static public function getPredatorCount()
+    {
+        return _predatorCount;
+    }
+
+    static public function getCount()
+    {
+        return _preyCount + _predatorCount;
     }
 }

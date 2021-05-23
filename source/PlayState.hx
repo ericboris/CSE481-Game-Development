@@ -34,7 +34,7 @@ class PlayState extends FlxState
     static public final CHUNK_HEIGHT = 300;
 
     // Enables debug commands (spawn prey, next level)
-    static public final DEBUG = false;
+    static public final DEBUG = true;
 
     // Makes player move faster
     static public final DEBUG_FAST_SPEED = false;
@@ -188,7 +188,7 @@ class PlayState extends FlxState
         setupCamera();
 
         // Set up score counter
-        scoreText = new FlxText(0, 0, 0, "" + Score.getTotalScore(), 24);
+        scoreText = new FlxText(0, 0, 0, "" + Score.getScore(), 24);
         scoreText.scrollFactor.x = scoreText.scrollFactor.y = 0;
         scoreText.x = overlayCamera.width - scoreText.width - 16;
         scoreText.y = 8;
@@ -375,7 +375,7 @@ class PlayState extends FlxState
     function updateScore()
     {
         Score.update();
-        var score = Score.getTotalScore();
+        var score = Score.getScore();
         if (score != lastScore)
         {
             function setAlpha(f:Float) {
@@ -398,7 +398,7 @@ class PlayState extends FlxState
         }
     }
 
-    var lastScore:Int = Score.getTotalScore();
+    var lastScore:Int = Score.getScore();
     var dead:Bool = false;
     override public function update(elapsed:Float)
     {
@@ -411,6 +411,23 @@ class PlayState extends FlxState
         {
             // Don't execute update method until logger session has been created.
             return;
+        }
+
+        if (DEBUG)
+        {
+            // Debug commands for skipping to game over/game win
+            if (FlxG.keys.anyPressed([K]))
+            {
+                MenuPlayState.menuState = GameOverState;
+                FlxG.switchState(new MenuPlayState());
+                return;
+            }
+            if (FlxG.keys.anyPressed([L]))
+            {
+                MenuPlayState.menuState = GameWinState;
+                FlxG.switchState(new MenuPlayState());
+                return;
+            }
         }
 
         PlayLogger.update();

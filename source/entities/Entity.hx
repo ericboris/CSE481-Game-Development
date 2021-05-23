@@ -380,4 +380,5 @@ class Entity
     }
 
     public function collides() { return collidable; }
+    public function setCanJumpCliffs(canJump:Bool) { canJumpCliffs = canJump; }
 }

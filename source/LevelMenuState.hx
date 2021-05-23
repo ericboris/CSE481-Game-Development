@@ -104,6 +104,7 @@ class LevelMenuState extends FlxSubState
 
     function fadeTween(sprite:FlxSprite, from:Float, to:Float, duration:Float, onComplete:(FlxTween) -> Void = null)
     {
+        FlxTween.cancelTweensOf(sprite);
         var options = {ease: FlxEase.quartOut, onComplete:onComplete}
         var tween = FlxTween.num(from, to, duration, options, setAlpha.bind(sprite));
     }

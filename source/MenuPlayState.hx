@@ -158,13 +158,26 @@ class MenuPlayState extends FlxState
 
 
         // Spawn prey!
-        for (i in 0...Score.getTotalScore())
+        for (i in 0...Score.getPreyCount())
         {
             var prey = new Prey();
             var position = preySpawnPositions[i % preySpawnPositions.length];
             prey.setPosition(position.x, position.y);
+            prey.immortal = true;
+            prey.setCanJumpCliffs(true);
             addEntity(prey);
         }
+        
+        for (i in 0...Score.getPredatorCount())
+        {
+            var pred = new Predator();
+            var position = preySpawnPositions[i % preySpawnPositions.length];
+            pred.setPosition(position.x, position.y);
+            addEntity(pred);
+        }
+
+        player = new Player();
+        player.setPosition(-1000, -1000);
 
         this.persistentDraw = true;
         this.persistentUpdate = true;
@@ -381,25 +394,6 @@ class MenuPlayState extends FlxState
 
     function visionChecks()
     {
-        for (predator in entityGroups[EntityPredator])
-        {
-            if (GameWorld.checkVision(predator, player))
-            {
-                predator.seen(player);
-            }
-
-            for (prey in entityGroups[EntityPrey])
-            {
-                if (GameWorld.checkVision(predator, prey))
-                {
-                    predator.seen(prey);
-                }
-                if (GameWorld.checkVision(prey, predator))
-                {
-                    prey.seen(predator);
-                }
-            }
-        }
     }
 
     public function toggleAdditionalTilemapCollisions(toggle:Bool)
@@ -497,5 +491,10 @@ class MenuPlayState extends FlxState
     public function getStaticObstacles()
     {
         return staticCollidableSprites;
+    }
+
+    public function getPlayer()
+    {
+        return player;
     }
 }
