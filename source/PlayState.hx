@@ -782,6 +782,11 @@ class PlayState extends FlxState
         }
     }
 
+    public function levelFinished()
+    {
+        return entityGroups[EntityPrey].length == 0 && GameWorld.levelId() > 1;
+    }
+
     var scoreSoundMultiplier:Float = 0.0;
     public function collectDino(dino:Dino, cave:Cave)
     {

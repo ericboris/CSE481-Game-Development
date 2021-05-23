@@ -36,7 +36,6 @@ class Player extends Entity
 
     var speed:Float = SPEED;
 
-    // Array of followers. TODO: Should be linked list.
     public var followers:Array<Dino>;
     var primaryFollower:Dino;
 
@@ -268,11 +267,6 @@ class Player extends Entity
                 callCircle.alpha += 0.05;
             }
 
-            if (callRadius > MAX_CALL_RADIUS / 3 && caveArrow.alpha < 1.0)
-            {
-                caveArrow.alpha += 0.03;
-            }
-
             if (callRadius != callCircle.radius)
             {
                 callCircle.radius = callRadius;
@@ -282,7 +276,16 @@ class Player extends Entity
         else
         {
             callCircle.alpha -= 0.1;
-            caveArrow.alpha -= 0.2;
+        }
+
+        var levelFinished = PlayState.world.levelFinished();
+        if (levelFinished || callRadius > MAX_CALL_RADIUS * 3 / 4)
+        {
+            caveArrow.alpha += 0.03;
+        }
+        else
+        {
+            caveArrow.alpha -= 0.15;
         }
 
         // Center call circle on player
@@ -301,15 +304,16 @@ class Player extends Entity
             else
             {
                 var distance = GameWorld.entityDistance(this, cave);
-         
+                var radius = Math.max(callRadius, MAX_CALL_RADIUS * 3 / 4);
+
                 // Position along circle
                 var angle = GameWorld.entityAngle(this, cave);
-                var circleX = getX() + Math.cos(angle) * callRadius;
-                var circleY = getY() + Math.sin(angle) * callRadius;
+                var circleX = getX() + Math.cos(angle) * radius;
+                var circleY = getY() + Math.sin(angle) * radius;
                 
                 // Interpolate between position along circle and the position above the cave
                 // This creates a smooth transition of position when the cave enters the call radius
-                var interpolation:Float = GameWorld.map(callRadius * 7/8, callRadius * 9/8, 0.0, 1.0, distance);
+                var interpolation:Float = GameWorld.map(radius * 7/8, radius * 9/8, 0.0, 1.0, distance);
                 var bounded:Float = Math.min(Math.max(interpolation, 0.0), 1.0);
                 
                 // Interpolate between circle position and indicator over cave
