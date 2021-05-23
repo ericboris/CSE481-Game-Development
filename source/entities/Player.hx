@@ -21,9 +21,9 @@ class Player extends Entity
     static final STICK_HITBOX_ID    = 1;
 
     static final SPEED = 100.0;
-    static final SPEED_BOOST_MULTIPLIER = 1.35;
+    static final SPEED_BOOST_MULTIPLIER = 1.25;
     static final SWIPE_SPEED = 45.0;
-    static final CALL_SPEED = 82.0;
+    static final CALL_SPEED = 70.0;
     
     static final DEBUG_SPEED = 120.0;
 
@@ -489,7 +489,7 @@ class Player extends Entity
         }
         else if (isCalling)
         {
-            movementSpeed = CALL_SPEED;
+            movementSpeed = GameWorld.map(0, MAX_CALL_RADIUS, SPEED, CALL_SPEED, callRadius);
         }
         
         if (speedBoost)
