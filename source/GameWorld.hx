@@ -25,7 +25,8 @@ class TutorialText
 class GameWorld
 {
     static var levelIndex = 0;
-    static var levelArray = [AssetPaths.tutorial0__json, 
+
+    static var levelArrayA = [AssetPaths.tutorial0__json, 
                             AssetPaths.tutorial1__json,
                             AssetPaths.tutorial2__json,
                             AssetPaths.tutorial3__json,
@@ -34,6 +35,31 @@ class GameWorld
                             AssetPaths.map6w119h125__json,
                             AssetPaths.map1w125h103__json,
                             AssetPaths.map2w125h125__json];
+
+    static var levelArrayB = [AssetPaths.tutorial0__json, 
+                            AssetPaths.tutorial1__json,
+                            AssetPaths.tutorial2__json,
+                            AssetPaths.tutorial3__json,
+                            AssetPaths.map3w100h100__json,
+                            AssetPaths.map5w150h84__json,
+                            AssetPaths.map6w150h158__json,
+                            AssetPaths.map1w200h165__json,
+                            AssetPaths.map2w200h200__json];
+
+    static var levelChoice:Int;
+
+    static var levelMap = [0 => levelArrayA,
+                           1 => levelArrayB];
+
+    static public function getLevelArray()
+    {
+        if (levelIndex == 0)
+        {
+            levelChoice = FlxG.random.int(0, 1);
+            PlayLogger.recordLevelChoice(levelChoice);
+        }
+        return levelMap[levelChoice];
+    }
 
     static public function levelId()
     {
@@ -225,9 +251,10 @@ class GameWorld
 
     static public function getNextMap()
     {
-        if (levelIndex < levelArray.length) 
+        var la = getLevelArray();
+        if (levelIndex < la.length) 
         {
-            return levelArray[levelIndex++];
+            return la[levelIndex++];
         }
         else
         {

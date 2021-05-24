@@ -18,7 +18,7 @@ class PlayLogger
     static final MAY_16_VERSION = 3;
     static final INITIAL_RELEASE = 4;
 
-    static final GAME_VERSION = DEBUG_VERSION;
+    static final GAME_VERSION = INITIAL_RELEASE;
 
     static var logger = new CapstoneLogger(GAME_ID, GAME_NAME, GAME_KEY, GAME_VERSION);
     static var createdLoggerSession = false;
@@ -304,5 +304,11 @@ class PlayLogger
     {
         var details = { lives: Player.getLives(), score: Score.getScore(), prey: Score.getPreyCount(), predator: Score.getPredatorCount() }
         logger.logLevelAction(GAME_WIN, details);
+    }
+
+    public static function recordLevelChoice(levelChoice:Int)
+    {
+        var details = {};
+        logger.logActionWithNoLevel(levelChoice, details);
     }
 }
