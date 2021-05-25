@@ -312,6 +312,11 @@ class PlayState extends FlxState
     {
         // Check to load next level.
         transitioningToNextLevel = player.isInRangeOfCave() && levelIsComplete();
+        if (GameWorld.levelId() == 1)
+        {
+            transitioningToNextLevel = false;
+        }
+
         if (DEBUG)
         {
             if (FlxG.keys.anyPressed([N]))
@@ -846,7 +851,7 @@ class PlayState extends FlxState
     public var levelMenu:LevelMenuState;
     public function openLevelMenu(cave:Cave)
     {
-        if (!levelIsComplete() && lastDeliveredTimer <= 0 && levelMenu == null)
+        if (lastDeliveredTimer <= 0 && levelMenu == null)
         {
             levelMenu = new LevelMenuState(cave.getX(), cave.getY());
             openSubState(levelMenu);

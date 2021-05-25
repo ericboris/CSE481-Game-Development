@@ -47,16 +47,26 @@ class LevelMenuState extends FlxSubState
         var totalPrey = PlayState.world.numPrey;
         var numPreds = PlayState.world.numPredatorsCollected;
 
-        var textString = "You've collected:\n" + numPrey + " mammoths";
-        if (numPreds > 0)
+        var textString:String;
+        if (GameWorld.levelId() == 1)
         {
-            boxHeight += 8;
-            textString += "\n" + numPreds + " predator";
-            if (numPreds > 1)
+            textString = "Go to the next level?";
+        }
+        else
+        {
+            textString = "You've collected:\n" + numPrey + " mammoths";
+            if (numPreds > 0)
             {
-                textString += "s";
+                boxHeight += 8;
+                textString += "\n" + numPreds + " predator";
+                if (numPreds > 1)
+                {
+                    textString += "s";
+                }
+                textString += "!";
             }
-            textString += "!";
+        
+            textString += "\n" + PlayState.world.getNumPreyLeft() + " remaining";
         }
 
         box = new FlxSprite();
@@ -65,8 +75,6 @@ class LevelMenuState extends FlxSubState
         box.y = (this.y - camera.scroll.y) - box.height - 16;
         box.alpha = 0.0;
         box.resetSizeFromFrame();
-        
-        textString += "\n" + PlayState.world.getNumPreyLeft() + " remaining";
 
         text = new FlxText(0, 0, boxWidth - 8, textString, 8);
         text.x = box.x + box.width/2 - text.width/2;
@@ -116,7 +124,7 @@ class LevelMenuState extends FlxSubState
 
     override public function update(elapsed:Float)
     {
-        if (FlxG.keys.anyPressed([N]))
+        if (FlxG.keys.anyPressed([ENTER, N]))
         {
             clickNext();
         }

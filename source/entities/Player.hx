@@ -279,7 +279,7 @@ class Player extends Entity
         }
 
         var levelFinished = PlayState.world.levelFinished();
-        if (levelFinished || callRadius > MAX_CALL_RADIUS * 3 / 4)
+        if (levelFinished || isCalling)
         {
             caveArrow.alpha += 0.03;
         }
@@ -304,7 +304,11 @@ class Player extends Entity
             else
             {
                 var distance = GameWorld.entityDistance(this, cave);
-                var radius = Math.max(callRadius, MAX_CALL_RADIUS * 3 / 4);
+                var radius:Float = callRadius;
+                if (levelFinished && !isCalling)
+                {
+                    radius = MAX_CALL_RADIUS * 3/4;
+                }
 
                 // Position along circle
                 var angle = GameWorld.entityAngle(this, cave);
@@ -789,7 +793,7 @@ class Player extends Entity
     {
         runningIntoCave = true;
         nearCaveCounter++;
-        if (nearCaveCounter > 3 && cave != null)
+        if (nearCaveCounter > 0 && cave != null)
         {
             PlayState.world.openLevelMenu(cave);
         }
