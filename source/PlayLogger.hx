@@ -129,6 +129,7 @@ class PlayLogger
                 var framerate = averageFramerate / averageFramerateCount;
                 averageFramerate = averageFramerateCount = 0;
                 var details = {fps: Std.int(1 / framerate)};
+                logger.logLevelAction(HEARTBEAT, details);
                 heartbeatTimer = HEARTBEAT_TIME;
             }
             
