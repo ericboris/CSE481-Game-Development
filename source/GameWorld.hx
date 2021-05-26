@@ -102,7 +102,7 @@ class GameWorld
                                                          new TutorialText("C to Call Mammoths", 350, 266),
                                                          new TutorialText("lead Mammoths to Caves", 470, 145)],
                                                    1 => [new TutorialText("Space to Swipe", 160, 370),
-                                                         new TutorialText("Swipe Predators to Stun", 510, 350)]];
+                                                         new TutorialText("Swipe to Stun Predators", 515, 170)]];
 
     static public function getNearestEntity(src:Entity, entities:Array<Entity>, pathfind:Bool = false):Entity
     {
