@@ -14,7 +14,7 @@ class LevelMenuState extends FlxSubState
 {
     var box:FlxSprite;
     var text:FlxText;
-    var nextButton:FlxButton;
+    //var nextButton:FlxButton;
 
     var fadingOut:Bool = false;
     var dead:Bool = false;
@@ -41,7 +41,7 @@ class LevelMenuState extends FlxSubState
         FlxG.mouse.visible = true;
 
         var boxWidth = 100;
-        var boxHeight = 68;
+        var boxHeight = 48;
 
         var numPrey = PlayState.world.numPreyCollected;
         var totalPrey = PlayState.world.numPrey;
@@ -50,11 +50,11 @@ class LevelMenuState extends FlxSubState
         var textString:String;
         if (GameWorld.levelId() == 1)
         {
-            textString = "Go to the next level?";
+            textString = "press N at Caves to go to move on";
         }
         else
         {
-            textString = "You've collected:\n" + numPrey + " mammoths";
+            textString = "You've collected:\n" + numPrey + " Mammoths";
             if (numPreds > 0)
             {
                 boxHeight += 8;
@@ -81,6 +81,7 @@ class LevelMenuState extends FlxSubState
         text.y = box.y + 5;
         text.alpha = 0.0;
 
+        /**
         var textColor = 0xFF404040;
         nextButton = new FlxButton(0, 0, "Move on", clickNext);
         nextButton.scale.x = nextButton.scale.y = 0.8;
@@ -90,18 +91,19 @@ class LevelMenuState extends FlxSubState
         nextButton.label.size = 6;
         nextButton.x = box.x + box.width/2 - nextButton.width/2;
         nextButton.y = box.y + box.height - nextButton.height - 5;
+        */
 
         var duration = 0.5;
         fadeTween(box, 0.0, 0.8, duration);
         fadeTween(text, 0.0, 1.0, duration);
-        fadeTween(nextButton, 0.0, 1.0, duration);
+        //fadeTween(nextButton, 0.0, 1.0, duration);
 
         setOverlay(box);
         setOverlay(text);
 
         add(box);
         add(text);
-        add(nextButton);
+        //add(nextButton);
     }
 
     function setOverlay(sprite:FlxSprite)
@@ -154,7 +156,7 @@ class LevelMenuState extends FlxSubState
             var duration = 0.4;
             fadeTween(box, box.alpha, 0.0, duration, closed);
             fadeTween(text, text.alpha, 0.0, duration);
-            fadeTween(nextButton, nextButton.alpha, 0.0, duration);
+            //fadeTween(nextButton, nextButton.alpha, 0.0, duration);
         }
     }
 

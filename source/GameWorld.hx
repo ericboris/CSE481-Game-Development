@@ -26,9 +26,9 @@ class GameWorld
 {
     static var levelIndex = 0;
 
-    static var levelArrayA = [AssetPaths.tutorial0__json, 
+    static var levelArrayA = [//AssetPaths.tutorial0__json, 
                             AssetPaths.tutorial1__json,
-                            AssetPaths.tutorial2__json,
+                            //AssetPaths.tutorial2__json,
                             AssetPaths.tutorial3__json,
                             AssetPaths.map3w50h50__json,
                             AssetPaths.map5w100h54__json,
@@ -36,9 +36,9 @@ class GameWorld
                             AssetPaths.map1w125h103__json,
                             AssetPaths.map2w125h125__json];
 
-    static var levelArrayB = [AssetPaths.tutorial0__json, 
+    static var levelArrayB = [//AssetPaths.tutorial0__json, 
                             AssetPaths.tutorial1__json,
-                            AssetPaths.tutorial2__json,
+                            //AssetPaths.tutorial2__json,
                             AssetPaths.tutorial3__json,
                             AssetPaths.map3w100h100__json,
                             AssetPaths.map5w150h84__json,
@@ -50,6 +50,10 @@ class GameWorld
 
     static var levelMap = [0 => levelArrayA,
                            1 => levelArrayB];
+
+    static var newEntities = [0 => EntityPrey,
+                              1 => EntityBoulder,
+                              2 => EntityPredator];
 
     static public function getLevelArray()
     {
@@ -78,19 +82,7 @@ class GameWorld
         levelIndex = 0;
     }
 
-    // New entities to display reactions above.
-    static var newEntities = [EntityCave,
-                            EntityPrey,
-                            EntityBoulder,
-                            EntityPredator,
-                            EntityNull,
-                            EntityNull,
-                            EntityNull,
-                            EntityNull,
-                            EntityNull,
-                            EntityNull];
-
-    // Reactions shown above entities upon encountering player.
+        // Reactions shown above entities upon encountering player.
     static var entityReactions = [EntityCave => "V",
                                 EntityPrey => ":)",
                                 EntityBoulder => "V",
@@ -106,11 +98,11 @@ class GameWorld
 
     // Tutorial info to show the player at the start of a relevant level.
     static var tutorialInformation: Map<Int, Array<TutorialText>>
-                                                = [0 => [new TutorialText("Arrow keys to move", 170, 220)],
-                                                   1 => [new TutorialText("Hold C to call Mammoths", 120, 270),
-                                                         new TutorialText("Deliver Mammoths to the cave!", 470, 145)],
-                                                   3 => [new TutorialText("Press space to swipe", 180, 350),
-                                                         new TutorialText("Swiping Predators \nstuns them briefly!", 480, 120)]];
+                                                = [0 => [new TutorialText("Arrows to Move", 125, 230),
+                                                         new TutorialText("C to Call Mammoths", 350, 266),
+                                                         new TutorialText("lead Mammoths to Caves", 470, 145)],
+                                                   1 => [new TutorialText("Space to Swipe", 160, 370),
+                                                         new TutorialText("Swipe Predators to Stun", 510, 350)]];
 
     static public function getNearestEntity(src:Entity, entities:Array<Entity>, pathfind:Bool = false):Entity
     {
@@ -267,7 +259,11 @@ class GameWorld
      */
     static public function getNewEntity():EntityType
     {
-        return newEntities[levelIndex];
+        if (newEntities.exists(levelIndex))
+        {
+            return newEntities[levelIndex];
+        }
+        return EntityNull;
     }
 
     /**

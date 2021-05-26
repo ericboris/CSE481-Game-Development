@@ -16,6 +16,8 @@ class MenuState extends FlxSubState
 
     static final BASE_VOLUME = 0.7;
 
+    static var delayTimer = 1.0;
+
     override public function create()
     {
         super.create();
@@ -32,6 +34,7 @@ class MenuState extends FlxSubState
 
         var textColor = 0xFF404040;
 
+        /**
         playButton = new FlxButton(220, 460, "Play", clickPlay);
         playButton.scale.x = playButton.scale.y = 2.0;
         playButton.updateHitbox();
@@ -48,6 +51,7 @@ class MenuState extends FlxSubState
         optionsButton.label.fieldWidth *= 2;
         
         add(optionsButton);
+        */
 
         //optionsButton.onUp.sound = FlxG.sound.load(AssetPaths.select__wav);
 
@@ -59,6 +63,15 @@ class MenuState extends FlxSubState
 
     override public function update(elapsed:Float)
     {
+        if (delayTimer > 0)
+        {
+            delayTimer -= elapsed;
+        }
+        else
+        {
+            clickPlay();
+        }
+
         if (FlxG.keys.anyPressed([P, SPACE]))
         {
             clickPlay();
@@ -67,6 +80,7 @@ class MenuState extends FlxSubState
         super.update(elapsed);
     }
 
+    
     function clickPlay()
     {
         FlxG.camera.fade(FlxColor.BLACK, 0.5, false, function() {
@@ -74,10 +88,11 @@ class MenuState extends FlxSubState
         });
     }
 
+    /**
     function clickOptions()
     {
         FlxG.camera.fade(FlxColor.BLACK, 0.5, false, function() {
             FlxG.switchState(new OptionsState());
         });
-    }
+    }*/
 }

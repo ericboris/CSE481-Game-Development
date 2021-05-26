@@ -34,10 +34,10 @@ class PlayState extends FlxState
     static public final CHUNK_HEIGHT = 300;
 
     // Enables debug commands (spawn prey, next level)
-    static public final DEBUG = false;
+    static public final DEBUG = true;
 
     // Makes player move faster
-    static public final DEBUG_FAST_SPEED = false;
+    static public final DEBUG_FAST_SPEED = true;
 
     // Update every time update() is called.
     var frameCounter:Int = 0;
@@ -405,8 +405,11 @@ class PlayState extends FlxState
 
     var lastScore:Int = Score.getScore();
     var dead:Bool = false;
+
     override public function update(elapsed:Float)
     {
+        Console.log("PLAYER COORDS: x=" + player.getX() + " y=" + player.getY());
+
         if (dead)
         {
             return;

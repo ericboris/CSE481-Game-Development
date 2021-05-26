@@ -18,7 +18,7 @@ class PlayLogger
     static final MAY_16_VERSION = 3;
     static final INITIAL_RELEASE = 4;
 
-    static final GAME_VERSION = INITIAL_RELEASE;
+    static final GAME_VERSION = DEBUG_VERSION;
 
     static var logger = new CapstoneLogger(GAME_ID, GAME_NAME, GAME_KEY, GAME_VERSION);
     static var createdLoggerSession = false;
