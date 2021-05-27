@@ -37,7 +37,7 @@ class PlayState extends FlxState
     static public final DEBUG = true;
 
     // Makes player move faster
-    static public final DEBUG_FAST_SPEED = true;
+    static public final DEBUG_FAST_SPEED = false;
 
     // Update every time update() is called.
     var frameCounter:Int = 0;
@@ -123,6 +123,8 @@ class PlayState extends FlxState
             entityGroups[type] = new Array<Entity>();
             spriteGroups[type] = new FlxGroup();
         }
+
+        GameWorld.getABChoice();
 
         // Must have call to getNewEntity before call to getNextMap
         newEntity = GameWorld.getNewEntity();
@@ -422,7 +424,7 @@ class PlayState extends FlxState
 
     override public function update(elapsed:Float)
     {
-        Console.log("PLAYER COORDS: x=" + player.getX() + " y=" + player.getY());
+        //Console.log("PLAYER COORDS: x=" + player.getX() + " y=" + player.getY());
 
         if (dead)
         {
