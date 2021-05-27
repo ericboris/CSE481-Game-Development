@@ -52,21 +52,74 @@ class GameWorld
 
     static var levelChoice:Int;
 
-    static var levelMap = [0 => levelArrayA,
-                           1 => levelArrayB];
+    static var levelSizeMap = [0 => levelArrayA,
+                               1 => levelArrayB];
 
     static var newEntities = [0 => EntityPrey,
                               1 => EntityBoulder,
                               2 => EntityPredator];
 
+    static var ABChoiceIsMade:Bool = false;
+
+    static var playerSpeedChoice:Int;
+    static var playerSpeedMap = [0 => 100.0,
+                              1 => 120.0];
+
+    static var levelDensityChoice:Int;
+    static var levelDensityMap = [0 => levelArrayA,
+                                  1 => levelArrayA];
+
+
+    static public function getABChoice()
+    {
+        var ABChoice:Int;
+        if (levelIndex == 0 && !ABChoiceIsMade)
+        {
+            ABChoice = FlxG.random.int(0, 2);
+            switch (ABChoice)
+            {
+                case 0:
+                    levelDensityChoice = 0;
+                    playerSpeedChoice = 0;
+                case 1:
+                    levelDensityChoice = 1;
+                    playerSpeedChoice = 0;
+                case 2:
+                    levelDensityChoice = 0;
+                    playerSpeedChoice = 1;
+                case 3:
+                    levelDensityChoice = 1;
+                    playerSpeedChoice = 1;
+            }
+            PlayLogger.recordLevelDensityChoice(levelDensityChoice);
+            PlayLogger.recordPlayerSpeedChoice(playerSpeedChoice);
+            ABChoiceIsMade = true;
+        }
+    }
+
     static public function getLevelArray()
     {
+        /** No longer needed for A/B tests. 
         if (levelIndex == 0)
         {
             levelChoice = FlxG.random.int(0, 1);
             PlayLogger.recordLevelChoice(levelChoice);
         }
-        return levelMap[levelChoice];
+        */
+        levelChoice = 0;
+        return levelSizeMap[levelChoice];
+    }
+
+    static public function getPlayerSpeed()
+    {
+        Console.log("PLAYER SPEED = " + playerSpeedChoice);
+        return playerSpeedMap[playerSpeedChoice];
+    }
+
+    static public function getLevelDensity()
+    {
+        Console.log("LEVEL DENSITY = " + levelDensityChoice);
+        return levelDensityMap[levelDensityChoice];
     }
 
     static public function levelId()
@@ -247,7 +300,7 @@ class GameWorld
 
     static public function getNextMap()
     {
-        var la = getLevelArray();
+        var la = getLevelDensity();
         if (levelIndex < la.length) 
         {
             return la[levelIndex++];

@@ -72,6 +72,7 @@ class PlayLogger
     static var playerX:Float = 0;
     static var playerY:Float = 0;
 
+
     public static function initializeLogger()
     {
         if (!createdLoggerSession)
@@ -309,7 +310,26 @@ class PlayLogger
 
     public static function recordLevelChoice(levelChoice:Int)
     {
+        var logConstants = [0 => 0,
+                            1 => 1];
         var details = {};
-        logger.logActionWithNoLevel(levelChoice, details);
+        logger.logActionWithNoLevel(logConstants[levelChoice], details);
+    }
+
+    public static function recordPlayerSpeedChoice(playerSpeedChoice:Int)
+    {
+        var logConstants = [0 => 2,
+                            1 => 3];
+
+        var details = {};
+        logger.logActionWithNoLevel(logConstants[playerSpeedChoice], details);
+    }
+
+    public static function recordLevelDensityChoice(densityChoice:Int)
+    {
+        var logConstants = [0 => 4,
+                            1 => 5];
+        var details = {};
+        logger.logActionWithNoLevel(logConstants[densityChoice], details);
     }
 }

@@ -20,7 +20,8 @@ class Player extends Entity
     static final INTERACT_HITBOX_ID = 0;
     static final STICK_HITBOX_ID    = 1;
 
-    static final SPEED = 100.0;
+    static var SPEED:Float;
+
     static final SPEED_BOOST_MULTIPLIER = 1.25;
     static final SWIPE_SPEED = 45.0;
     static final CALL_SPEED = 70.0;
@@ -97,6 +98,12 @@ class Player extends Entity
                         900 => false,
                         1000 => false];
 
+    public function setPlayerSpeed()
+    {
+        SPEED = GameWorld.getPlayerSpeed();  
+        this.speed = SPEED;
+    }
+
     public function new()
     {
         super();
@@ -153,6 +160,7 @@ class Player extends Entity
 
         followers = new Array<Dino>();
 
+        setPlayerSpeed();
         if (PlayState.DEBUG_FAST_SPEED)
         {
             this.speed = DEBUG_SPEED;
@@ -181,6 +189,7 @@ class Player extends Entity
         caveArrow.alpha = 0.0;
         caveArrow.health = PlayState.world.topLayerSortIndex();
         PlayState.world.add(caveArrow);
+
 
         PlayLogger.recordPlayerLives(numLives);
     }
