@@ -84,6 +84,19 @@ class Player extends Entity
 
     var BERRY_SHIFT = 48;
 
+    // Flags for whether an extra life has been granted
+    // for achieving the listed score.
+    var extraLifeScores = [100 => false,
+                        200 => false,
+                        300 => false,
+                        400 => false,
+                        500 => false,
+                        600 => false,
+                        700 => false,
+                        800 => false,
+                        900 => false,
+                        1000 => false];
+
     public function new()
     {
         super();
@@ -179,6 +192,8 @@ class Player extends Entity
         call();
         updateItem();
         move();
+
+        addExtraLife();
 
         PlayLogger.recordPlayerMovement(this);
  
@@ -943,5 +958,26 @@ class Player extends Entity
     public function getFollowers()
     {
         return followers;
+    }
+    
+    private function addExtraLife():Void
+    {   
+        var score = Score.getScore();
+        for (s in extraLifeScores.keys())
+        {
+            if (score >= s)
+            {
+                if (!extraLifeScores[s])
+                {
+                    incrementLives();
+                    extraLifeScores[s] = true;
+                    think("+1");
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
     }
 }
