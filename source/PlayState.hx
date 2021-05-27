@@ -394,6 +394,7 @@ class PlayState extends FlxState
     function updateScore()
     {
         livesText.text = "" + Player.getLives() + " x ";
+        livesSprite.x = livesText.x + livesText.width - 4;
 
         Score.update();
         var score = Score.getScore();

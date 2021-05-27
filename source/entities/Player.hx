@@ -391,7 +391,7 @@ class Player extends Entity
 
     function call():Void
     {
-        if (FlxG.keys.pressed.SHIFT)
+        if (FlxG.keys.pressed.SPACE)
         {
             // Sound playing logic
             if (!isCalling)
@@ -658,7 +658,7 @@ class Player extends Entity
     {
         if (heldItem != null)
         {
-            var useKeyPressed = FlxG.keys.anyPressed([SPACE]);
+            var useKeyPressed = FlxG.keys.anyPressed([SHIFT]);
             
             if (usingItem)
             {
