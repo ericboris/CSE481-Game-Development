@@ -21,6 +21,7 @@ class Icon
     var offsetY:Int;
     var tweenY:Float = 0.0;
 
+    public var maxAlpha = 1.0;
     var alphaRate:Float = 0.0;
 
     var fadeOutDelay:Float = 3.0;
@@ -36,7 +37,7 @@ class Icon
     {
         this.center = centeredOn;
         var offset = FlxG.random.float(-0.1, 0.1);
-        this.tween = FlxTween.num(-1, 5, 2.5 + offset, {ease: FlxEase.linear, type: FlxTweenType.PINGPONG}, updateTween);
+        this.tween = FlxTween.num(-1, 2.5, 1.0 + offset, {ease: FlxEase.linear, type: FlxTweenType.PINGPONG}, updateTween);
         setOffset(x, y);
         setText("");
     }
@@ -139,9 +140,9 @@ class Icon
             alphaRate = 0;
             shouldFadeOut = false;
         }
-        else if (sprite.alpha >= 1)
+        else if (sprite.alpha >= maxAlpha)
         {
-            sprite.alpha = 1;
+            sprite.alpha = maxAlpha;
             alphaRate = 0;
         }
     }
@@ -154,7 +155,7 @@ class Icon
 
     public function fadeOut(rate:Float = -0.09)
     {
-        sprite.alpha = 1;
+        sprite.alpha = maxAlpha;
         alphaRate = rate;
         shouldFadeOut = false;
     }

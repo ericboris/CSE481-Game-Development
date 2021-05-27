@@ -15,7 +15,7 @@ class Main extends Sprite
         if (PlayState.DEBUG)
         {
             // For debugging purposes
-            addChild(new FPS(10, 10, 0xffffff));
+            addChild(new FPS(10, PlayState.SCREEN_HEIGHT - 20, 0xffffff));
         }
     }
 }

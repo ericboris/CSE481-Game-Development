@@ -96,7 +96,6 @@ class GameOverState extends FlxSubState
     var transitioning:Bool = false;
     public override function update(elapsed:Float)
     {
-        PlayLogger.recordGameOverTryAgain();
         if (FlxG.keys.anyPressed([N, R, SPACE]) && !transitioning)
         {
             transitioning = true;

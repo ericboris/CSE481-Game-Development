@@ -15,6 +15,10 @@ class Cave extends Obstacle
         this.collidable = false;
 
         this.type = EntityCave;
+        if (GameWorld.levelId() == 1)
+        {
+            this.thought.maxAlpha = 0;
+        }
         this.thought.setOffset(0, -16);
         this.thought.setSprite(16, 16, AssetPaths.down_arrow__png);
     }

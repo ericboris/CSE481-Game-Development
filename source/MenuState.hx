@@ -16,7 +16,7 @@ class MenuState extends FlxSubState
 
     static final BASE_VOLUME = 0.7;
 
-    static var delayTimer = 1.0;
+    static var delayTimer = 1.5;
 
     override public function create()
     {
@@ -72,7 +72,7 @@ class MenuState extends FlxSubState
             clickPlay();
         }
 
-        if (FlxG.keys.anyPressed([P, SPACE]))
+        if (FlxG.keys.anyPressed([N, W, A, S, D, P, SPACE]))
         {
             clickPlay();
         }

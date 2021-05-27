@@ -41,7 +41,7 @@ class LevelMenuState extends FlxSubState
         FlxG.mouse.visible = true;
 
         var boxWidth = 100;
-        var boxHeight = 48;
+        var boxHeight = 52;
 
         var numPrey = PlayState.world.numPreyCollected;
         var totalPrey = PlayState.world.numPrey;
@@ -50,23 +50,18 @@ class LevelMenuState extends FlxSubState
         var textString:String;
         if (GameWorld.levelId() == 1)
         {
-            textString = "press C at Caves to skip level";
+            textString = "press C at Caves to move on";
         }
         else
         {
-            textString = "You've collected:\n" + numPrey + " Mammoths";
+            textString = "You've collected:\n" + numPrey + " " + makePlural("Mammoth", numPrey);
             if (numPreds > 0)
             {
-                boxHeight += 8;
-                textString += "\n" + numPreds + " predator";
-                if (numPreds > 1)
-                {
-                    textString += "s";
-                }
-                textString += "!";
+                boxHeight += 16;
+                textString += "\n" + numPreds + " " + makePlural("Predator", numPreds) + "!";
             }
         
-            textString += "\n" + PlayState.world.getNumPreyLeft() + " remaining";
+            textString += "\n\n" + PlayState.world.getNumPreyLeft() + " remaining";
         }
 
         box = new FlxSprite();
@@ -78,20 +73,8 @@ class LevelMenuState extends FlxSubState
 
         text = new FlxText(0, 0, boxWidth - 8, textString, 8);
         text.x = box.x + box.width/2 - text.width/2;
-        text.y = box.y + 5;
+        text.y = box.y + 4;
         text.alpha = 0.0;
-
-        /**
-        var textColor = 0xFF404040;
-        nextButton = new FlxButton(0, 0, "Move on", clickNext);
-        nextButton.scale.x = nextButton.scale.y = 0.8;
-        nextButton.updateHitbox();
-        nextButton.label.fieldWidth *= 0.8;
-        nextButton.alpha = 0.0;
-        nextButton.label.size = 6;
-        nextButton.x = box.x + box.width/2 - nextButton.width/2;
-        nextButton.y = box.y + box.height - nextButton.height - 5;
-        */
 
         var duration = 0.5;
         fadeTween(box, 0.0, 0.8, duration);
@@ -117,6 +100,14 @@ class LevelMenuState extends FlxSubState
         FlxTween.cancelTweensOf(sprite);
         var options = {ease: FlxEase.quartOut, onComplete:onComplete}
         var tween = FlxTween.num(from, to, duration, options, setAlpha.bind(sprite));
+    }
+
+    function makePlural(str:String, num:Int)
+    {
+        if (num == 1)
+            return str;
+        else
+            return str + "s";
     }
 
     function setAlpha(sprite:FlxSprite, f:Float)

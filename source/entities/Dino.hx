@@ -244,7 +244,7 @@ class Dino extends Entity
         }
 
         // If our leader is pathfinding or we're stuck, then generate a path to follow
-        if ((isLeaderPathfinding || framesStuck > 6) && herdedPath.length == 0)
+        if ((isLeaderPathfinding || framesStuck > 20) && herdedPath.length == 0)
         {
             pathTowards(leader);
         }

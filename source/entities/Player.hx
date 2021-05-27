@@ -322,7 +322,7 @@ class Player extends Entity
                 var radius:Float = callRadius;
                 if (levelFinished && !isCalling)
                 {
-                    radius = MAX_CALL_RADIUS * 3/4;
+                    radius = MAX_CALL_RADIUS * 1/4;
                 }
 
                 // Position along circle
@@ -869,7 +869,7 @@ class Player extends Entity
         
         triggerSpeedBoost();
         
-        think(getLives() + " x <3", 2.0);
+        think("!", 2.0);
         
         PlayLogger.recordPlayerLives(numLives);
     }

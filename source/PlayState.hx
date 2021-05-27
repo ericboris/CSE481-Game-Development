@@ -72,6 +72,9 @@ class PlayState extends FlxState
 
     var respawnCave:Cave;
 
+    var livesText:FlxText;
+    var livesSprite:FlxSprite;
+
     // The level's score
     var scoreText:FlxText;
     var scoreSecondaryText:FlxText;
@@ -153,12 +156,10 @@ class PlayState extends FlxState
         // Load tiles from tile maps
         ground = map.loadTilemap(AssetPaths.Tileset__png, "ground");
         ground.useScaleHack = true;
-        ground.pixelPerfectRender = true;
         add(ground);
 
         obstacles = map.loadTilemap(AssetPaths.Tileset__png, "obstacles");
         ground.useScaleHack = true;
-        ground.pixelPerfectRender = true;
         mapWidth = obstacles.widthInTiles;
         mapHeight = obstacles.heightInTiles;
         add(obstacles);
@@ -193,7 +194,7 @@ class PlayState extends FlxState
         scoreText.x = overlayCamera.width - scoreText.width - 16;
         scoreText.y = 8;
         scoreText.setBorderStyle(SHADOW, FlxColor.BLACK, 3, 1);
-        scoreText.health = topLayerSortIndex();
+        scoreText.health = topLayerSortIndex() + 2;
         scoreText.camera = overlayCamera;
         add(scoreText);
         
@@ -202,9 +203,22 @@ class PlayState extends FlxState
         scoreSecondaryText.x = overlayCamera.width - scoreSecondaryText.width - 16;
         scoreSecondaryText.y = scoreText.y + scoreText.height + 1;
         scoreSecondaryText.setBorderStyle(SHADOW, FlxColor.BLACK, 2, 1);
-        scoreSecondaryText.health = topLayerSortIndex();
+        scoreSecondaryText.health = topLayerSortIndex() + 2;
         scoreSecondaryText.camera = overlayCamera;
         add(scoreSecondaryText);
+
+        livesText = new FlxText(16, 8, 0, "" + Player.getLives() + " x ", 24);
+        livesText.scrollFactor.x = livesText.scrollFactor.y = 0;
+        livesText.setBorderStyle(SHADOW, FlxColor.BLACK, 3, 1);
+        livesText.health = topLayerSortIndex() + 2;
+        livesText.camera = overlayCamera;
+        add(livesText);
+
+        livesSprite = new FlxSprite(livesText.x + livesText.width - 4, 12);
+        livesSprite.loadGraphic(AssetPaths.heart_big__png, 27, 24);
+        livesSprite.health = topLayerSortIndex() + 2;
+        livesSprite.camera = overlayCamera;
+        add(livesSprite);
 
         // Set up transition screen
         transitionScreen = new FlxSprite(0, 0);
@@ -250,8 +264,6 @@ class PlayState extends FlxState
         var camera_w = CHUNK_WIDTH/5;
         var camera_h = CHUNK_HEIGHT/5;
         FlxG.camera.deadzone.set(camera_x - camera_w/2, camera_y - camera_h/2, camera_w, camera_h);
-    
-        FlxG.camera.pixelPerfectRender = true;
     }
 
     function createTileCollider(tileX:Int, tileY:Int, obstacles:FlxTilemap)
@@ -379,6 +391,8 @@ class PlayState extends FlxState
 
     function updateScore()
     {
+        livesText.text = "" + Player.getLives() + " x ";
+
         Score.update();
         var score = Score.getScore();
         if (score != lastScore)
@@ -792,7 +806,7 @@ class PlayState extends FlxState
 
     public function levelFinished()
     {
-        return entityGroups[EntityPrey].length == 0 && GameWorld.levelId() > 1;
+        return entityGroups[EntityPrey].length == 0;
     }
 
     var scoreSoundMultiplier:Float = 0.0;
