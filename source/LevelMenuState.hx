@@ -38,8 +38,6 @@ class LevelMenuState extends FlxSubState
             PlayLogger.initializeLogger();
         }
 
-        FlxG.mouse.visible = true;
-
         var boxWidth = 100;
         var boxHeight = 52;
 
@@ -129,7 +127,6 @@ class LevelMenuState extends FlxSubState
     {
         dead = true;
         PlayState.world.levelMenu = null;
-        FlxG.mouse.visible = false;
         close();
     }
 
