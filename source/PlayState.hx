@@ -226,7 +226,7 @@ class PlayState extends FlxState
         transitionScreen = new FlxSprite(0, 0);
         transitionScreen.makeGraphic(SCREEN_WIDTH, SCREEN_HEIGHT, FlxColor.BLACK);
         transitionScreen.alpha = 1;
-        transitionScreen.health = topLayerSortIndex() + 1;
+        transitionScreen.health = topLayerSortIndex() + 10;
         transitionScreen.camera = overlayCamera;
         add(transitionScreen);
 

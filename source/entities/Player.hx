@@ -331,7 +331,7 @@ class Player extends Entity
                 var radius:Float = callRadius;
                 if (levelFinished && !isCalling)
                 {
-                    radius = MAX_CALL_RADIUS * 1/4;
+                    radius = MAX_CALL_RADIUS * 3.0 / 8.0;
                 }
 
                 // Position along circle
@@ -391,7 +391,7 @@ class Player extends Entity
 
     function call():Void
     {
-        if (FlxG.keys.pressed.C)
+        if (FlxG.keys.pressed.SHIFT)
         {
             // Sound playing logic
             if (!isCalling)

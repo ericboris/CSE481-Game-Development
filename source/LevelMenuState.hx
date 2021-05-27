@@ -50,7 +50,7 @@ class LevelMenuState extends FlxSubState
         var textString:String;
         if (GameWorld.levelId() == 1)
         {
-            textString = "press C at Caves to move on";
+            textString = "Press Shift at Caves to move on";
         }
         else
         {
@@ -117,7 +117,7 @@ class LevelMenuState extends FlxSubState
 
     override public function update(elapsed:Float)
     {
-        if (FlxG.keys.anyPressed([ENTER, C]))
+        if (FlxG.keys.anyPressed([ENTER, SHIFT]))
         {
             clickNext();
         }
