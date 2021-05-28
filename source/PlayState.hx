@@ -34,7 +34,7 @@ class PlayState extends FlxState
     static public final CHUNK_HEIGHT = 300;
 
     // Enables debug commands (spawn prey, next level)
-    static public final DEBUG = true;
+    static public final DEBUG = false;
 
     // Makes player move faster
     static public final DEBUG_FAST_SPEED = false;
@@ -496,6 +496,10 @@ class PlayState extends FlxState
         scoreSoundMultiplier -= 0.005;
         frameCounter++;
 
+        // TODO REMOVE - only used for map making.
+        Console.log("PREY COUNT = " + getNumPreyLeft());
+        Console.log("PREDATOR COUNT = " + getNumPredatorsLeft());
+    
         this.sort(sortSprites);
         super.update(elapsed);
     }
@@ -581,12 +585,6 @@ class PlayState extends FlxState
     public function removeFromCollidableSprites(entity:Entity)
     {
         collidableSprites.remove(entity.getSprite());
-    }
-
-    // TODO
-    public function getNumPreyRemaining():Int
-    {
-       return entityGroups[EntityPrey].length;
     }
 
     function collisionChecks()
@@ -861,6 +859,13 @@ class PlayState extends FlxState
     {
         return entityGroups[EntityPrey].length;
     }
+
+    public function getNumPredatorsLeft():Int
+    {
+        return entityGroups[EntityPredator].length;
+    }
+
+
 
     public function getPlayer():Player
     {
