@@ -41,6 +41,9 @@ class TileType
     public static final CAVE_1 = 40;
     public static final CAVE_2 = 41;
 
+    public static final TRANSPARENT_COLLIDE = 110;
+    public static final TRANSPARENT_NO_COLLIDE = 111;
+
     public static function getTileObstacle(tile:Int):Null<Obstacle>
     {
         var tilemap = PlayState.world.getObstacles();

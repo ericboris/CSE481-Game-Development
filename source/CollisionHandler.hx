@@ -51,6 +51,9 @@ class CollisionHandler
  
         obstacles.setTileProperties(TileType.CAVE_1, FlxObject.ANY, CollisionHandler.handleCaveCollision);
         obstacles.setTileProperties(TileType.CAVE_2, FlxObject.ANY, CollisionHandler.handleCaveCollision);
+
+        obstacles.setTileProperties(TileType.TRANSPARENT_COLLIDE, FlxObject.NONE);
+        obstacles.setTileProperties(TileType.TRANSPARENT_NO_COLLIDE, FlxObject.NONE);
     }
 
 
@@ -116,18 +119,21 @@ class CollisionHandler
                 case FlxObject.RIGHT:
                     isFacing = diffX > 0 && Math.abs(diffY) < Math.abs(diffX);
             }
+            isFacing = isFacing && sprite.facing == direction1;
             
+            var isFacing2  = false;
             switch (direction2)
             {
                 case FlxObject.UP:
-                    isFacing = isFacing || diffY < 0 && Math.abs(diffY) > Math.abs(diffX);
+                    isFacing2 = diffY < 0 && Math.abs(diffY) > Math.abs(diffX);
                 case FlxObject.DOWN:
-                    isFacing = isFacing || diffY > 0 && Math.abs(diffY) > Math.abs(diffX);
+                    isFacing2 = diffY > 0 && Math.abs(diffY) > Math.abs(diffX);
                 case FlxObject.LEFT:
-                    isFacing = isFacing || diffX < 0 && Math.abs(diffY) < Math.abs(diffX);
+                    isFacing2 = diffX < 0 && Math.abs(diffY) < Math.abs(diffX);
                 case FlxObject.RIGHT:
-                    isFacing = isFacing || diffX > 0 && Math.abs(diffY) < Math.abs(diffX);
+                    isFacing2 = diffX > 0 && Math.abs(diffY) < Math.abs(diffX);
             }
+            isFacing2 = isFacing2 && sprite.facing == direction2;
 
             if (entity.getType() == EntityBoulder)
             {
@@ -138,7 +144,7 @@ class CollisionHandler
                 }
             }
 
-            if (isFacing)
+            if (isFacing || isFacing2)
             {
                 entity.handleCliffCollision(direction1, direction2);
             }

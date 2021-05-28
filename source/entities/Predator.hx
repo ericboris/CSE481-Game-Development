@@ -307,12 +307,13 @@ class Predator extends Dino
 
 
         var random = FlxG.random.float(0, 1.0);
+        var timer = DAZED_TIMER - 0.5;
         if (random < 0.3)
-            this.think(":O", 0.4);
+            this.think(":O", timer);
         else if (random < 0.6)
-            this.think(":|", 0.4);
+            this.think(":|", timer);
         else
-            this.think(":o", 0.4);
+            this.think(":o", timer);
 
         this.dazed = true;
         this.dazedTimer = DAZED_TIMER;
@@ -337,7 +338,7 @@ class Predator extends Dino
             hasRoared = false;
             state = Fleeing;
 
-            think(">:(", 0.4);
+            think(">:)", SATIATED_TIMER - 0.5);
 
             return true;
         }

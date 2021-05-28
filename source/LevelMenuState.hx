@@ -38,8 +38,6 @@ class LevelMenuState extends FlxSubState
             PlayLogger.initializeLogger();
         }
 
-        FlxG.mouse.visible = true;
-
         var boxWidth = 100;
         var boxHeight = 52;
 
@@ -50,7 +48,7 @@ class LevelMenuState extends FlxSubState
         var textString:String;
         if (GameWorld.levelId() == 1)
         {
-            textString = "Press Shift at Caves to move on";
+            textString = "Press Space at Caves to move on";
         }
         else
         {
@@ -117,7 +115,7 @@ class LevelMenuState extends FlxSubState
 
     override public function update(elapsed:Float)
     {
-        if (FlxG.keys.anyPressed([ENTER, SHIFT]))
+        if (FlxG.keys.anyPressed([ENTER, SPACE]))
         {
             clickNext();
         }
@@ -129,7 +127,6 @@ class LevelMenuState extends FlxSubState
     {
         dead = true;
         PlayState.world.levelMenu = null;
-        FlxG.mouse.visible = false;
         close();
     }
 

@@ -56,8 +56,6 @@ class PlayState extends FlxState
     // Maps GroupdIds (defined above) to a group containing all of that type of entity
     var entityGroups:Map<EntityType, Array<Entity>>;
     var spriteGroups:Map<EntityType, FlxGroup>;
-    
-    var uncollidableTiles:Array<Int> = new Array<Int>();
 
     // A group containing all collidable entities
     var collidableSprites:FlxGroup;
@@ -286,9 +284,13 @@ class PlayState extends FlxState
             
             if (TileType.nonCollidable(tileNum))
             {
-                if (obstacle.collides() && !uncollidableTiles.contains(tileNum))
+                if (obstacle.collides())
                 {
-                    uncollidableTiles.push(tileNum);
+                    obstacles.setTile(tileX, tileY, TileType.TRANSPARENT_COLLIDE);
+                }
+                else
+                {
+                    obstacles.setTile(tileX, tileY, TileType.TRANSPARENT_NO_COLLIDE);
                 }
 
                 if (TileType.isStatic(tileNum))
@@ -394,6 +396,7 @@ class PlayState extends FlxState
     function updateScore()
     {
         livesText.text = "" + Player.getLives() + " x ";
+        livesSprite.x = livesText.x + livesText.width - 4;
 
         Score.update();
         var score = Score.getScore();
@@ -656,10 +659,7 @@ class PlayState extends FlxState
     {
         // Enable/Disable collisions (these collisions are used when raycasting).
         var collisions = toggle ? FlxObject.ANY : FlxObject.NONE;
-        for (tileNum in uncollidableTiles)
-        {
-            obstacles.setTileProperties(tileNum, collisions);
-        }
+        obstacles.setTileProperties(TileType.TRANSPARENT_COLLIDE, collisions);
     }
 
     function placeEntities(entity:EntityData)
