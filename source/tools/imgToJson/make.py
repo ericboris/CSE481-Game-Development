@@ -173,7 +173,7 @@ OBSTACLE_TILEMAP = {(0, 0, 0, 0, 1, 1, 0, 1, 1): TOP_LEFT_OUT,
 entityId = 0
 
 def main(args):
-    global ROWS, COLS, TREE_NOISE, PREY_NOISE, PREDATOR_NOISE, TREE_THRESHOLD, PREY_THRESHOLD, PREDATOR_THRESHOLD
+    global ROWS, COLS, TREE_NOISE, PREY_NOISE, PREDATOR_NOISE, TREE_DENSITY, PREY_DENSITY, PREDATOR_DENSITY
 
     infile = args.infile
     outfile = args.outfile
@@ -181,9 +181,12 @@ def main(args):
     treeSimplex = int(args.tree_simplex)
     preySimplex = int(args.prey_simplex)
     predatorSimplex = int(args.predator_simplex)
-    TREE_THRESHOLD = float(args.tree_threshold)
-    PREY_THRESHOLD = float(args.prey_threshold)
-    PREDATOR_THRESHOLD = float(args.predator_threshold)
+
+    TREE_DENSITY = float(args.tree_density)
+    PREY_DENSITY = float(args.prey_density)
+    PREDATOR_DENSITY = float(args.predator_density)
+
+    assert ((TREE_DENSITY + PREY_DENSITY + PREDATOR_DENSITY) <= 1), 'Densities may not exceed 1.'
 
     # Load the image.
     img = np.array(Image.open(infile).convert('L'))
@@ -201,7 +204,8 @@ def main(args):
     img = threshold(img, colorThreshold)
     
     # Get the entities and obstacles tile data.
-    entityData, obstacleData = getObstacleData(img) 
+    #entityData, obstacleData = getObstacleData(img) 
+    entityData, obstacleData = getData(img)
 
     # Build the layer dictionaries.
     entityLayer = getEntityLayer(name=ENTITIES_NAME, 
@@ -305,58 +309,118 @@ def getGroundData(img):
     return d
 
 
-def getObstacleData(img):
-    # The list of tile indices.
-    obstacles = []
-    entities = []
+def getData(img):
+    # Return entities and obstacles lists based on img.
+  
+    # Nested dictionary of tiles at (x, y) coordinates of the form y -> x -> tile.
+    obstacleDict = {}
 
-    # Visit every pixel in img.
+    # List of obstacle tile coords (x, y) that need to be filled.
+    emptyTiles = []
+
+    # Fill in cliffs and water tiles.
+    # And build a list of empty tiles to fill with trees and dinos.
     for y in range(ROWS):
+        obstacleDict[y] = {}
         for x in range(COLS):
-            # Get the pixel region.
+            # Get the pixels in the region surrounding the current (x, y) pixel.
             region = getRegion(img, x, y)
 
-            # True if descending into water and false otherwise.
+             # True if descending into water and false otherwise.
             intoWater = True if min(region) == 0 else False
 
             # Flatten the region into 1s and 0s.
-            flatRegion = flatten(region)   
-    
-            # Used with clean.py
-            #diffs = []
-            #if (y, x) in diffs:
-            #    print(tuple(flatRegion))
+            flatRegion = flatten(region)
 
+            # Get the obstacle to insert at (x, y).
             try:
                 # Get the raw obstacle shape.
                 obstacle = OBSTACLE_TILEMAP[tuple(flatRegion)]
             except:
                 obstacle = EMPTY
 
-            # Convert the obstacle shape into the typed obstacle.
+            # Handle water tiles and cliffs into water.
             if intoWater:
-                # Add cliffs into water.
                 typed = WATER_TILEMAP[obstacle]
+                obstacleDict[y][x] = typed
             else:
-                # Add trees.
-                if obstacle == EMPTY and TREE_NOISE.noise2(x, y) > TREE_THRESHOLD:
-                    choice = getTreeType()
-                    typed = TREE_TILEMAP[choice]
-                # Add cliffs.
+                # Handle empty land tiles later.
+                if obstacle == EMPTY:
+                    emptyTiles.append((x, y))
+                # Otherwise, place a cliff.
                 else:
                     typed = GRASS_TILEMAP[obstacle]
+                    obstacleDict[y][x] = typed
 
-                # Add prey.
-                if obstacle == EMPTY and PREY_NOISE.noise2(x, y) > PREY_THRESHOLD:
-                    entities.append(getPreyEntity(x*16, y*16))
+    numEmptyTiles = len(emptyTiles)
 
-                # Add predators.
-                if obstacle == EMPTY and PREDATOR_NOISE.noise2(x, y) > PREDATOR_THRESHOLD:
-                    entities.append(getPredatorEntity(x*16, y*16))
+    # Fill in trees.
+    treesAdded = 0
+    treesToAdd = _getNumToAdd(TREE_DENSITY, numEmptyTiles)
+    while treesAdded < treesToAdd:
+        # Place a tree on a randomly chosen empty tile.
+        x, y = random.choice(emptyTiles)
 
+        # Remove that tile from the list since it's no longer empty.
+        emptyTiles.remove((x, y))
 
-            # Insert that value into the data list.
-            obstacles.append(typed)
+        # Get the type of tree to add.
+        choice = getTreeType()
+        typed = TREE_TILEMAP[choice]
+
+        # Add the tree.
+        obstacleDict[y][x] = typed
+
+        treesAdded += 1
+
+    # The entities list of prey and predators and their locations.
+    entities = []
+
+    # Fill in prey.
+    preyAdded = 0
+    preyToAdd = _getNumToAdd(PREY_DENSITY, numEmptyTiles)
+    while preyAdded < preyToAdd:
+        # Place a prey on a randomly chosen empty tile.
+        x, y = random.choice(emptyTiles)
+
+        # Remove that tile from the list since it's no longer empty.
+        emptyTiles.remove((x, y))
+
+        # Add the prey to the entities list.
+        entities.append(getPreyEntity(x*16, y*16))
+
+        # Fill the tile on obstacles with an empty tile.
+        obstacleDict[y][x] = EMPTY
+
+        preyAdded += 1
+
+    # Fill in predators.
+    predatorsAdded = 0
+    predatorsToAdd = _getNumToAdd(PREDATOR_DENSITY, numEmptyTiles)
+    while predatorsAdded < predatorsToAdd:
+        # Place a predator on a randomly chosen empty tile.
+        x, y = random.choice(emptyTiles)
+
+        # Remove that tile from the list since it's no longer empty.
+        emptyTiles.remove((x, y))
+
+        # Add the predator to the entities list.
+        entities.append(getPredatorEntity(x*16, y*16))
+
+        # Fill the tile on obstacles with an empty tile.
+        obstacleDict[y][x] = EMPTY
+
+        predatorsAdded += 1
+
+    # Fill in the remaining empty tiles.
+    for x, y in emptyTiles:
+        obstacleDict[y][x] = EMPTY
+
+    # Flatten the nested obstacleDict into a flat list.
+    obstacles = []
+    for y in range(ROWS):
+        for x in range(COLS):
+            obstacles.append(obstacleDict[y][x])
 
     return entities, obstacles
 
@@ -465,6 +529,10 @@ def _getEntity(name, ID, _eid, x, y, originX=0, originY=0):
             'y': y,
             'originX': originX,
             'originY': originY}
+
+
+def _getNumToAdd(density, area):
+    return int(density * area)    
         
  
 if __name__ == '__main__':
@@ -475,9 +543,9 @@ if __name__ == '__main__':
     parser.add_argument('--tree_simplex', help='default=18', default=18)
     parser.add_argument('--prey_simplex', help='default=19', default=19)
     parser.add_argument('--predator_simplex', help='default=20', default=20)
-    parser.add_argument('--tree_threshold', help='Number of trees to add, lower=more, default=0.65', default=0.65)
-    parser.add_argument('--prey_threshold', help='Number of prey to add, lower=more, default=0.92', default=0.92)
-    parser.add_argument('--predator_threshold', help='Number of predators to add, lower=more, default=0.995', default=0.995)
+    parser.add_argument('--tree_density', help='Density of trees on land, default=0.1', default=0.1)
+    parser.add_argument('--prey_density', help='Density of prey on land, default=0.03', default=0.03)
+    parser.add_argument('--predator_density', help='Density of predators on land, default=0.03', default=0.003)
     args = parser.parse_args()
     
     main(args)
