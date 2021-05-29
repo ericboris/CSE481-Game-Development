@@ -28,7 +28,7 @@ class GameWorld
 
     static var levelArrayA = [//AssetPaths.tutorial0__json, 
                             AssetPaths.tutorial1__json,
-                            //AssetPaths.tutorial2__json,
+                            AssetPaths.tutorial2__json,
                             AssetPaths.tutorial3__json,
                             AssetPaths.map7w50h22__json,
                             AssetPaths.map3w50h50__json,
@@ -50,6 +50,28 @@ class GameWorld
                             AssetPaths.map1w200h165__json,
                             AssetPaths.map2w200h200__json];
 
+    static var lowDensityLevels = [AssetPaths.tutorial1__json,
+                                    AssetPaths.tutorial2__json,
+                                    AssetPaths.tutorial3__json,
+                                    AssetPaths.map1low__json,
+                                    AssetPaths.map2low__json,
+                                    AssetPaths.map3low__json,
+                                    AssetPaths.map4low__json,
+                                    AssetPaths.map5low__json,
+                                    AssetPaths.map6low__json,
+                                    AssetPaths.map7low__json];
+
+     static var highDensityLevels = [AssetPaths.tutorial1__json,
+                                    AssetPaths.tutorial2__json,
+                                    AssetPaths.tutorial3__json,
+                                    AssetPaths.map1high__json,
+                                    AssetPaths.map2high__json,
+                                    AssetPaths.map3high__json,
+                                    AssetPaths.map4high__json,
+                                    AssetPaths.map5high__json,
+                                    AssetPaths.map6high__json,
+                                    AssetPaths.map7high__json];
+                            
     static var levelChoice:Int;
 
     static var levelSizeMap = [0 => levelArrayA,
@@ -66,8 +88,8 @@ class GameWorld
                               1 => 120.0];
 
     static var levelDensityChoice:Int;
-    static var levelDensityMap = [0 => levelArrayA,
-                                  1 => levelArrayA];
+    static var levelDensityMap = [0 => lowDensityLevels,
+                                  1 => highDensityLevels];
 
 
     static public function getABChoice()

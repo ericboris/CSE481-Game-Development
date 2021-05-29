@@ -99,6 +99,8 @@ class PlayState extends FlxState
     var cameraZoomDirection:Int = -1;
     var cameraZoomTween:FlxTween;
 
+    var predatorAlarmClock:FlxTimer;
+
     override public function create()
     {
         super.create();
@@ -239,6 +241,24 @@ class PlayState extends FlxState
             var adjustment = 0.1 + levelIndex * 0.05;
             Predator.adjustAggression(adjustment);
         }
+
+        this.predatorAlarmClock = new FlxTimer();
+        predatorAlarmClock.start(5.0, function (timer) 
+            {
+                var newTime = GameWorld.map(0.0, 1.0, 20.0, 8.0, Predator.aggression);
+                predatorAlarmClock.reset(newTime);
+                
+                for (entity in entityGroups[EntityPredator])
+                {
+                    var predator:Predator = cast entity;
+                    if (predator.getState() == Sleeping) 
+                    {
+                        predator.wakeUp();
+                        return;
+                    }
+                }
+                predatorAlarmClock.cancel();
+            }, 0);
     }
 
     function baseZoom():Float
@@ -248,7 +268,7 @@ class PlayState extends FlxState
 
     function minZoom():Float
     {
-        return baseZoom() * 0.8;
+        return baseZoom() * 0.7;
     }
 
     var overlayCamera:FlxCamera;
@@ -367,6 +387,7 @@ class PlayState extends FlxState
 
     function updateCamera()
     {
+        var duration = 2.5;
         var zoom = FlxG.camera.zoom;
         if (player.isPlayerCalling())
         {
@@ -377,7 +398,7 @@ class PlayState extends FlxState
                 }};
                 
                 if (cameraZoomTween != null) cameraZoomTween.cancel();
-                cameraZoomTween = FlxTween.num(zoom, minZoom(), 1.0, options, function (f: Float) {
+                cameraZoomTween = FlxTween.num(zoom, minZoom(), duration, options, function (f: Float) {
                     FlxG.camera.zoom = f;
                 });
                 cameraZoomDirection = 1;
@@ -392,7 +413,7 @@ class PlayState extends FlxState
                 }};
                 
                 if (cameraZoomTween != null) cameraZoomTween.cancel();
-                cameraZoomTween = FlxTween.num(zoom, baseZoom(), 1.0, options, function (f: Float) {
+                cameraZoomTween = FlxTween.num(zoom, baseZoom(), duration, options, function (f: Float) {
                     FlxG.camera.zoom = f;
                 });
                 cameraZoomDirection = -1;
@@ -434,8 +455,6 @@ class PlayState extends FlxState
 
     override public function update(elapsed:Float)
     {
-        //Console.log("PLAYER COORDS: x=" + player.getX() + " y=" + player.getY());
-
         if (dead)
         {
             return;
@@ -588,12 +607,6 @@ class PlayState extends FlxState
     public function removeFromCollidableSprites(entity:Entity)
     {
         collidableSprites.remove(entity.getSprite());
-    }
-
-    // TODO
-    public function getNumPreyRemaining():Int
-    {
-       return entityGroups[EntityPrey].length;
     }
 
     function collisionChecks()
@@ -863,6 +876,13 @@ class PlayState extends FlxState
     {
         return entityGroups[EntityPrey].length;
     }
+
+    public function getNumPredatorsLeft():Int
+    {
+        return entityGroups[EntityPredator].length;
+    }
+
+
 
     public function getPlayer():Player
     {

@@ -13,6 +13,7 @@ enum DinoState
     Unherded;
     Pursuing;
     Fleeing;
+    Sleeping;
 }
 
 class Dino extends Entity
@@ -47,6 +48,8 @@ class Dino extends Entity
     var collidedWithCave:Cave = null;
     var caveCollisionCount:Int = 0;
 
+    var isWaking:Bool = false;
+
     public function new()
     {
         super();
@@ -66,6 +69,8 @@ class Dino extends Entity
                 herded(elapsed);
             case Fleeing:
                 fleeing(elapsed);
+            case Sleeping:
+                sleeping(elapsed);
             default:
         }
 
@@ -391,6 +396,19 @@ class Dino extends Entity
             var angle = Math.atan2(dir.y, dir.x);
             sprite.velocity.set(Math.cos(angle) * UNHERDED_SPEED, Math.sin(angle) * UNHERDED_SPEED);
         }
+    }
+
+    function sleeping(elapsed:Float)
+    {
+        if (isWaking)
+        {
+            think("z...", 1.0, true);
+        }
+        else
+        {
+            think("zzz", 1.0, false);
+        }
+        sprite.velocity.set(0, 0);
     }
 
     public override function handleCaveCollision(cave:Cave)
