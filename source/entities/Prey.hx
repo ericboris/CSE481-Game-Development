@@ -161,6 +161,7 @@ class Prey extends Dino
             // Die instantly!
             PlayState.world.numPreyDeaths++;
             PlayState.world.removeEntity(this);
+            Predator.adjustAggression(-0.02);
             killedSound.play();
         }
     }

@@ -17,13 +17,52 @@ class Predator extends Dino
 
     /* Pursuing state */
     static final ANGULAR_ACCELERATION = GameWorld.toRadians(20);
-    static final PURSUING_SPEED = 100.0;
+    
+    static final MAX_PURSUING_SPEED = 1.2;
+    static final MIN_PURSUING_SPEED = 0.5;
+    static var PURSUING_SPEED = 100.0;
+
     static final SEEN_TIMER = 1.5;
 
-    static final SATIATED_TIMER = 6.0;
-    static final DAZED_TIMER = 4.0;
+    static final MAX_SATIATED_TIMER = 4.0;
+    static final MIN_SATIATED_TIMER = 0.4;
+    static var SATIATED_TIMER = 0.0;
+
+    static final MAX_DAZED_TIMER = 4.0;
+    static final MIN_DAZED_TIMER = 0.4;
+    static var DAZED_TIMER = 0.0;
+
+    static final MIN_SIGHT_RANGE = 100;
+    static final MAX_SIGHT_RANGE = 300;
+
+    static final MIN_SIGHT_RADIUS = 60;
+    static final MAX_SIGHT_RADIUS = 120;
     
     static final FLASHING_RATE = 0.04;
+
+    /* ADAPTIVE AGGRESSION */
+    static var aggression:Float = 0.5;
+    static public function adjustAggression(f:Float)
+    {
+        aggression += f;
+        Console.log("Aggression: " + aggression);
+        if (aggression < 0) aggression = 0;
+        if (aggression > 1) aggression = 1;
+        updateAggression();
+    }
+
+    static public function updateAggression()
+    {
+        var speed = GameWorld.getPlayerSpeed();
+        PURSUING_SPEED = GameWorld.map(0.0, 1.0, speed * MIN_PURSUING_SPEED, speed * MAX_PURSUING_SPEED, aggression);
+
+        SATIATED_TIMER = GameWorld.map(0.0, 1.0, MAX_SATIATED_TIMER, MIN_SATIATED_TIMER, aggression);
+        DAZED_TIMER = GameWorld.map(0.0, 1.0, MAX_DAZED_TIMER, MIN_DAZED_TIMER, aggression);
+    
+        Console.log("Speed: " + PURSUING_SPEED);
+        Console.log("Satiated Timer: " + SATIATED_TIMER);
+        Console.log("Dazed Timer: " + DAZED_TIMER);
+    }
 
     var lastSeenEntity:Entity;
     var lastSeenTimer:Float = 0;
@@ -81,6 +120,9 @@ class Predator extends Dino
 
     public override function update(elapsed:Float)
     {
+        SIGHT_RANGE = GameWorld.map(0.0, 1.0, MIN_SIGHT_RANGE, MAX_SIGHT_RANGE, aggression);
+        NEARBY_SIGHT_RADIUS = GameWorld.map(0.0, 1.0, MIN_SIGHT_RADIUS, MAX_SIGHT_RADIUS, aggression);
+        
         if (dazed)
         {
             dazedTimer -= elapsed;

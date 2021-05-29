@@ -112,13 +112,11 @@ class GameWorld
 
     static public function getPlayerSpeed()
     {
-        Console.log("PLAYER SPEED = " + playerSpeedChoice);
         return playerSpeedMap[playerSpeedChoice];
     }
 
     static public function getLevelDensity()
     {
-        Console.log("LEVEL DENSITY = " + levelDensityChoice);
         return levelDensityMap[levelDensityChoice];
     }
 

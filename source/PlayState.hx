@@ -231,7 +231,14 @@ class PlayState extends FlxState
         this.persistentDraw = true;
         this.persistentUpdate = true;
 
-        PlayLogger.startLevel(GameWorld.levelId());
+        var levelIndex = GameWorld.levelId();
+        PlayLogger.startLevel(levelIndex);
+        Predator.updateAggression();
+        if (levelIndex > 4)
+        {
+            var adjustment = 0.1 + levelIndex * 0.05;
+            Predator.adjustAggression(adjustment);
+        }
     }
 
     function baseZoom():Float
@@ -591,13 +598,6 @@ class PlayState extends FlxState
 
     function collisionChecks()
     {
-        var playerGroup = spriteGroups[EntityPlayer];
-        var preyGroup = spriteGroups[EntityPrey];
-        var predatorGroup = spriteGroups[EntityPredator];
-        var caveGroup = spriteGroups[EntityCave];
-        var hitboxGroup = spriteGroups[EntityHitbox];
-        var boulderGroup = spriteGroups[EntityBoulder];
-
         // Collision resolution
 
         // Check collidable entity overlap
@@ -639,12 +639,12 @@ class PlayState extends FlxState
         }
 
 
-        if (newEntity != EntityNull)
+        if (!hasSeenNewEntity && newEntity != EntityNull)
         {
             for (entity in entityGroups[newEntity])
             {
                 //var visionCheck = GameWorld.checkVision(player, entity)) // and in range
-                if (!hasSeenNewEntity && GameWorld.entityDistance(player, entity) < player.getSightRange())
+                if (GameWorld.entityDistance(player, entity) < player.getSightRange())
                 {
                     player.think(playerReaction);
                     entity.think(entityReaction);
@@ -833,7 +833,7 @@ class PlayState extends FlxState
             }
             else
             {
-                cave.think("!?", 1.5, true);
+                cave.think("!?", 2.5, true);
             }
 
             Score.collectDino(dino);
@@ -848,10 +848,12 @@ class PlayState extends FlxState
 
             if (dino.getType() == EntityPrey)
             {
+                Predator.adjustAggression(0.01);
                 numPreyCollected++;
             }
             else if (dino.getType() == EntityPredator)
             {
+                Predator.adjustAggression(0.1);
                 numPredatorsCollected++;
             }
         }

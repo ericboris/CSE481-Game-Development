@@ -876,6 +876,8 @@ class Player extends Entity
         var respawnCave = PlayState.world.getRespawnCave();
         this.setPosition(respawnCave.getX(), respawnCave.getY());
         
+        Predator.adjustAggression(-0.3);
+
         triggerSpeedBoost();
         
         think("!", 2.0);
