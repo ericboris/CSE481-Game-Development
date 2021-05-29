@@ -6,6 +6,7 @@ import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import js.html.Console;
 import flixel.system.FlxSound;
+import flixel.util.FlxTimer;
 
 class Predator extends Dino
 {
@@ -68,6 +69,8 @@ class Predator extends Dino
         this.attackRoar = FlxG.sound.load(AssetPaths.PredatorRoar1__mp3, 0.7);
         attackRoar.proximity(sprite.x, sprite.y, FlxG.camera.target, FlxG.width * 0.6);
         this.thought.setOffset(0, -17);
+
+        this.state = Sleeping;
     }
 
     function flash()
@@ -93,8 +96,13 @@ class Predator extends Dino
         }
         else if (!satiated && !dazed)
         {
+            if (state == Sleeping)
+            {
+                
+            }
+
             // Can only puruse if not dazed.
-            if (seenEntities.length > 0)
+            else if (seenEntities.length > 0)
             {
                 if (state != Pursuing)
                 {
@@ -288,6 +296,14 @@ class Predator extends Dino
         }
     }
 
+    public override function handlePredatorCollision(predator:Predator)
+    {
+        if (state == Sleeping)
+        {
+            wakeUp();
+        }
+    }
+
     var lastHitTimestamp:Float = 0.0;
     public function hitWithStick()
     {
@@ -330,17 +346,28 @@ class Predator extends Dino
         var canEat = !satiated && !dazed;
         if (canEat)
         {
-            // Eat this entity! Set satiated to true and reverse direction.
-            sprite.velocity.x *= -1;
-            sprite.velocity.y *= -1;
-            satiated = true;
-            satiatedTimer = SATIATED_TIMER;
-            hasRoared = false;
-            state = Fleeing;
+            if (state == Sleeping)
+            {
+                if (!isWaking)
+                {
+                    wakeUp();            
+                }
+                return false;
+            }
+            else
+            {
+                // Eat this entity! Set satiated to true and reverse direction.
+                sprite.velocity.x *= -1;
+                sprite.velocity.y *= -1;
+                satiated = true;
+                satiatedTimer = SATIATED_TIMER;
+                hasRoared = false;
+                state = Fleeing;
 
-            think(">:)", SATIATED_TIMER - 0.5);
+                think(">:)", SATIATED_TIMER - 0.5);
 
-            return true;
+                return true;
+            }
         }
         else
         {
@@ -348,8 +375,19 @@ class Predator extends Dino
         }
     }
 
+    public function wakeUp():Void
+    {
+        isWaking = true;
+        attackRoar.play(); 
+        new FlxTimer().start(0.5, function (FlxTimer) 
+            {
+               this.state = Unherded; 
+            });
+    }
+
     public function track(entity:Entity)
     {
+        wakeUp();
         seenEntities.push(entity);
     }
 

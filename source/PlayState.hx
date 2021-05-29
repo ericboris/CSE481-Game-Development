@@ -34,7 +34,7 @@ class PlayState extends FlxState
     static public final CHUNK_HEIGHT = 300;
 
     // Enables debug commands (spawn prey, next level)
-    static public final DEBUG = false;
+    static public final DEBUG = true;
 
     // Makes player move faster
     static public final DEBUG_FAST_SPEED = false;
@@ -98,6 +98,8 @@ class PlayState extends FlxState
 
     var cameraZoomDirection:Int = -1;
     var cameraZoomTween:FlxTween;
+
+    var predatorAlarmClock:FlxTimer;
 
     override public function create()
     {
@@ -232,6 +234,21 @@ class PlayState extends FlxState
         this.persistentUpdate = true;
 
         PlayLogger.startLevel(GameWorld.levelId());
+
+        this.predatorAlarmClock = new FlxTimer();
+        predatorAlarmClock.start(5.0, function (timer) 
+            {
+                for (entity in entityGroups[EntityPredator])
+                {
+                    var predator:Predator = cast entity;
+                    if (predator.getState() == Sleeping) 
+                    {
+                        predator.wakeUp();
+                        return;
+                    }
+                }
+                predatorAlarmClock.cancel();
+            }, 0);
     }
 
     function baseZoom():Float
@@ -241,7 +258,7 @@ class PlayState extends FlxState
 
     function minZoom():Float
     {
-        return baseZoom() * 0.8;
+        return baseZoom() * 0.7;
     }
 
     var overlayCamera:FlxCamera;
@@ -360,6 +377,7 @@ class PlayState extends FlxState
 
     function updateCamera()
     {
+        var duration = 2.5;
         var zoom = FlxG.camera.zoom;
         if (player.isPlayerCalling())
         {
@@ -370,7 +388,7 @@ class PlayState extends FlxState
                 }};
                 
                 if (cameraZoomTween != null) cameraZoomTween.cancel();
-                cameraZoomTween = FlxTween.num(zoom, minZoom(), 1.0, options, function (f: Float) {
+                cameraZoomTween = FlxTween.num(zoom, minZoom(), duration, options, function (f: Float) {
                     FlxG.camera.zoom = f;
                 });
                 cameraZoomDirection = 1;
@@ -385,7 +403,7 @@ class PlayState extends FlxState
                 }};
                 
                 if (cameraZoomTween != null) cameraZoomTween.cancel();
-                cameraZoomTween = FlxTween.num(zoom, baseZoom(), 1.0, options, function (f: Float) {
+                cameraZoomTween = FlxTween.num(zoom, baseZoom(), duration, options, function (f: Float) {
                     FlxG.camera.zoom = f;
                 });
                 cameraZoomDirection = -1;
@@ -427,8 +445,6 @@ class PlayState extends FlxState
 
     override public function update(elapsed:Float)
     {
-        //Console.log("PLAYER COORDS: x=" + player.getX() + " y=" + player.getY());
-
         if (dead)
         {
             return;
@@ -496,10 +512,6 @@ class PlayState extends FlxState
         scoreSoundMultiplier -= 0.005;
         frameCounter++;
 
-        // TODO REMOVE - only used for map making.
-        Console.log("PREY COUNT = " + getNumPreyLeft());
-        Console.log("PREDATOR COUNT = " + getNumPredatorsLeft());
-    
         this.sort(sortSprites);
         super.update(elapsed);
     }
