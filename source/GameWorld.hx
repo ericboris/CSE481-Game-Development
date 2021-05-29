@@ -156,6 +156,7 @@ class GameWorld
     {
         PlayLogger.recordGameOverTryAgain();
         Score.resetScore();
+        Player.setLives(3);
         levelIndex = 0;
     }
 
