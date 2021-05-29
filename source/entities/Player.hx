@@ -658,7 +658,7 @@ class Player extends Entity
     {
         if (heldItem != null)
         {
-            var useKeyPressed = FlxG.keys.anyPressed([SHIFT, J]);
+            var useKeyPressed = FlxG.keys.anyPressed([SHIFT, J, C]);
             
             if (usingItem)
             {

@@ -56,7 +56,11 @@ class GameWorld
                             AssetPaths.tutorial3__json,
                             AssetPaths.map1low__json,
                             AssetPaths.map2low__json,
-                            AssetPaths.map3low__json];
+                            AssetPaths.map3low__json,
+                            AssetPaths.map4low__json,
+                            AssetPaths.map5low__json,
+                            AssetPaths.map6low__json,
+                            AssetPaths.map7low__json];
                             
 
     static var levelChoice:Int;

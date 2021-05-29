@@ -34,7 +34,7 @@ class PlayState extends FlxState
     static public final CHUNK_HEIGHT = 300;
 
     // Enables debug commands (spawn prey, next level)
-    static public final DEBUG = false;
+    static public final DEBUG = true;
 
     // Makes player move faster
     static public final DEBUG_FAST_SPEED = false;
