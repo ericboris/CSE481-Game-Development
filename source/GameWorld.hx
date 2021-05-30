@@ -158,6 +158,7 @@ class GameWorld
         Score.resetScore();
         Player.setLives(3);
         levelIndex = 0;
+        ABChoiceIsMade = false;
     }
 
         // Reactions shown above entities upon encountering player.

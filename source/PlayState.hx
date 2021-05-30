@@ -149,6 +149,7 @@ class PlayState extends FlxState
             MenuPlayState.menuState = GameWinState;
             FlxG.switchState(new MenuPlayState());
             return;
+            GameWorld.restart();
         }
         
         // Set up the tilemap.
