@@ -26,7 +26,10 @@ entityId = 0
 
 def main(args):
     infile = str(args.infile)
+    assert (infile != ''), 'Must provide a file'
     outfile = str(args.outfile)
+    if outfile == '':
+        outfile = infile
     entity = str(args.type)
     density = float(args.density)
 
@@ -200,8 +203,8 @@ def addNewEntities(root, newEntityName, density, area, emptyTiles):
 
 if __name__ == '__main__':
     parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--infile', help='File to convert to json', default='west.png')
-    parser.add_argument('--outfile', help='Output file name', default='output.json')
+    parser.add_argument('--infile', help='File to convert to json', default='')
+    parser.add_argument('--outfile', help='Output file name', default='')
     parser.add_argument('--type', help='Type of entity to add "prey" or "predator", default="prey"', default='prey')
     parser.add_argument('--density', help='Density of entity, default=0.03', default=0.03)
     args = parser.parse_args()

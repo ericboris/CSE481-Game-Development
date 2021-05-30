@@ -45,10 +45,9 @@ class Prey extends Dino
 
         setHitboxSize(7, 7);
 
-
         sprite.elasticity = PREY_ELASTICITY;
 
-        herdedSound = FlxG.sound.load(AssetPaths.addedToHerd__mp3, 0.6);
+        herdedSound = FlxG.sound.load(AssetPaths.addedToHerd__mp3, 0.4);
         killedSound = FlxG.sound.load(AssetPaths.preyKilled__mp3, 0.3);
         killedSound.proximity(sprite.x, sprite.y, FlxG.camera.target, FlxG.width * 0.6);
 

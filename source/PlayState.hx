@@ -924,4 +924,9 @@ class PlayState extends FlxState
             }, true);
         }
     }
+
+    public function isDebug()
+    {
+        return DEBUG;
+    }
 }

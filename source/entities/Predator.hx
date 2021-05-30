@@ -19,25 +19,25 @@ class Predator extends Dino
     /* Pursuing state */
     static final ANGULAR_ACCELERATION = GameWorld.toRadians(20);
     
-    static final MAX_PURSUING_SPEED = 1.2;
-    static final MIN_PURSUING_SPEED = 0.5;
+    static final MAX_PURSUING_SPEED = 1.3;
+    static final MIN_PURSUING_SPEED = 0.4;
     static var PURSUING_SPEED = 100.0;
 
     static final SEEN_TIMER = 1.5;
 
     static final MAX_SATIATED_TIMER = 4.0;
-    static final MIN_SATIATED_TIMER = 0.4;
+    static final MIN_SATIATED_TIMER = 0.8;
     static var SATIATED_TIMER = 0.0;
 
     static final MAX_DAZED_TIMER = 4.0;
-    static final MIN_DAZED_TIMER = 0.4;
+    static final MIN_DAZED_TIMER = 0.8;
     static var DAZED_TIMER = 0.0;
 
-    static final MIN_SIGHT_RANGE = 80;
-    static final MAX_SIGHT_RANGE = 300;
+    static final MIN_SIGHT_RANGE = 60;
+    static final MAX_SIGHT_RANGE = 200;
 
-    static final MIN_SIGHT_RADIUS = 60;
-    static final MAX_SIGHT_RADIUS = 120;
+    static final MIN_SIGHT_RADIUS = 30;
+    static final MAX_SIGHT_RADIUS = 100;
     
     static final FLASHING_RATE = 0.04;
 
@@ -59,7 +59,7 @@ class Predator extends Dino
         SATIATED_TIMER = GameWorld.map(0.0, 1.0, MAX_SATIATED_TIMER, MIN_SATIATED_TIMER, aggression);
         DAZED_TIMER = GameWorld.map(0.0, 1.0, MAX_DAZED_TIMER, MIN_DAZED_TIMER, aggression);
     
-        if (DEBUG)
+        if (PlayState.world.isDebug())
         {
             Console.log("Aggression: " + aggression);
             Console.log("Speed: " + PURSUING_SPEED);

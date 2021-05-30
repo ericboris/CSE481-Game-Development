@@ -176,7 +176,10 @@ def main(args):
     global ROWS, COLS, TREE_NOISE, PREY_NOISE, PREDATOR_NOISE, TREE_DENSITY, PREY_DENSITY, PREDATOR_DENSITY
 
     infile = args.infile
+    assert (infile != ''), 'Must provide a file'
     outfile = args.outfile
+    if outfile == '':
+        outfile = infile.split('.')[0] + '.json'
     colorThreshold = int(args.color_threshold)
     treeSimplex = int(args.tree_simplex)
     preySimplex = int(args.prey_simplex)
@@ -537,8 +540,8 @@ def _getNumToAdd(density, area):
  
 if __name__ == '__main__':
     parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--infile', help='File to convert to json', default='west.png')
-    parser.add_argument('--outfile', help='Output file name', default='output.json')
+    parser.add_argument('--infile', help='File to convert to json', default='')
+    parser.add_argument('--outfile', help='Output file name', default='')
     parser.add_argument('--color_threshold', help='Number of colors to use, default=10', default=10)
     parser.add_argument('--tree_simplex', help='default=18', default=18)
     parser.add_argument('--prey_simplex', help='default=19', default=19)
