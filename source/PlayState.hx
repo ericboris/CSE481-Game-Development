@@ -99,6 +99,8 @@ class PlayState extends FlxState
     var cameraZoomDirection:Int = -1;
     var cameraZoomTween:FlxTween;
 
+    var initialCameraZoomTween:FlxTween;
+
     var predatorAlarmClock:FlxTimer;
 
     override public function create()
@@ -137,7 +139,6 @@ class PlayState extends FlxState
             tutorialText.x -= tutorialText.width / 2;
             tutorialText.health = -9;
             tutorialText.alignment = CENTER;
-            //tutorialText.borderStyle = SHADOW;
             add(tutorialText);
         }
 
@@ -149,7 +150,6 @@ class PlayState extends FlxState
             MenuPlayState.menuState = GameWinState;
             FlxG.switchState(new MenuPlayState());
             return;
-            GameWorld.restart();
         }
         
         // Set up the tilemap.
@@ -284,14 +284,33 @@ class PlayState extends FlxState
 
         // Set camera to follow player
         FlxG.camera.setScrollBoundsRect(0, 0, TILE_SIZE * mapWidth, TILE_SIZE * mapHeight);
-        FlxG.camera.zoom = baseZoom();
-        FlxG.camera.follow(player.getSprite(), TOPDOWN, 0.3);
+        FlxG.camera.zoom = 1.0;
+        FlxG.camera.bgColor = 0xFF6DBAB8;
+        FlxG.camera.follow(player.getSprite(), TOPDOWN, 0.2);
 
         var camera_x = SCREEN_WIDTH/2;
         var camera_y = SCREEN_HEIGHT/2;
         var camera_w = CHUNK_WIDTH/5;
         var camera_h = CHUNK_HEIGHT/5;
         FlxG.camera.deadzone.set(camera_x - camera_w/2, camera_y - camera_h/2, camera_w, camera_h);
+
+        var duration = 5.0;
+        var options = {ease: FlxEase.cubeInOut, onComplete: function (tween) {
+            initialCameraZoomTween = null;
+        }};
+
+        var initialZoom:Float;
+        if (mapWidth < mapHeight)
+        {
+            initialZoom = SCREEN_WIDTH / (mapWidth * 16);
+        }
+        else
+        {
+            initialZoom = SCREEN_HEIGHT / (mapHeight * 16);
+        }
+        initialCameraZoomTween = FlxTween.num(initialZoom, baseZoom(), duration, options, function (f: Float) {
+            FlxG.camera.zoom = f;
+        });
     }
 
     function createTileCollider(tileX:Int, tileY:Int, obstacles:FlxTilemap)
@@ -388,6 +407,8 @@ class PlayState extends FlxState
 
     function updateCamera()
     {
+        if (initialCameraZoomTween != null) return;
+
         var duration = 2.5;
         var zoom = FlxG.camera.zoom;
         if (player.isPlayerCalling())
