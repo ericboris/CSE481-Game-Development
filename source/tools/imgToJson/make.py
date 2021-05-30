@@ -357,6 +357,7 @@ def getData(img):
 
     numEmptyTiles = len(emptyTiles)
 
+    '''
     # Fill in trees.
     treesAdded = 0
     treesToAdd = _getNumToAdd(TREE_DENSITY, numEmptyTiles)
@@ -375,10 +376,12 @@ def getData(img):
         obstacleDict[y][x] = typed
 
         treesAdded += 1
+    '''
 
     # The entities list of prey and predators and their locations.
     entities = []
-
+    
+    '''
     # Fill in prey.
     preyAdded = 0
     preyToAdd = _getNumToAdd(PREY_DENSITY, numEmptyTiles)
@@ -414,6 +417,7 @@ def getData(img):
         obstacleDict[y][x] = EMPTY
 
         predatorsAdded += 1
+    '''
 
     # Fill in the remaining empty tiles.
     for x, y in emptyTiles:

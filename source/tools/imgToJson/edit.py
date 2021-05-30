@@ -40,11 +40,17 @@ def main(args):
     # Compute the empty tile area and empty tile (x, y) coordinates. 
     area, emptyTiles = getEmptyTiles(root, entity)
 
-    # Get copy of root with instances of entity removed from entities.
-    root = removeEntities(root, entity)
+    if entity == 'tree':
+        
+        #root = removeTrees(root) 
 
-    # Insert new entities to the entities dict.
-    root = addNewEntities(root, entity, density, area, emptyTiles)
+        
+    else:
+        # Get copy of root with instances of entity removed from entities.
+        root = removeEntities(root, entity)
+
+        # Insert new entities to the entities dict.
+        root = addNewEntities(root, entity, density, area, emptyTiles)
 
     # Save the file.
     rootJson = json.dumps(root, indent=2)
@@ -59,18 +65,24 @@ def getEmptyTiles(root, entityName):
     Count of empty tiles doesn't necessarily equal len(totalEmptyTiles)
     '''
     emptyObstacleTiles = getEmptyObstacleTiles(root[LAYERS_INDEX][OBSTACLE_LAYER_INDEX])
-
+    
     nonEmptyEntityTiles = getNonEmptyEntityTiles(root[LAYERS_INDEX][ENTITY_LAYER_INDEX], entityName)
+
+    treeTiles = getTreeTiles(root[LAYERS_INDEX][OBSTACLE_LAYER_INDEX])
 
     assert (len(emptyObstacleTiles) >= len(nonEmptyEntityTiles)), 'There must be more empty than non-empty tiles.'
 
-    totalEmptyTiles = []
+    if entityName == 'tree':
+        totalEmptyTiles = emptyObstacleTiles + treeTiles
+        return len(totalEmptyTiles), totalEmptyTiles
 
-    for tile in emptyObstacleTiles:
-        if tile not in nonEmptyEntityTiles:
-            totalEmptyTiles.append(tile)
+    else:
+        totalEmptyTiles = []
+        for tile in emptyObstacleTiles:
+            if tile not in nonEmptyEntityTiles:
+                totalEmptyTiles.append(tile)
 
-    return len(emptyObstacleTiles), totalEmptyTiles
+        return len(emptyObstacleTiles), totalEmptyTiles
  
 
 def getEmptyObstacleTiles(obstacleLayer):
@@ -109,6 +121,34 @@ def getNonEmptyEntityTiles(entitiesLayer, entityName):
     return nonEmptyTiles
 
 
+def isTree(index):
+    '''
+    Return true if the given index represents a tree and false otherwise.
+    '''
+    trees = [14, 15, 21, 22, 53]
+    return index in trees
+
+
+def getTreeTiles(obstacleLayer):
+    '''
+    Return a list of (x, y) coordinate pairs of tree tiles on the obstacleLayer.
+    '''
+    cols = obstacleLayer[COLS_INDEX]
+    rows = obstacleLayer[ROWS_INDEX]
+    obstacles = obstacleLayer[DATA_INDEX]
+    i = 0
+
+    treeTiles = []
+
+    for y in range(rows):
+        for x in range(cols):
+            if isTree(obstacles[i]):
+                treeTiles.append((x, y))
+            i += 1
+    
+    return treeTiles
+
+
 def removeEntities(root, entityName):
     '''
     Return root with all instances of entities with name matching entityName removed.
@@ -127,6 +167,48 @@ def removeEntities(root, entityName):
 
     return newRoot
 
+
+def removeTrees(root):
+    '''
+    Return root with all instances of trees removed.
+    '''
+    obstacles = root[LAYERS_INDEX][OBSTACLE_LAYER_INDEX][DATA_INDEX]
+    cols = obstacleLayer[COLS_INDEX]
+    rows = obstacleLayer[ROWS_INDEX]
+    i = 0
+    
+    newObstacles = []
+    for y in range(rows):
+        for x in range(cols):
+            if isTree(obstacles[i]):
+                newObstacles.append(EMPTY)
+            else
+                newObstacles.append(obstacles[i])
+            i += 1
+
+    # Prevent side-effects.
+    newRoot = deepcopy(root)
+    newRoot[LAYERS_INDEX][OBSTACLE_LAYER_INDEX][DATA_INDEX] = newObstacles
+
+    return newRoot
+
+def addNewTrees(root, density, area, emptyTiles):
+    '''
+    Return root with trees of the given density filling the available area.
+    '''
+    # Prevent side-effects.
+    newRoot = deepcopy(root)
+
+    toAdd = numToAdd(density, area)
+    numAdded = 0
+
+    while numAdded < toAdd:
+        x, y = random.choice(emptyTiles)
+
+        emptyTiles.remove((x, y))
+
+        choice
+        
 
 def numToAdd(density, area):
     '''
