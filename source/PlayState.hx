@@ -34,7 +34,7 @@ class PlayState extends FlxState
     static public final CHUNK_HEIGHT = 300;
 
     // Enables debug commands (spawn prey, next level)
-    static public final DEBUG = false;
+    static public final DEBUG = true;
 
     // Makes player move faster
     static public final DEBUG_FAST_SPEED = false;
@@ -276,25 +276,28 @@ class PlayState extends FlxState
     function setupCamera()
     {
         // Set world size
-        FlxG.worldBounds.set(0, 0, TILE_SIZE * mapWidth, TILE_SIZE * mapHeight);
+        var worldWidth = TILE_SIZE * mapWidth;
+        var worldHeight = TILE_SIZE * mapHeight;
+        FlxG.worldBounds.set(0, 0, worldWidth, worldHeight);
         
         overlayCamera = new FlxCamera(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 1.0);
         overlayCamera.bgColor = FlxColor.TRANSPARENT;
         FlxG.cameras.add(overlayCamera, false);
 
         // Set camera to follow player
-        FlxG.camera.setScrollBoundsRect(0, 0, TILE_SIZE * mapWidth, TILE_SIZE * mapHeight);
         FlxG.camera.zoom = 1.0;
         FlxG.camera.bgColor = 0xFF6DBAB8;
         FlxG.camera.follow(player.getSprite(), TOPDOWN, 0.2);
+        FlxG.camera.setScrollBoundsRect(0, 0, worldWidth, worldHeight);
 
         var camera_x = SCREEN_WIDTH/2;
         var camera_y = SCREEN_HEIGHT/2;
         var camera_w = CHUNK_WIDTH/5;
         var camera_h = CHUNK_HEIGHT/5;
+        
         FlxG.camera.deadzone.set(camera_x - camera_w/2, camera_y - camera_h/2, camera_w, camera_h);
 
-        var duration = 5.0;
+        var zoomDuration = 3.5;
         var options = {ease: FlxEase.cubeInOut, onComplete: function (tween) {
             initialCameraZoomTween = null;
         }};
@@ -308,7 +311,7 @@ class PlayState extends FlxState
         {
             initialZoom = SCREEN_HEIGHT / (mapHeight * 16);
         }
-        initialCameraZoomTween = FlxTween.num(initialZoom, baseZoom(), duration, options, function (f: Float) {
+        initialCameraZoomTween = FlxTween.num(initialZoom, baseZoom(), zoomDuration, options, function (f: Float) {
             FlxG.camera.zoom = f;
         });
     }
