@@ -17,6 +17,7 @@ class PlayLogger
     static final MAY_11_VERSION = 2;
     static final MAY_16_VERSION = 3;
     static final INITIAL_RELEASE = 4;
+    static final MAY_30_RELEASE = 5;
 
     static final GAME_VERSION = DEBUG_VERSION;
 
