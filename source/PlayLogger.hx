@@ -10,8 +10,6 @@ class PlayLogger
     static final GAME_ID = 202107;
     static final GAME_KEY = "4fc8038359b26ec7a1044c1c6bc85745";
     static final GAME_NAME = "dinosaurherd";
- 
-    static final HEARTBEAT_TIME = 4.0;
 
     static final DEBUG_VERSION = 1;
     static final MAY_11_VERSION = 2;
@@ -19,7 +17,7 @@ class PlayLogger
     static final INITIAL_RELEASE = 4;
     static final MAY_30_RELEASE = 5;
 
-    static final GAME_VERSION = DEBUG_VERSION;
+    static final GAME_VERSION = MAY_30_RELEASE;
 
     static var logger = new CapstoneLogger(GAME_ID, GAME_NAME, GAME_KEY, GAME_VERSION);
     static var createdLoggerSession = false;
@@ -61,6 +59,7 @@ class PlayLogger
     static var caveDepositCount:Int = 0;
 
     // Time until next heartbeat, in seconds
+    static final HEARTBEAT_TIME = 4.0;
     static var heartbeatTimer:Float = 0.0;
 
     static final HERDED_PREY_TIMER = 8.0;
@@ -130,7 +129,7 @@ class PlayLogger
             {
                 var framerate = averageFramerate / averageFramerateCount;
                 averageFramerate = averageFramerateCount = 0;
-                var details = {fps: Std.int(1 / framerate)};
+                var details = {fps: Std.int(1 / framerate), aggression: Predator.aggression};
                 logger.logLevelAction(HEARTBEAT, details);
                 heartbeatTimer = HEARTBEAT_TIME;
             }
