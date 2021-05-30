@@ -59,7 +59,7 @@ class Predator extends Dino
         SATIATED_TIMER = GameWorld.map(0.0, 1.0, MAX_SATIATED_TIMER, MIN_SATIATED_TIMER, aggression);
         DAZED_TIMER = GameWorld.map(0.0, 1.0, MAX_DAZED_TIMER, MIN_DAZED_TIMER, aggression);
     
-        if (DEBUG)
+        if (PlayState.DEBUG)
         {
             Console.log("Aggression: " + aggression);
             Console.log("Speed: " + PURSUING_SPEED);

@@ -946,7 +946,7 @@ class Player extends Entity
         berrySound.play();
     }
 
-    public function setLives(amount:Int):Void
+    public static function setLives(amount:Int):Void
     {
         numLives = amount;
     }
