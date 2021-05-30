@@ -167,10 +167,14 @@ class Predator extends Dino
 
         if (satiated)
         {
-            state = Unherded;
             satiatedTimer -= elapsed;
             if (satiatedTimer < 0)
                 satiated = false;
+        }
+
+        if ((satiated || dazed) && seenEntities.length > 0)
+        {
+            state = Fleeing;
         }
 
         if (dazed || satiated)
@@ -448,5 +452,15 @@ class Predator extends Dino
     override function canBeCollected()
     {
         return dazed;
+    }
+
+    public function goIntoWater(x:Float, y:Float)
+    {
+        if (dazed)
+        {
+            jumpTo(x, y, false, function(pred) {
+                fadeOutAndRemove();
+            }, 0.4);
+        }
     }
 }

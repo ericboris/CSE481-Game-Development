@@ -216,32 +216,38 @@ class CollisionHandler
 
             var tile:FlxTile = cast object1;
 
+            var tilemap = PlayState.world.getObstacles();
+
+            var waterOffset = tile.mapIndex;
+            switch (direction)
+            {
+                case FlxObject.RIGHT:
+                    waterOffset -= 1;
+                case FlxObject.LEFT:
+                    waterOffset += 1;
+                case FlxObject.UP:
+                    waterOffset -= tilemap.widthInTiles;
+                case FlxObject.DOWN:
+                    waterOffset += tilemap.widthInTiles;
+            }
+
+            var coords = tilemap.getTileCoordsByIndex(waterOffset, false);
             if (entity.getType() == EntityBoulder)
             {
-                var boulder:Boulder = cast entity;
-                var tilemap = PlayState.world.getObstacles();
-
-                var waterOffset = tile.mapIndex;
-                switch (direction)
-                {
-                    case FlxObject.RIGHT:
-                        waterOffset -= 1;
-                    case FlxObject.LEFT:
-                        waterOffset += 1;
-                    case FlxObject.UP:
-                        waterOffset -= tilemap.widthInTiles;
-                    case FlxObject.DOWN:
-                        waterOffset += tilemap.widthInTiles;
-                }
-
                 var waterTileIndex = tilemap.getTileByIndex(waterOffset);
                 if (waterTileIndex == TileType.WATER)
                 {
+                    var boulder:Boulder = cast entity;
                     disableWaterEdgeColliders(waterOffset, tilemap);
 
-                    var coords = tilemap.getTileCoordsByIndex(waterOffset, false);
                     boulder.goIntoWater(coords.x, coords.y, waterOffset);
                 }
+            }
+            else if (entity.getType() == EntityPredator)
+            {
+                var predator:Predator = cast entity;
+                var coords = tilemap.getTileCoordsByIndex(waterOffset, false);
+                predator.goIntoWater(coords.x, coords.y);
             }
         }
     }

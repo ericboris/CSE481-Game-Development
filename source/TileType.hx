@@ -26,8 +26,8 @@ class TileType
     public static final WATER_EDGE_LEFT = 58;
     public static final WATER_EDGE_UP = 50;
     public static final WATER_EDGE_DOWN = 64;
-    public static final WATER_EDGE_UP_RIGHT = 55;
-    public static final WATER_EDGE_UP_LEFT = 57;
+    public static final WATER_EDGE_UP_RIGHT = 51;
+    public static final WATER_EDGE_UP_LEFT = 49;
     public static final WATER_EDGE_DOWN_RIGHT = 63;
     public static final WATER_EDGE_DOWN_LEFT = 65;
 
