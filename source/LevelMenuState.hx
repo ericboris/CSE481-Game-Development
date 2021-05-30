@@ -48,7 +48,7 @@ class LevelMenuState extends FlxSubState
         var textString:String;
         if (GameWorld.levelId() == 1)
         {
-            textString = "Press Space at Caves to move on";
+            textString = "Press Enter at Caves to move on";
         }
         else
         {
@@ -60,7 +60,13 @@ class LevelMenuState extends FlxSubState
             }
         
             textString += "\n\n" + PlayState.world.getNumPreyLeft() + " remaining";
+            textString += "\nEnter to move on";
         }
+ 
+        text = new FlxText(0, 0, boxWidth - 8, textString, 8);
+        text.alpha = 0.0;
+
+        boxHeight = Std.int(Math.max(boxHeight, text.height + 8));
 
         box = new FlxSprite();
         box.makeGraphic(boxWidth, boxHeight, FlxColor.BLACK);
@@ -68,23 +74,19 @@ class LevelMenuState extends FlxSubState
         box.y = (this.y - camera.scroll.y) - box.height - 16;
         box.alpha = 0.0;
         box.resetSizeFromFrame();
-
-        text = new FlxText(0, 0, boxWidth - 8, textString, 8);
+        
         text.x = box.x + box.width/2 - text.width/2;
         text.y = box.y + 4;
-        text.alpha = 0.0;
 
         var duration = 0.5;
         fadeTween(box, 0.0, 0.8, duration);
         fadeTween(text, 0.0, 1.0, duration);
-        //fadeTween(nextButton, 0.0, 1.0, duration);
 
         setOverlay(box);
         setOverlay(text);
 
         add(box);
         add(text);
-        //add(nextButton);
     }
 
     function setOverlay(sprite:FlxSprite)
@@ -115,7 +117,7 @@ class LevelMenuState extends FlxSubState
 
     override public function update(elapsed:Float)
     {
-        if (FlxG.keys.anyPressed([ENTER, SPACE]))
+        if (FlxG.keys.anyPressed([ENTER]))
         {
             clickNext();
         }
@@ -144,7 +146,6 @@ class LevelMenuState extends FlxSubState
             var duration = 0.4;
             fadeTween(box, box.alpha, 0.0, duration, closed);
             fadeTween(text, text.alpha, 0.0, duration);
-            //fadeTween(nextButton, nextButton.alpha, 0.0, duration);
         }
     }
 

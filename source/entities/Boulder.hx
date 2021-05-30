@@ -12,7 +12,7 @@ import flixel.math.FlxMath;
 
 class Boulder extends Entity
 {
-    static var PUSH_SPEED = 0.55;
+    static var PUSH_SPEED = 0.75;
 
     var isInWater:Bool = false;
     // The tile of water that the boulder is being pushed into.
@@ -83,10 +83,10 @@ class Boulder extends Entity
                     shouldJump = diffY < 0 && Math.abs(diffY) > Math.abs(diffX);
                 case FlxObject.LEFT:
                     jumpX = -jumpDist;
-                    shouldJump = diffX < 0 && Math.abs(diffY) < Math.abs(diffX);
+                    shouldJump = diffX > 0 && Math.abs(diffY) < Math.abs(diffX);
                 case FlxObject.RIGHT:
                     jumpX = jumpDist;
-                    shouldJump = diffX > 0 && Math.abs(diffY) < Math.abs(diffX);
+                    shouldJump = diffX < 0 && Math.abs(diffY) < Math.abs(diffX);
             }
 
             if (shouldJump)

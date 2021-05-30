@@ -19,25 +19,25 @@ class Predator extends Dino
     /* Pursuing state */
     static final ANGULAR_ACCELERATION = GameWorld.toRadians(20);
     
-    static final MAX_PURSUING_SPEED = 1.3;
-    static final MIN_PURSUING_SPEED = 0.4;
+    static final MAX_PURSUING_SPEED = 1.1;
+    static final MIN_PURSUING_SPEED = 0.6;
     static var PURSUING_SPEED = 100.0;
 
     static final SEEN_TIMER = 1.5;
 
     static final MAX_SATIATED_TIMER = 4.0;
-    static final MIN_SATIATED_TIMER = 0.8;
+    static final MIN_SATIATED_TIMER = 1.5;
     static var SATIATED_TIMER = 0.0;
 
     static final MAX_DAZED_TIMER = 4.0;
-    static final MIN_DAZED_TIMER = 0.8;
+    static final MIN_DAZED_TIMER = 1.5;
     static var DAZED_TIMER = 0.0;
 
-    static final MIN_SIGHT_RANGE = 60;
+    static final MIN_SIGHT_RANGE = 100;
     static final MAX_SIGHT_RANGE = 200;
 
-    static final MIN_SIGHT_RADIUS = 30;
-    static final MAX_SIGHT_RADIUS = 100;
+    static final MIN_SIGHT_RADIUS = 20;
+    static final MAX_SIGHT_RADIUS = 60;
     
     static final FLASHING_RATE = 0.04;
 
@@ -106,7 +106,7 @@ class Predator extends Dino
         this.SIGHT_RANGE = 200;
         this.NEARBY_SIGHT_RADIUS = 80;
 
-        setHitboxSize(14, 14);
+        setHitboxSize(10, 10);
 
         this.attackRoar = FlxG.sound.load(AssetPaths.PredatorRoar1__mp3, 0.7);
         attackRoar.proximity(sprite.x, sprite.y, FlxG.camera.target, FlxG.width * 0.6);
@@ -393,10 +393,7 @@ class Predator extends Dino
         {
             if (state == Sleeping)
             {
-                if (!isWaking)
-                {
-                    wakeUp();            
-                }
+                wakeUp();            
                 return false;
             }
             else
@@ -422,12 +419,15 @@ class Predator extends Dino
 
     public function wakeUp():Void
     {
-        isWaking = true;
-        attackRoar.play(); 
-        new FlxTimer().start(0.5, function (FlxTimer) 
-            {
-               this.state = Unherded; 
-            });
+        if (!isWaking)
+        {
+            isWaking = true;
+            attackRoar.play(); 
+            new FlxTimer().start(0.5, function (FlxTimer) 
+                {
+                   this.state = Unherded; 
+                });
+        }
     }
 
     public function track(entity:Entity)

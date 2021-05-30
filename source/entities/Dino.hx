@@ -206,10 +206,15 @@ class Dino extends Entity
             followingRadius *= 2;
             speed *= 1.05;
             dist = GameWorld.entityDistance(this, leader);
+
+            if (!GameWorld.raycast(this, leader))
+            {
+                framesStuck = 30;
+            }
         }
 
         // If player is at cave, head towards cave
-        if (herdedPlayer.isDepositingToCave())
+        if (herdedPlayer.isDepositingToCave() && GameWorld.checkVision(this, herdedPlayer))
         {
             leader = herdedPlayer;
             followingRadius = 0;
@@ -218,6 +223,7 @@ class Dino extends Entity
         if (dist < followingRadius)
         {
             // Slow dino down
+            framesStuck = 0;
             sprite.velocity.scale(DAMPING_FACTOR);
             return;
         }
@@ -225,7 +231,7 @@ class Dino extends Entity
         // Check if we're stuck
         var position = new FlxPoint(getX(), getY());
         var positionDiff = new FlxPoint(lastPosition.x - position.x, lastPosition.y - position.y);
-        var notMovingCheck = GameWorld.magnitude(positionDiff) < 1.5;
+        var notMovingCheck = GameWorld.magnitude(positionDiff) < 1.0;
         
         // Check if we can see our destination
         var visionCheck = !GameWorld.checkVision(this, leader);
@@ -288,7 +294,7 @@ class Dino extends Entity
     {
         if (herdedPath.length == 0) return;
         
-        if (framesSincePathGenerated > 10)
+        if (framesSincePathGenerated > 30)
         {
             pathTowards(pathLeader);
         }
@@ -298,7 +304,7 @@ class Dino extends Entity
         var pathPoint = herdedPath[herdedPath.length-1];
         var position = new FlxPoint(getX(), getY());
         var dir = new FlxPoint(pathPoint.x - position.x, pathPoint.y - position.y);
-        if (GameWorld.magnitude(dir) < 8.0)
+        if (GameWorld.magnitude(dir) < 6.0)
         {
             herdedPath.pop();
             if (herdedPath.length == 0) return;
@@ -406,7 +412,10 @@ class Dino extends Entity
         }
         else
         {
-            think("zzz", 1.0, false);
+            if (FlxG.random.bool(1.5))
+            {
+                think("zzz", 1.0, false);
+            }
         }
         sprite.velocity.set(0, 0);
     }

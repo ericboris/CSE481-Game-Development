@@ -176,11 +176,12 @@ class GameWorld
 
     // Tutorial info to show the player at the start of a relevant level.
     static var tutorialInformation: Map<Int, Array<TutorialText>>
-                                                = [0 => [new TutorialText("WASD to Move", 125, 230),
+                                                = [0 => [new TutorialText("WASD to Move", 125, 225),
                                                          new TutorialText("Space to Call Mammoths", 350, 266),
-                                                         new TutorialText("lead Mammoths to Caves", 470, 145)],
-                                                   1 => [new TutorialText("Shift to Swipe", 160, 370),
-                                                         new TutorialText("Swipe to Stun Predators", 515, 170)]];
+                                                         new TutorialText("Lead Mammoths to Caves", 470, 145)],
+                                                   2 => [new TutorialText("Use boulders to scale cliffs", 290, 165),
+                                                         new TutorialText("Press J to Swipe", 520, 320),
+                                                         new TutorialText("Swipe Predators to stun them", 520, 330)]];
 
     static public function getNearestEntity(src:Entity, entities:Array<Entity>, pathfind:Bool = false):Entity
     {
@@ -247,18 +248,22 @@ class GameWorld
         return Math.atan2(cross, dot);
     }
 
+
     /* VISION CHECKS */
     static public function checkVision(from:Entity, to:Entity):Bool
     {
         if (checkNearbySightRadius(from, to) || checkSightRange(from, to))
         {
             var obstacles = PlayState.world.getObstacles();
-            if (obstacles.ray(from.getSprite().getMidpoint(), to.getSprite().getMidpoint(), null, 4))
-            {
-                return true;
-            }
+            return raycast(from, to);
         }
         return false;
+    }
+
+    static public function raycast(from:Entity, to:Entity):Bool
+    {
+        var obstacles = PlayState.world.getObstacles();
+        return obstacles.ray(from.getSprite().getMidpoint(), to.getSprite().getMidpoint(), null, 4);
     }
 
     static function checkNearbySightRadius(from:Entity, to:Entity):Bool

@@ -153,7 +153,7 @@ class Player extends Entity
         addHitbox(interactHitbox);
 
         stickHitbox = new Hitbox(this, STICK_HITBOX_ID);
-        stickHitbox.setSize(16, 25);
+        stickHitbox.setSize(24, 24);
         stickHitbox.setOffset(0,8);
         stickHitbox.setActive(false);
         addHitbox(stickHitbox);
@@ -704,7 +704,7 @@ class Player extends Entity
 
                 usingItem = true;
 
-                stickHitbox.setActive(true, 8);
+                stickHitbox.setActive(true, 12);
                 swipeSound.stop();
                 swipeSound.play();
             }
@@ -874,7 +874,7 @@ class Player extends Entity
     {
        // Move player to nearest cave.
         var respawnCave = PlayState.world.getRespawnCave();
-        this.setPosition(respawnCave.getX(), respawnCave.getY());
+        this.setPosition(respawnCave.getX(), respawnCave.getY() + 16);
         
         Predator.adjustAggression(-0.3);
 

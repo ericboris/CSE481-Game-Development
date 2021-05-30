@@ -148,7 +148,7 @@ class Prey extends Dino
                 herdedPlayer.notifyDeadFollower(this);
            
             var player = PlayState.world.getPlayer();
-            if (GameWorld.entityDistance(player, this) < 200) 
+            if (GameWorld.entityDistance(player, this) < 150)
             {
                 FlxG.camera.shake(0.01, 0.1);
             }
