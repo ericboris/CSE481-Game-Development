@@ -187,6 +187,15 @@ class Predator extends Dino
             }
         }
 
+        if (dazed)
+        {
+            canJumpCliffs = true;
+        }
+        else
+        {
+            canJumpCliffs = false;
+        }
+
         if (state == Pursuing)
             pursuing(elapsed);
 
