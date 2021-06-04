@@ -378,10 +378,12 @@ class PlayState extends FlxState
     {
         // Check to load next level.
         transitioningToNextLevel = player.isInRangeOfCave() && levelIsComplete();
+        /**
         if (GameWorld.levelId() == 1)
         {
             transitioningToNextLevel = false;
         }
+        */
 
         if (DEBUG)
         {

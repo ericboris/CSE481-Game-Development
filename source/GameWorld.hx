@@ -94,6 +94,8 @@ class GameWorld
 
     static public function getABChoice()
     {
+        // No longer necessary but method must remain.
+        /**
         var ABChoice:Int;
         if (levelIndex == 0 && !ABChoiceIsMade)
         {
@@ -117,6 +119,12 @@ class GameWorld
             PlayLogger.recordPlayerSpeedChoice(playerSpeedChoice);
             ABChoiceIsMade = true;
         }
+        */
+        ABChoiceIsMade = true;
+        levelDensityChoice = 1;
+        playerSpeedChoice = 1;
+        PlayLogger.recordLevelDensityChoice(levelDensityChoice);
+        PlayLogger.recordPlayerSpeedChoice(playerSpeedChoice);
     }
 
     static public function getLevelArray()

@@ -41,6 +41,8 @@ class Predator extends Dino
     
     static final FLASHING_RATE = 0.04;
 
+    var splashSound:FlxSound;
+
     /* ADAPTIVE AGGRESSION */
     static public var aggression:Float = 0.5;
     static public function adjustAggression(f:Float)
@@ -113,6 +115,8 @@ class Predator extends Dino
         this.thought.setOffset(0, -17);
 
         this.state = Sleeping;
+
+        this.splashSound = FlxG.sound.load(AssetPaths.splash__mp3, 1.0);
     }
 
     function flash()
@@ -461,6 +465,8 @@ class Predator extends Dino
             jumpTo(x, y, false, function(pred) {
                 fadeOutAndRemove();
             }, 0.4);
+            splashSound.play();
+            Score.increment(5);
         }
     }
 }
