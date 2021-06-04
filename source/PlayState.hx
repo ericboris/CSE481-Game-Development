@@ -530,6 +530,12 @@ class PlayState extends FlxState
             entity.update(elapsed);
         }
 
+        if (entityGroups[EntityPrey].length == 0)
+        {
+            var nextLevelTimer = new FlxTimer();
+            nextLevelTimer.start(1.5, function(timer) { nextLevel(); });
+        }
+
         if (DEBUG)
         {
             if (FlxG.keys.anyPressed([P]))
@@ -888,7 +894,7 @@ class PlayState extends FlxState
 
             if (dino.getType() == EntityPrey)
             {
-                Predator.adjustAggression(0.01);
+                Predator.adjustAggression(0.005);
                 numPreyCollected++;
             }
             else if (dino.getType() == EntityPredator)

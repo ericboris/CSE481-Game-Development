@@ -411,4 +411,14 @@ class GameWorld
         else
             return FlxObject.NONE;
     }
+
+    static public function getLevelIndex():Int
+    {
+        return levelIndex;
+    }
+
+    static public function getNumLevels():Int
+    {
+        return highDensityLevels.length;
+    }
 }

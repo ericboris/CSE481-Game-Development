@@ -26,6 +26,12 @@ class TransitionState extends FlxState
         var background = new FlxSprite();
         background.loadGraphic(AssetPaths.cavebackground__png);
         add(background);
+
+        var levelString = "Level " + GameWorld.getLevelIndex() + "/" + GameWorld.getNumLevels() + " Complete!";
+        var levelText = new FlxText(0, 0, 0, levelString, 36);
+        setShadow(levelText);
+        levelText.alpha = 1;
+        this.add(levelText);
         
         var scoreString = "Saved:\n" + PlayState.world.numPreyCollected + " mammoth";
         if (numPrey != 1) scoreString += "s";

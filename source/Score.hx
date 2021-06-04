@@ -25,11 +25,11 @@ class Score
         switch (dino.getType()) {
             case EntityPrey:
                 _collectedScore += 1;
-                _collectedMultiplier += 0.05;
+                _collectedMultiplier += 0.1;
                 _preyCount += 1;
             case EntityPredator:
                 _collectedScore += 5;
-                _collectedMultiplier += 0.2;
+                _collectedMultiplier += 2.0;
                 _predatorCount += 1;
             default:
                 // This shouldn't happen.
