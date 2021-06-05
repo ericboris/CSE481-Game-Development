@@ -379,7 +379,20 @@ class PlayState extends FlxState
         }
         else
         {
-            FlxG.switchState(new TransitionState());
+            var levelIndex = GameWorld.getLevelIndex();
+            switch levelIndex
+            {
+                case 1:
+                    FlxG.switchState(new PlayState());
+                case 2:
+                    FlxG.switchState(new PlayState());
+                case 3:
+                    MenuPlayState.menuState = TransitionState;
+                    FlxG.switchState(new MenuPlayState());
+                default:
+                    MenuPlayState.menuState = TransitionState;
+                    FlxG.switchState(new MenuPlayState());
+            }
         }
     }
 

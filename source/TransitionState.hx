@@ -33,9 +33,9 @@ class TransitionState extends FlxSubState
 
         camera.fade(FlxColor.BLACK, 0.33, true);
 
-        var background = new FlxSprite();
-        background.loadGraphic(AssetPaths.cavebackground__png);
-        add(background);
+        //var background = new FlxSprite();
+        //background.loadGraphic(AssetPaths.cavebackground__png);
+        //add(background);
 
         var levelString = "Level " + GameWorld.getLevelIndex() + "/" + GameWorld.getNumLevels() + " Complete!";
         var levelText = new FlxText(0, 0, 0, levelString, 36);
