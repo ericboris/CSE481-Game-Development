@@ -24,6 +24,7 @@ class PlayState extends FlxState
 {
     // A singleton reference to the global PlayState.
     public static var world:PlayState;
+    public static var oldWorld:PlayState;
 
     static public final SCREEN_WIDTH = 800;
     static public final SCREEN_HEIGHT = 600;
@@ -370,6 +371,7 @@ class PlayState extends FlxState
     public function nextLevel()
     {
         PlayLogger.endLevel();
+        PlayState.oldWorld = this;
 
         if (this.numPrey == 0)
         {

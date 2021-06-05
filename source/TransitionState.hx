@@ -20,9 +20,9 @@ class TransitionState extends FlxSubState
         Score.endLevel();
 
         // Display the score for this level.
-        var numPreyCollected = PlayState.world.numPreyCollected;
-        var numPredsCollected = PlayState.world.numPredatorsCollected;
-        var numPrey:Int = PlayState.world.numPrey;
+        var numPreyCollected = PlayState.oldWorld.numPreyCollected;
+        var numPredsCollected = PlayState.oldWorld.numPredatorsCollected;
+        var numPrey:Int = PlayState.oldWorld.numPrey;
 
         overlayCamera = new FlxCamera(0, 0, PlayState.SCREEN_WIDTH, PlayState.SCREEN_HEIGHT);
         overlayCamera.fade(FlxColor.BLACK, 1.0, true);
@@ -43,7 +43,7 @@ class TransitionState extends FlxSubState
         levelText.alpha = 1;
         this.add(levelText);
         
-        var scoreString = "Saved:\n" + PlayState.world.numPreyCollected + " mammoth";
+        var scoreString = "Saved:\n" + PlayState.oldWorld.numPreyCollected + " mammoth";
         if (numPrey != 1) scoreString += "s";
         if (numPredsCollected > 0)
         {
@@ -144,6 +144,8 @@ class TransitionState extends FlxSubState
 
         var setAlpha1 = setAlpha.bind([levelScoreText, nextText, restartText]);
         FlxTween.num(0, 1.0, 0.5, fadeScoreOptions, setAlpha1);
+    
+        PlayState.oldWorld = null;
     }
 
     function setOverlay(sprite:FlxSprite)
