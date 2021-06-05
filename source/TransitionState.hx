@@ -9,9 +9,11 @@ import flixel.util.FlxTimer;
 import flixel.system.FlxSound;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
+import flixel.FlxCamera;
 
 class TransitionState extends FlxState
 {
+    var overlayCamera:FlxCamera;
     public override function create()
     {
         Score.endLevel();
@@ -20,6 +22,11 @@ class TransitionState extends FlxState
         var numPreyCollected = PlayState.world.numPreyCollected;
         var numPredsCollected = PlayState.world.numPredatorsCollected;
         var numPrey:Int = PlayState.world.numPrey;
+
+        overlayCamera = new FlxCamera(0, 0, PlayState.SCREEN_WIDTH, PlayState.SCREEN_HEIGHT);
+        overlayCamera.fade(FlxColor.BLACK, 1.0, true);
+        overlayCamera.bgColor = FlxColor.TRANSPARENT;
+        FlxG.cameras.add(overlayCamera, false);
 
         camera.fade(FlxColor.BLACK, 0.33, true);
 
@@ -67,6 +74,11 @@ class TransitionState extends FlxState
         var restartText = new FlxText(0, 0, 0, "R to restart", 20); 
         setShadow(restartText);
         restartText.alpha = 0;
+
+        setOverlay(levelScoreText);
+        setOverlay(rateText);
+        setOverlay(nextText);
+        setOverlay(restartText);
 
         this.add(levelScoreText);
         this.add(rateText);
@@ -128,6 +140,13 @@ class TransitionState extends FlxState
 
         var setAlpha1 = setAlpha.bind([levelScoreText, nextText, restartText]);
         FlxTween.num(0, 1.0, 0.5, fadeScoreOptions, setAlpha1);
+    }
+
+    function setOverlay(sprite:FlxSprite)
+    {
+        sprite.camera = overlayCamera;
+        sprite.scrollFactor.x = 0;
+        sprite.scrollFactor.y = 0;
     }
 
     function setShadow(text:FlxText)
