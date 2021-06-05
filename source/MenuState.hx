@@ -27,7 +27,7 @@ class MenuState extends FlxSubState
             PlayLogger.initializeLogger();
         }
 
-        titleText = new FlxText(125, 130, 400, "Mammoth Herder", 60);
+        titleText = new FlxText(125, 130, 400, "Mammoth Party", 65);
         titleText.alignment = CENTER;
         titleText.setBorderStyle(SHADOW, FlxColor.BLACK, 5);
         add(titleText);

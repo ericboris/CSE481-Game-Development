@@ -29,7 +29,7 @@ class ConfettiParticle extends FlxParticle implements IFlxParticle
 
     override public function onEmit()
     {
-        this.alpha = 0.9;
+        this.alpha = 1.0;
     }
 	
 	override public function update(elapsed:Float):Void 
@@ -38,7 +38,7 @@ class ConfettiParticle extends FlxParticle implements IFlxParticle
 		
 		this.scale.x = 1;
 		this.scale.y = this.scale.y - spinRotation;
-		this.alpha -= 0.025;
+		this.alpha -= 0.01;
 
 		if (this.scale.y <= -1) {
 			this.scale.y = 1;

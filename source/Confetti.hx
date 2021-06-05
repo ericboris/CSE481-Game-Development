@@ -11,7 +11,7 @@ import flixel.math.FlxRandom;
  */
 class Confetti extends FlxTypedGroup<FlxEmitter>
 {
-	private static inline var MAX_COUNT:Int = 50;
+	private static inline var MAX_COUNT:Int = 100;
 	
 	var emitter:FlxEmitter;
 
@@ -43,7 +43,7 @@ class Confetti extends FlxTypedGroup<FlxEmitter>
 
 	public function trigger():Void
 	{
-		emitter.start(true, 0, 7);
+		emitter.start(true, 0, 10);
 	}
 
     public function emit():Void

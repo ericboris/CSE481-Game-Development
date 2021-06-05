@@ -1,0 +1,167 @@
+package;
+
+import flixel.FlxG;
+import flixel.FlxState;
+import flixel.text.FlxText;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxTimer;
+import flixel.system.FlxSound;
+import flixel.FlxSprite;
+import flixel.util.FlxColor;
+import flixel.FlxCamera;
+import flixel.FlxSubState;
+
+class DescriptionState2 extends FlxSubState
+{
+    var overlayCamera:FlxCamera;
+    public override function create()
+    {
+        Score.endLevel();
+
+        // Display the score for this level.
+        var numPreyCollected = PlayState.oldWorld.numPreyCollected;
+        var numPredsCollected = PlayState.oldWorld.numPredatorsCollected;
+        var numPrey:Int = PlayState.oldWorld.numPrey;
+
+        overlayCamera = new FlxCamera(0, 0, PlayState.SCREEN_WIDTH, PlayState.SCREEN_HEIGHT);
+        overlayCamera.fade(FlxColor.BLACK, 1.0, true);
+        overlayCamera.bgColor = FlxColor.TRANSPARENT;
+        FlxG.cameras.add(overlayCamera, false);
+
+        var camera = overlayCamera;
+
+        camera.fade(FlxColor.BLACK, 0.33, true);
+
+        //var background = new FlxSprite();
+        //background.loadGraphic(AssetPaths.cavebackground__png);
+        //add(background);
+
+        var levelString = "Level " + GameWorld.getLevelIndex() + "/" + GameWorld.getNumLevels() + " Complete!";
+        var levelText = new FlxText(0, 0, 0, levelString, 36);
+        setShadow(levelText);
+        levelText.alpha = 1;
+        this.add(levelText);
+        
+        var scoreString = "Saved:\n" + PlayState.oldWorld.numPreyCollected + " mammoth";
+        if (numPrey != 1) scoreString += "s";
+        if (numPredsCollected > 0)
+        {
+            scoreString += "\n" + numPredsCollected + " predator";
+            if (numPredsCollected != 1) scoreString += "s";
+            scoreString += "!";
+        }
+
+        var rate:Int = Std.int(100 * (numPreyCollected + numPredsCollected) / numPrey);
+        var survivalRate = "Survival Rate: " + rate + "%";
+
+        var levelScoreText = new FlxText(0, 0, 0, scoreString, 36);
+        setShadow(levelScoreText);
+        levelScoreText.alpha = 0;
+
+        var score  = "Score: " + Score.getScore();
+        var scoreText = new FlxText(0, 0, 0, score, 24);
+        scoreText.x = camera.width - scoreText.width - 16;
+        scoreText.y = 8;
+        setShadow(scoreText);
+
+        var rateText = new FlxText(0, 0, 0, survivalRate, 36);
+        setShadow(rateText);
+        rateText.alpha = 0;
+
+        var descriptionString = "you invited all your friends\nbut they got lost along the way";
+        var descriptionText = new FlxText(0, 0, 0, descriptionString, 36);
+        setShadow(descriptionText);
+        descriptionText.alpha = 0;
+
+        var nextText = new FlxText(0, 0, 0, "Space to move on", 20);
+        setShadow(nextText);
+        nextText.alpha = 0;
+
+        var restartText = new FlxText(0, 0, 0, "R to restart", 20); 
+        setShadow(restartText);
+        restartText.alpha = 0;
+
+        setOverlay(scoreText);
+        setOverlay(levelScoreText);
+        //setOverlay(rateText);
+        setOverlay(descriptionText);
+        setOverlay(nextText);
+        setOverlay(restartText);
+
+        this.add(scoreText);
+        //this.add(levelScoreText);
+        //this.add(rateText);
+        this.add(descriptionText);
+        this.add(nextText);
+        this.add(restartText);
+
+        var midx = camera.scroll.x + PlayState.SCREEN_WIDTH/2;
+        var midy = camera.scroll.y + PlayState.SCREEN_HEIGHT/2;
+        rateText.setPosition(midx - rateText.width/2, midy - rateText.height/2);
+        levelScoreText.setPosition(midx - rateText.width/2, rateText.y - levelScoreText.height - 30);
+        descriptionText.setPosition(midx - descriptionText.width/2, midy - descriptionText.height/2);
+        descriptionText.alignment = CENTER;
+
+        var bottomy = camera.scroll.y + PlayState.SCREEN_HEIGHT;
+        nextText.setPosition(camera.scroll.x + 20, bottomy - 50);
+        restartText.setPosition(camera.scroll.x + 20, bottomy - 80);
+
+        var setAlpha = function (texts:Array<FlxText>, f:Float) {
+            for (text in texts)
+            {
+                text.alpha = f;
+            }
+        };
+
+        var fadeOutDuration = 2.0;
+
+        var fadeScoreOptions = {ease: FlxEase.quadIn, onComplete: function (tween:FlxTween) {
+            var fadeRateOptions = {ease:FlxEase.quadIn, onComplete: function (tween:FlxTween) {
+                var fadeOutOptions = {ease:FlxEase.expoIn, onComplete: function (tween:FlxTween) {
+                    camera.fade(FlxColor.BLACK, 0.3, false, function() {
+                        FlxG.switchState(new PlayState());
+                    });
+                }};
+
+                var setAlpha3 = setAlpha.bind([levelScoreText, rateText, nextText, restartText, descriptionText, levelText]);
+                FlxTween.num(1.0, 0, fadeOutDuration, fadeOutOptions, setAlpha3);
+            }};
+
+            var duration:Float = 2.0;
+
+            var setAlpha2 = setAlpha.bind([rateText]);
+            FlxTween.num(0, 1.0, duration, fadeRateOptions, setAlpha2);
+        }};
+
+        var setAlpha1 = setAlpha.bind([levelScoreText, nextText, restartText, descriptionText, levelText]);
+        FlxTween.num(0, 1.0, 0.5, fadeScoreOptions, setAlpha1);
+    
+        PlayState.oldWorld = null;
+    }
+
+    function setOverlay(sprite:FlxSprite)
+    {
+        sprite.camera = overlayCamera;
+        sprite.scrollFactor.x = 0;
+        sprite.scrollFactor.y = 0;
+    }
+
+    function setShadow(text:FlxText)
+    {
+        text.setBorderStyle(SHADOW, FlxColor.BLACK, 4, 1);
+    }
+
+    public override function update(elapsed:Float)
+    {
+        if (FlxG.keys.anyPressed([N, SPACE]))
+        {
+            FlxG.switchState(new PlayState());
+        }
+        else if (FlxG.keys.anyPressed([R]))
+        {
+            GameWorld.restartLevel();
+            FlxG.switchState(new PlayState());
+        }
+    }
+}

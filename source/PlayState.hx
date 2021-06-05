@@ -385,11 +385,13 @@ class PlayState extends FlxState
             switch levelIndex
             {
                 case 1:
-                    FlxG.switchState(new PlayState());
+                    MenuPlayState.menuState = DescriptionState1;
+                    FlxG.switchState(new MenuPlayState());
                 case 2:
-                    FlxG.switchState(new PlayState());
+                    MenuPlayState.menuState = DescriptionState2;
+                    FlxG.switchState(new MenuPlayState());
                 case 3:
-                    MenuPlayState.menuState = TransitionState;
+                    MenuPlayState.menuState = DescriptionState3;
                     FlxG.switchState(new MenuPlayState());
                 default:
                     MenuPlayState.menuState = TransitionState;
