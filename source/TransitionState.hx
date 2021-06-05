@@ -29,6 +29,8 @@ class TransitionState extends FlxSubState
         overlayCamera.bgColor = FlxColor.TRANSPARENT;
         FlxG.cameras.add(overlayCamera, false);
 
+        var camera = overlayCamera;
+
         camera.fade(FlxColor.BLACK, 0.33, true);
 
         var background = new FlxSprite();
