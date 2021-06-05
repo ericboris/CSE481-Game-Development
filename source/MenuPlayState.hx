@@ -271,10 +271,7 @@ class MenuPlayState extends FlxState
             var cave:Cave = cast entity;
             if (FlxG.random.bool(confettiChance))
             {
-                for (i in 0...FlxG.random.int(1, 4))
-                {
-                    cave.confetti.trigger();
-                }
+                cave.confetti.emit();
             }
         }
 

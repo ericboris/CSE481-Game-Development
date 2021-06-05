@@ -45,5 +45,10 @@ class Confetti extends FlxTypedGroup<FlxEmitter>
 	{
 		emitter.start(true, 0, 7);
 	}
+
+    public function emit():Void
+    {
+        emitter.start(false, 0.05, 100);
+    }
 	
 }
