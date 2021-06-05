@@ -64,7 +64,6 @@ class TransitionState extends FlxSubState
         scoreText.x = camera.width - scoreText.width - 16;
         scoreText.y = 8;
         setShadow(scoreText);
-        add(scoreText);
 
         var rateText = new FlxText(0, 0, 0, survivalRate, 36);
         setShadow(rateText);
@@ -78,11 +77,13 @@ class TransitionState extends FlxSubState
         setShadow(restartText);
         restartText.alpha = 0;
 
+        setOverlay(scoreText);
         setOverlay(levelScoreText);
         setOverlay(rateText);
         setOverlay(nextText);
         setOverlay(restartText);
 
+        this.add(scoreText);
         this.add(levelScoreText);
         this.add(rateText);
         this.add(nextText);
