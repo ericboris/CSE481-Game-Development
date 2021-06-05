@@ -6,6 +6,7 @@ import js.html.Console;
 
 class Cave extends Obstacle
 {
+    public var confetti: Confetti;
     public function new()
     {
         super();

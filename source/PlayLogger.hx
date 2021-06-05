@@ -3,6 +3,7 @@ package;
 import entities.*;
 import js.html.Console;
 import flixel.util.FlxTimer;
+import flixel.FlxG;
 
 class PlayLogger
 {
@@ -157,6 +158,7 @@ class PlayLogger
                 {
                     var details = {caveDepositCount:caveDepositCount}
                     logger.logLevelAction(CAVE_DEPOSIT, details);
+                    PlayState.world.triggerCheer();
 
                     caveDepositCount = 0;
                     caveDepositTimer = CAVE_DEPOSIT_TIMER_DEFAULT;

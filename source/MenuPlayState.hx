@@ -261,6 +261,23 @@ class MenuPlayState extends FlxState
             collisionChecks();
         }
 
+
+        var score = Score.getScore();
+        var confettiChance = 0;
+        if (score > 0) confettiChance = 2;
+        else if (score > 100) confettiChance = 15;
+        for (entity in entityGroups[EntityCave])
+        {
+            var cave:Cave = cast entity;
+            if (FlxG.random.bool(confettiChance))
+            {
+                for (i in 0...FlxG.random.int(1, 4))
+                {
+                    cave.confetti.trigger();
+                }
+            }
+        }
+
         // Update all entities
         for (entity in entities)
         {
@@ -296,19 +313,26 @@ class MenuPlayState extends FlxState
         {
             return 1;
         }
+        
+        if (Std.is(obj1, FlxObject) && Std.is(obj2, FlxObject))
+        {
+            var sprite1:FlxObject = cast obj1;
+            var sprite2:FlxObject = cast obj2;
 
-        var sprite1:FlxObject = cast obj1;
-        var sprite2:FlxObject = cast obj2;
+            var y1 = sprite1.y + sprite1.height/2;
+            if (sprite1.health != 1)
+                y1 = sprite1.health;
 
-        var y1 = sprite1.y + sprite1.height/2;
-        if (sprite1.health != 1)
-            y1 = sprite1.health;
+            var y2 = sprite2.y + sprite2.height/2;
+            if (sprite2.health != 1)
+                y2 = sprite2.health;
 
-        var y2 = sprite2.y + sprite2.height/2;
-        if (sprite2.health != 1)
-            y2 = sprite2.health;
-
-        return cast(y1 - y2);
+            return cast(y1 - y2);
+        }
+        else
+        {
+            return 1;
+        }
     }
 
     // Adds entity to the world and respective sprite group.
@@ -427,6 +451,8 @@ class MenuPlayState extends FlxState
                 var cave = new Cave();
                 cave.setPosition(x - TILE_SIZE, y - 2 * TILE_SIZE);
                 addEntity(cave, false);
+                cave.confetti = new Confetti(x + TILE_SIZE/2, y - TILE_SIZE * 1.5);
+                add(cave.confetti.getEmitter());
                 caves.push(cave);
             case "boulder":
                 var boulder = new Boulder();

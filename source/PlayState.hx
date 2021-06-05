@@ -34,7 +34,7 @@ class PlayState extends FlxState
     static public final CHUNK_HEIGHT = 300;
 
     // Enables debug commands (spawn prey, next level)
-    static public final DEBUG = false;
+    static public final DEBUG = true;
 
     // Makes player move faster
     static public final DEBUG_FAST_SPEED = false;
@@ -102,6 +102,8 @@ class PlayState extends FlxState
     var initialCameraZoomTween:FlxTween;
 
     var predatorAlarmClock:FlxTimer;
+
+    var lastCheerTimestamp:Float = haxe.Timer.stamp();
 
     override public function create()
     {
@@ -297,23 +299,30 @@ class PlayState extends FlxState
         
         FlxG.camera.deadzone.set(camera_x - camera_w/2, camera_y - camera_h/2, camera_w, camera_h);
 
-        var zoomDuration = 3.5;
-        var options = {ease: FlxEase.cubeInOut, onComplete: function (tween) {
-            initialCameraZoomTween = null;
-        }};
-
-        var initialZoom:Float;
-        if (mapWidth < mapHeight)
+        if (GameWorld.levelId() >= 4)
         {
-            initialZoom = SCREEN_WIDTH / (mapWidth * 16);
+            var zoomDuration = 3.5;
+            var options = {ease: FlxEase.cubeInOut, onComplete: function (tween) {
+                initialCameraZoomTween = null;
+            }};
+
+            var initialZoom:Float;
+            if (mapWidth < mapHeight)
+            {
+                initialZoom = SCREEN_WIDTH / (mapWidth * 16);
+            }
+            else
+            {
+                initialZoom = SCREEN_HEIGHT / (mapHeight * 16);
+            }
+            initialCameraZoomTween = FlxTween.num(initialZoom, baseZoom(), zoomDuration, options, function (f: Float) {
+                FlxG.camera.zoom = f;
+            });
         }
         else
         {
-            initialZoom = SCREEN_HEIGHT / (mapHeight * 16);
+            FlxG.camera.zoom = baseZoom();
         }
-        initialCameraZoomTween = FlxTween.num(initialZoom, baseZoom(), zoomDuration, options, function (f: Float) {
-            FlxG.camera.zoom = f;
-        });
     }
 
     function createTileCollider(tileX:Int, tileY:Int, obstacles:FlxTilemap)
@@ -397,7 +406,7 @@ class PlayState extends FlxState
         if (transitioningToNextLevel)
         {
             closeLevelMenu();
-            transitionScreen.alpha += 0.03;
+            transitionScreen.alpha += 0.015;
             if (transitionScreen.alpha >= 1.0)
             {
                 // Go to next level!
@@ -406,7 +415,7 @@ class PlayState extends FlxState
         }
         else if (transitionScreen.alpha > 0)
         {
-            transitionScreen.alpha -= 0.03;
+            transitionScreen.alpha -= 0.04;
         }
     }
 
@@ -584,18 +593,25 @@ class PlayState extends FlxState
             return 1;
         }
 
-        var sprite1:FlxObject = cast obj1;
-        var sprite2:FlxObject = cast obj2;
+        if (Std.is(obj1, FlxObject) && Std.is(obj2, FlxObject))
+        {
+            var sprite1:FlxObject = cast obj1;
+            var sprite2:FlxObject = cast obj2;
 
-        var y1 = sprite1.y + sprite1.height/2;
-        if (sprite1.health != 1)
-            y1 = sprite1.health;
+            var y1 = sprite1.y + sprite1.height/2;
+            if (sprite1.health != 1)
+                y1 = sprite1.health;
 
-        var y2 = sprite2.y + sprite2.height/2;
-        if (sprite2.health != 1)
-            y2 = sprite2.health;
+            var y2 = sprite2.y + sprite2.height/2;
+            if (sprite2.health != 1)
+                y2 = sprite2.health;
 
-        return cast(y1 - y2);
+            return cast(y1 - y2);
+        }
+        else
+        {
+            return 1;
+        }
     }
 
     // Adds entity to the world and respective sprite group.
@@ -731,6 +747,8 @@ class PlayState extends FlxState
             case "cave":
                 var cave = new Cave();
                 cave.setPosition(x - TILE_SIZE, y - 2 * TILE_SIZE);
+                cave.confetti = new Confetti(x + TILE_SIZE/2, y - TILE_SIZE * 1.5);
+                add(cave.confetti.getEmitter());
                 addEntity(cave);
             case "boulder":
                 var boulder = new Boulder();
@@ -866,6 +884,7 @@ class PlayState extends FlxState
             lastDeliveredTimer = 1.0;
 
             dino.dead = true;
+            cave.confetti.trigger();
 
             var numPreyLeft = 0;
             if (dino.getType() == EntityPrey)
@@ -875,10 +894,18 @@ class PlayState extends FlxState
                     if (!prey.dead)
                         numPreyLeft++;
                 }
-                cave.think("" + numPreyLeft, 3.5, true);
+                cave.think("" + numPreyLeft, 2.5, true);
+                if (numPreyLeft == 0)
+                {
+                    triggerCheer();
+                }
             }
             else
             {
+                cave.confetti.trigger();
+                cave.confetti.trigger();
+                cave.confetti.trigger();
+                cave.confetti.trigger();
                 cave.think("!?", 2.5, true);
             }
 
@@ -899,7 +926,7 @@ class PlayState extends FlxState
             }
             else if (dino.getType() == EntityPredator)
             {
-                Predator.adjustAggression(0.1);
+                Predator.adjustAggression(0.05);
                 numPredatorsCollected++;
             }
         }
@@ -961,6 +988,16 @@ class PlayState extends FlxState
     public function isDebug()
     {
         return DEBUG;
+    }
+
+    public function triggerCheer()
+    {
+        var timestamp = haxe.Timer.stamp();
+        if (timestamp - lastCheerTimestamp >= 5.0)
+        {
+            lastCheerTimestamp = timestamp;
+            FlxG.sound.play(AssetPaths.cheer__mp3, 0.6, false, false);
+        }
     }
 }
 
