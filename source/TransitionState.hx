@@ -10,8 +10,9 @@ import flixel.system.FlxSound;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.FlxCamera;
+import flixel.FlxSubState;
 
-class TransitionState extends FlxState
+class TransitionState extends FlxSubState
 {
     var overlayCamera:FlxCamera;
     public override function create()
