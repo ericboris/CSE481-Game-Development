@@ -19,24 +19,24 @@ class Predator extends Dino
     /* Pursuing state */
     static final ANGULAR_ACCELERATION = GameWorld.toRadians(20);
     
-    static final MAX_PURSUING_SPEED = 1.1;
-    static final MIN_PURSUING_SPEED = 0.6;
+    static final MAX_PURSUING_SPEED = 1.05;
+    static final MIN_PURSUING_SPEED = 0.8;
     static var PURSUING_SPEED = 100.0;
 
     static final SEEN_TIMER = 1.5;
 
     static final MAX_SATIATED_TIMER = 4.0;
-    static final MIN_SATIATED_TIMER = 1.5;
+    static final MIN_SATIATED_TIMER = 2.0;
     static var SATIATED_TIMER = 0.0;
 
     static final MAX_DAZED_TIMER = 4.0;
-    static final MIN_DAZED_TIMER = 1.5;
+    static final MIN_DAZED_TIMER = 2.0;
     static var DAZED_TIMER = 0.0;
 
     static final MIN_SIGHT_RANGE = 100;
     static final MAX_SIGHT_RANGE = 200;
 
-    static final MIN_SIGHT_RADIUS = 20;
+    static final MIN_SIGHT_RADIUS = 40;
     static final MAX_SIGHT_RADIUS = 60;
     
     static final FLASHING_RATE = 0.04;
