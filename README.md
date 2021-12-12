@@ -1,1 +1,2 @@
-A game about saving dinosaurs from an asteroid impact.
+Play on Itch.io!
+https://mammothherder.itch.io/mammoth-herder
